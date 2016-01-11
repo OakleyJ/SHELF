@@ -1,0 +1,24 @@
+Package: SHELF
+Type: Package
+Title: Tools to Support the Sheffield Elicitation Framework (SHELF)
+Version: 1.0.1.9002
+Date: 2016-01-11
+Author: Jeremy Oakley
+Maintainer: Jeremy Oakley <j.oakley@sheffield.ac.uk>
+Description: Implements various methods for eliciting a probability distribution
+    for a single parameter from an expert or a group of experts. The expert
+    provides a small number of probability or quantile judgements, corresponding
+    to points on his or her cumulative distribution function. A range of parametric
+    distributions can then be fitted and displayed, with feedback provided in the
+    form of additional quantiles. A graphical interface for the roulette elicitation
+    method is also provided. For multiple experts, a weighted linear pool can be
+    calculated. Also includes functions for eliciting beliefs about population distributions.
+License: GPL-2 | GPL-3
+Depends: R (>= 3.2.3)
+RoxygenNote: 5.0.1
+Suggests: testthat
+Imports: ggplot2,
+    grid,
+    shiny
+URL: https://github.com/OakleyJ/SHELF
+BugReports: https://github.com/OakleyJ/SHELF/issues
