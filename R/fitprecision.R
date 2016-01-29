@@ -38,7 +38,7 @@
 #' 
 #'    
 #' @examples 
-#'  \dontrun{
+#' \dontrun{
 #' fitprecision(interval=c(60, 70), propvals=c(0.2, 0.4), trans = "log")
 #'   }
 #' @export
