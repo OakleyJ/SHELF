@@ -70,6 +70,7 @@
 #' # and force use of Beta distributions
 #' plotfit(myfit, d = "beta",  lp = T, lpw = c(2,1), ql = 0.05, qu = 0.95, ind=FALSE )
 #' }
+#' @import graphics
 #' @export
 plotfit <-
 function(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf, ql = NA, qu = NA, lp = FALSE, ex = NA, sf = 3, ind = TRUE, lpw = 1){

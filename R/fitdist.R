@@ -86,7 +86,7 @@
 #' u <- c(100, Inf)
 #' fitdist(vals=v, probs=p, lower=l, upper=u)
 #' }
-#' 
+#' @import stats
 #' @export
 #' 
 #' 
