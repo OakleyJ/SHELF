@@ -10,7 +10,7 @@
 #' pool can be calculated.
 #' 
 #' \tabular{ll}{ Package: \tab SHELF\cr Type: \tab Package\cr Version: \tab
-#' 1.0.1.9002\cr Date: \tab 2016-01-11\cr License: \tab GPL-2 | GPL-3\cr }
+#' 1.1.0.9001\cr Date: \tab 2016-04-21\cr License: \tab GPL-2 | GPL-3\cr }
 #' 
 #' @name SHELF-package
 #' @aliases SHELF-package SHELF
