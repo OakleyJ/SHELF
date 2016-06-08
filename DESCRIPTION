@@ -16,11 +16,15 @@ Description: Implements various methods for eliciting a probability distribution
 License: GPL-2 | GPL-3
 Depends: R (>= 3.2.2)
 RoxygenNote: 5.0.1
-Suggests: testthat
+Suggests: testthat,
+    knitr,
+    rmarkdown
 Imports: ggplot2,
     grid,
     shiny,
     stats,
-    graphics
+    graphics,
+    tidyr
 URL: https://github.com/OakleyJ/SHELF
 BugReports: https://github.com/OakleyJ/SHELF/issues
+VignetteBuilder: knitr
