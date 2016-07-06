@@ -24,7 +24,8 @@ Imports: ggplot2,
     shiny,
     stats,
     graphics,
-    tidyr
+    tidyr,
+    MASS
 URL: https://github.com/OakleyJ/SHELF
 BugReports: https://github.com/OakleyJ/SHELF/issues
 VignetteBuilder: knitr

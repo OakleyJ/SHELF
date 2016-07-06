@@ -130,7 +130,34 @@ fitDirichlet <- function(...,
     print(p1)
   }
   
+  # diagnostics
   
+  elic.marginal <- data.frame(beta.parameters)
+  elic.marginal <- rbind(elic.marginal,
+                         beta.means, 
+                         v^0.5,
+                         colSums(beta.parameters))
+  names(elic.marginal) <- categories
+  row.names(elic.marginal) <- c("shape1", "shape2", "mean", "sd",  "sum")
+  cat("\nDirectly elicted beta marginal distributions:\n \n" )
+  print(signif(elic.marginal, 3))
+  
+  cat("\nSum of elicited marginal means:",  
+      round(sum(beta.means), 3) )
+  
+  fitted.marginal <- data.frame(matrix(c(dirichlet.parameters,
+                                         n.d - dirichlet.parameters,
+                                      dirichlet.parameters / n.d,
+                                      (dirichlet.parameters * (n.d - dirichlet.parameters) /
+                                        (n.d ^ 2 * (n.d + 1)))^0.5, 
+                                      rep(n.d, numCategories)),
+                                      ncol=numCategories, byrow=T))
+  names(fitted.marginal) <- categories
+  row.names(fitted.marginal) <- c("shape1", "shape2","mean", "sd", "sum")
+  
+  cat("\n \nBeta marginal distributions from Dirichlet fit:\n \n" )
+  print(signif(fitted.marginal, 3))
+ 
   dirichlet.parameters
 }
 

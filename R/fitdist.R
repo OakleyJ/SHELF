@@ -110,7 +110,7 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 	logt.parameters <- matrix(NA, n.experts, 3)
 	beta.parameters <- matrix(NA, n.experts, 2)
 	ssq<-matrix(NA, n.experts, 6)
-	expertnames <- paste("expert.", 1:n.experts, sep="")
+	expertnames <- paste("expert.", LETTERS[1:n.experts], sep="")
 	
 	limits <- data.frame(lower = lower, upper = upper)
 	row.names(limits) <- expertnames
