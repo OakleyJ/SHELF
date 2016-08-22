@@ -6,7 +6,7 @@
 #' upper fitted quantiles.
 #' 
 #' 
-#' @param fit The output of a \code{fitdist} command.
+#' @param fit An object of class \code{elicitation}.
 #' @param d The distribution fitted to each expert's probabilities. Options are
 #' \code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
 #' \code{"logt"},\code{"beta"}, \code{"hist"} (for a histogram fit), and
@@ -37,6 +37,8 @@
 #' plotting of the individual density functions.
 #' @param lpw A vector of weights to be used in linear pool, if unequal
 #' weighting is desired.
+#' @param fs The font size used in the plot.
+#' @param lwd The line width used in the plot.
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
 #' @examples
 #' 
@@ -72,8 +74,21 @@
 #' }
 #' @import graphics
 #' @export
-plotfit <-
-function(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf, ql = NA, qu = NA, lp = FALSE, ex = NA, sf = 3, ind = TRUE, lpw = 1){
+plotfit <- function(fit, 
+                    d = "best", 
+                    int = FALSE, 
+                    xl = -Inf, 
+                    xu = Inf, 
+                    ql = NA, 
+                    qu = NA, 
+                    lp = FALSE, 
+                    ex = NA, 
+                    sf = 3, 
+                    ind = TRUE, 
+                    lpw = 1,
+                    fs = 12,
+                    lwd = 1){
+  
 
   if(d=="beta" & (min(fit$limits) == -Inf | max(fit$limits) == Inf )){stop("Parameter limits must be finite to fit a beta distribution")}
   if(d=="gamma" & min(fit$limits) < 0 ){stop("Lower parameter limit must be non-negative to fit a gamma distribution")}
@@ -82,11 +97,12 @@ function(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf, ql = NA, qu = NA, lp
   if(is.na(ql)==F & (ql <0 | ql>1 )){stop("Lower feedback quantile must be between 0 and 1")}
   if(is.na(qu)==F & (qu <0 | qu>1 )){stop("Upper feedback quantile must be between 0 and 1")}
   
-  
+  theme_set(theme_grey(base_size = fs))
+
   if(nrow(fit$vals)>1 & is.na(ex)==T & lp==F){
     if(xl == -Inf & min(fit$limits[,1]) > -Inf){xl <- min(fit$limits[,1]) }
     if(xu == Inf & max(fit$limits[,2]) < Inf){xu <- max(fit$limits[,2]) }
-    if(int == FALSE){plotgroup(fit, xl, xu, d, bw = T)}else{
+    if(int == FALSE){suppressWarnings(print(makeGroupPlot(fit, xl, xu, d, lwd)))}else{
       shinyplotgroup(fit, xl, xu, lpw)
     }
   }
@@ -104,7 +120,7 @@ function(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf, ql = NA, qu = NA, lp
       f2 <- feedback(fit, quantiles=0.99, dist=d)
       xu <- max(f2$expert.quantiles)
     }
-    if(int == FALSE){plotlinearpool(fit, xl, xu, ql, qu , d, ind, lpw)}else{
+    if(int == FALSE){print(makeLinearPoolPlot(fit, xl, xu,  d , lpw))}else{
       shinyplotgroup(fit, xl, xu, lpw)
     }
     
@@ -113,16 +129,17 @@ function(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf, ql = NA, qu = NA, lp
   if(nrow(fit$vals)>1 & is.na(ex)==F){
     if(xl == -Inf & fit$limits[ex,1] > -Inf){xl <- fit$limits[ex,1] }
     if(xu == Inf & fit$limits[ex,2] < Inf){xu <- fit$limits[ex,2] }
-    if(int == FALSE){plotsingle(fit, d, xl, xu, ql, qu, sf, ex)}else{
+    if(int == FALSE){print(suppressWarnings(makeSingleExpertPlot(fit, d, xl, xu, ql, qu, sf, ex = 1, lwd)))}else{
       shinyplotsingle(fit, xl, xu, ql, qu, ex)
     }
     
   }
   
+ 
   if(nrow(fit$vals)==1){
-    if(int == FALSE){plotsingle(fit, d, xl, xu, ql, qu, sf, ex = 1)}else{
-      shinyplotsingle(fit, xl, xu, ql, qu, ex = 1)
+    if(int == FALSE){print(suppressWarnings(makeSingleExpertPlot(fit, d, xl, xu, ql, qu, sf, ex = 1, lwd)))}else{
+      suppressWarnings(shinyplotsingle(fit, xl, xu, ql, qu, ex = 1))
     }
-    
-  }	
+  }
+
 }

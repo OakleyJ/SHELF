@@ -5,14 +5,16 @@ SHELF v1.1.0 (2016-01-29)
 
 * New functions added for eliciting beliefs about uncertain population distributions:  cdffeedback, cdfplot, fitprecision, pdfplots
 
-SHELF v1.1.0.9001 (2016-07-06) 
+SHELF v1.2.0 (2016-08-16) 
 ==============================
 
-* New function shinyRoulette for using the roulette elicitation method within shiny
+* Roulette elicitation method now implemented using shiny
 
 * New functions fitDirchlet and feedbackDirichlet for eliciting Dirichlet distributions
 
-* New functions copulaSample and elicitQuadProb for eliciting dependent distributions using multivariate normal copulas
+* New functions copulaSample and elicitConcProb for eliciting dependent distributions using multivariate normal copulas
+
+* New function compareIntervals for comparing fitted intervals for individual distributions from multiple experts
 
 * Change to expert.names from numbers to letters in fitdist
 

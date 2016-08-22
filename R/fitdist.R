@@ -25,7 +25,7 @@
 #' weighted least squares is to be used in the parameter fitting.
 #' @param tdf The number of degrees of freedom to be used when fitting a
 #' t-distribution.
-#' @return 
+#' @return An object of class \code{elicitation}. This is a list containing the elements
 #' \item{Normal}{Parameters of the fitted normal distributions.}
 #' \item{Student.t}{Parameters of the fitted t distributions. Note that (X -
 #' location) / scale has a standard t distribution. The degrees of freedom is
@@ -181,6 +181,10 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 		
 			alp <- abs(m.scaled2 ^3 / v.scaled2 * (1/m.scaled2-1) - m.scaled2)
     		bet <- abs(alp/m.scaled2 - alp)
+    		if(identical(probs[, i], 
+    		             (vals[, i] - lower[i]) / (upper[i] - lower[i]))){
+    		  alp <- bet <- 1
+    		}
     		beta.fit <- optim(c(log(alp), log(bet)), beta.error, values = vals.scaled2, probabilities = probs[,i], weights = weights[,i])
     		beta.parameters[i,] <- exp(beta.fit$par)
     		ssq[i,6] <- beta.fit$value	
@@ -225,5 +229,11 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 	probs <- data.frame(probs)
 	names(probs) <- expertnames
 		
-  list(Normal = dfn, Student.t = dft, Gamma = dfg, Log.normal = dfln, Log.Student.t = dflt, Beta = dfb, ssq = ssq, best.fitting = best.fitting, vals = t(vals), probs = t(probs), limits = limits)
+  fit <- list(Normal = dfn, Student.t = dft, 
+              Gamma = dfg, Log.normal = dfln, 
+              Log.Student.t = dflt, Beta = dfb, ssq = ssq, 
+              best.fitting = best.fitting, vals = t(vals), 
+              probs = t(probs), limits = limits)
+  class(fit) <- "elicitation"
+  fit
 }

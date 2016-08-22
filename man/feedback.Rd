@@ -8,7 +8,7 @@ feedback(fit, quantiles = NA, values = NA, dist = "best", ex = NA,
   sf = 3)
 }
 \arguments{
-\item{fit}{The output of a \code{fitdist} command.}
+\item{fit}{An object of class \code{elicitation}.}
 
 \item{quantiles}{A vector of desired quantiles for feedback. If this
 argument is left out, the default is to use the same quantiles that were

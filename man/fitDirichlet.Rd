@@ -7,7 +7,7 @@
 fitDirichlet(..., categories = NULL, n.fitted = "opt", plotBeta = TRUE)
 }
 \arguments{
-\item{...}{A list of elicitation fits produced from the \code{fitdist}
+\item{...}{A list of objects of class \code{elicitation}.
 command, one per marginal proportion, separated by commas.}
 
 \item{categories}{A vector of strings labelling the marginal proportions.}

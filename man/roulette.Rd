@@ -5,24 +5,24 @@
 \title{Elicit one set of probabilities using the roulette method.}
 \usage{
 roulette(lower = 0, upper = 100, gridheight = 10, nbins = 10,
-  round.end = F)
+  round.end = T)
 }
 \arguments{
 \item{lower}{The lower limit on the x-axis of the roulette grid.}
 
 \item{upper}{The upper limit on the x-axis of the roulette grid.}
 
-\item{gridheight}{The maximum number of chips that can be allocated to a
+\item{gridheight}{The maximum number of probs that can be allocated to a
 single bin.}
 
 \item{nbins}{The number of equally sized bins drawn between \code{Lo} and
 \code{Up}.}
 
-\item{round.end}{If set to \code{T}, empty bins and the uppermost non-empty
-bin will be ignored. For example, with 20 chips in total, if the uppermost
-non-empty bin is [70,80] and contains 1 chip, setting \code{round.end = F}
+\item{round.end}{If set to \code{TRUE}, empty bins and the uppermost non-empty
+bin will be ignored. For example, with 20 probs in total, if the uppermost
+non-empty bin is [70,80] and contains 1 prob, setting \code{round.end = FALSE}
 will result in an elicited probability P(X>80)=0, but setting
-\code{round.end = T} will remove this judgement, instead only having
+\code{round.end = TRUE} will remove this judgement, instead only having
 P(X>70)=0.05.}
 }
 \value{
@@ -34,17 +34,17 @@ upper bin limit.}
 }
 \description{
 Produces a graphics window with the roulette grid. The user clicks in the
-window to allocate 'chips' to 'bins'. The elicited probability inside each
-bin is the proportion of chips in each bin.
+window to allocate 'probs' to 'bins'. The elicited probability inside each
+bin is the proportion of probs in each bin.
 }
 \examples{
 
 \dontrun{
-x <- roulette()
-# Then allocate chips to bins
+x <- roulette(lower = 0, upper = 100)
+# Then allocate probs to bins and click "Finish"
 
 # To fit distributions and see the results
-myfit <- fitdist(vals = x$v, probs = x$p)
+myfit <- fitdist(vals = x$v, probs = x$p, lower = 0, upper = 100)
 plotfit(myfit)
 }
 }

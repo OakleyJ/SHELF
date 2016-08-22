@@ -3,7 +3,7 @@ function(fit, quantiles =  NA, values = NA, dist = "best", sfg = 3){
 	
 	
 	n.experts <- nrow(fit$limits)
-	expertnames <- paste("expert.", 1:n.experts, sep="")
+	expertnames <- paste("expert.", LETTERS[1:n.experts], sep="")
 	
 	distributions <- data.frame(matrix(0, nrow = 1, ncol = n.experts))
 	names(distributions) <- expertnames

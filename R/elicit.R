@@ -60,7 +60,9 @@ elicit<- function(){
       myfit<-fitdist(vals=v, probs=p, lower=limits[1], upper=limits[2], tdf=input$tdf)
       
       dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
-      plotfit(myfit, d=dist[as.numeric(input$radio)], int = F, ql=input$fq1, qu=input$fq2, xl = limits[1], xu = limits[2])
+      suppressWarnings(plotfit(myfit, d=dist[as.numeric(input$radio)],
+                               int = F, ql=input$fq1, qu=input$fq2,
+                               xl = limits[1], xu = limits[2]))
       
     })
     

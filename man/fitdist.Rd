@@ -33,6 +33,7 @@ weighted least squares is to be used in the parameter fitting.}
 t-distribution.}
 }
 \value{
+An object of class \code{elicitation}. This is a list containing the elements
 \item{Normal}{Parameters of the fitted normal distributions.}
 \item{Student.t}{Parameters of the fitted t distributions. Note that (X -
 location) / scale has a standard t distribution. The degrees of freedom is

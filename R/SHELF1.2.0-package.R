@@ -10,7 +10,7 @@
 #' pool can be calculated.
 #' 
 #' \tabular{ll}{ Package: \tab SHELF\cr Type: \tab Package\cr Version: \tab
-#' 1.1.0.9001\cr Date: \tab 2016-04-21\cr License: \tab GPL-2 | GPL-3\cr }
+#' 1.2.0\cr Date: \tab 2016-08-16\cr License: \tab GPL-2 | GPL-3\cr }
 #' 
 #' @name SHELF-package
 #' @aliases SHELF-package SHELF
@@ -30,7 +30,7 @@
 #' myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
 #' 
 #' ## 3) Plot the fitted distributions, including a linear pool
-#' plotfit(myfit, lp=T)
+#' plotfit(myfit, lp = T)
 #' 
 #' ## 4) Now elicit a single 'consensus' distribution from the two experts
 #' # Suppose they agree P(X<25)=0.25, P(X<30)=0.5, P(X<40)=0.75
@@ -40,8 +40,8 @@
 #' 
 #' ## 5) Plot the fitted density, and report some feedback, such as the 
 #' # fitted 5th and 95th percentiles
-#' plotfit(myfit, ql=0.05, qu=0.95)
-#' feedback(myfit, quantiles=c(0.05,0.95))
+#' plotfit(myfit, ql = 0.05, qu = 0.95)
+#' feedback(myfit, quantiles = c(0.05, 0.95))
 #' 
 #' ## Can also use interactive plotting
 #' v <- matrix(c(30, 40, 50, 20, 25, 35), 3, 2)
@@ -51,13 +51,13 @@
 #' plotfit(myfit, int = TRUE)
 #' 
 #' ## plot the distribution for one expert only
-#' plotfit(myfit, int= TRUE, ex=1)
+#' plotfit(myfit, int = TRUE, ex = 1)
 #' 
 #' ## Enter judgements in interactive mode
 #' elicit()
 #' 
 #' ## Enter judgements using the roulette method
-#' roulette(Lo=0, Up=100, nbins=10, gridheight=10)
+#' roulette(Lo = 0, Up = 100, nbins = 10, gridheight = 10)
 #' }
 {
 }

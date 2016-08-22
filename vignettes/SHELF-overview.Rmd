@@ -2,8 +2,12 @@
 title: "Getting Started with SHELF"
 author: "Jeremy Oakley"
 date: "`r Sys.Date()`"
-output: pdf_document
 fontsize: 12pt
+output:
+  pdf_document:
+    number_sections: true
+    fig_caption: true
+    
 fig_caption: yes
 vignette: >
   %\VignetteIndexEntry{Getting Started with SHELF}
@@ -68,7 +72,7 @@ plotfit(myfit, lp = TRUE)
 
 # Eliciting a single distribution from an individual or a group of experts
 
-Now we elicit a single a single 'consensus' distribution from the two experts
+Now we elicit a single a single 'consensus' distribution from the two experts.
 Suppose they agree $$P(X\le 25)=0.25, P(X\le30)=0.5, P(X\le40)=0.75.$$
 We fit a single set of distributions to these judgements.
 ```{r}

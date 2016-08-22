@@ -7,7 +7,7 @@
 #' 
 #' 
 #' 
-#' @param ... A list of elicitation fits produced from the \code{fitdist}
+#' @param ... A list of objects of class \code{elicitation}.
 #' command, one per marginal proportion, separated by commas.
 #' @param categories A vector of strings labelling the marginal proportions.
 #' @param n.fitted The method used to determine the sum of the Dirichlet parameters.
@@ -52,6 +52,8 @@ fitDirichlet <- function(...,
                          categories = NULL,
                          n.fitted = "opt",
                          plotBeta = TRUE) {
+  
+  Category <- x <- fx <- parameters<- NULL # hack to avoid R CMD check NOTE
   
   beta.fits <- list(...)
   

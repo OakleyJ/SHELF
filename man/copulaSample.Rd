@@ -4,29 +4,29 @@
 \alias{copulaSample}
 \title{Generate correlated samples from elicited marginal distributions using a multivariate normal copula}
 \usage{
-copulaSample(..., qp, n, d = NULL)
+copulaSample(..., cp, n, d = NULL)
 }
 \arguments{
-\item{...}{A list of elicitation fits produced from the \code{fitdist}
+\item{...}{A list of objects of class \code{elicitation}.
 command, one per marginal distribution, separated by commas.}
 
-\item{qp}{A matrix of pairwise quadrant probabilities, with element i,j the elicited probability
-P(X_i > m_i, X_j > m_j), where m_i and m_j are the elicited medians of the uncertain quanties X_i and X_j.
+\item{cp}{A matrix of pairwise concordance probabilities, with element i,j the elicited probability
+P(X_i > m_i, X_j > m_j or X_i < m_i, X_j < m_j), where m_i and m_j are the elicited medians of the uncertain quantities X_i and X_j.
 Only the upper triangular elements in the matrix need to be specified; the remaining elements can be set at 0.}
 
 \item{n}{The sample size to be generated}
 
 \item{d}{A vector of distributions to be used for each elicited quantity: a string with elements chosen from
-\code{"Normal", "Student-t", "Gamma", "Log normal" "Log Student-t", "Beta"}. The default is to use 
+\code{"Normal", "Student-t", "Gamma", "Log normal" "Log Student-t", "Beta"}. The default is to use
 the best fitting distribution in each case.}
 }
 \value{
 A matrix of sampled values, one row per sample.
 }
 \description{
-Takes elicited marginal distributions and elicited concordance probabilities: pairwise 
+Takes elicited marginal distributions and elicited concordance probabilities: pairwise
 probabilities of two uncertain quantities being greater than their medians, and generates
-a correlated sample, assuming the elicited marginal distributions and a multivariate 
+a correlated sample, assuming the elicited marginal distributions and a multivariate
 normal copula
 }
 \examples{

@@ -5,10 +5,11 @@
 \title{Plot the fitted density function for one or more experts}
 \usage{
 plotfit(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf, ql = NA,
-  qu = NA, lp = FALSE, ex = NA, sf = 3, ind = TRUE, lpw = 1)
+  qu = NA, lp = FALSE, ex = NA, sf = 3, ind = TRUE, lpw = 1,
+  fs = 12, lwd = 1)
 }
 \arguments{
-\item{fit}{The output of a \code{fitdist} command.}
+\item{fit}{An object of class \code{elicitation}.}
 
 \item{d}{The distribution fitted to each expert's probabilities. Options are
 \code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
@@ -50,6 +51,10 @@ plotting of the individual density functions.}
 
 \item{lpw}{A vector of weights to be used in linear pool, if unequal
 weighting is desired.}
+
+\item{fs}{The font size used in the plot.}
+
+\item{lwd}{The line width used in the plot.}
 }
 \description{
 Plots the fitted density function for one or more experts. Can also plot a

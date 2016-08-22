@@ -2,8 +2,12 @@
 title: "Eliciting a Dirichlet Distribution"
 author: "Jeremy Oakley"
 date: "`r Sys.Date()`"
-output: pdf_document
 fontsize: 12pt
+output:
+  pdf_document:
+    number_sections: true
+    fig_caption: true
+    
 fig_caption: yes
 vignette: >
   %\VignetteIndexEntry{Eliciting a Dirichlet Distribution}

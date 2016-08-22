@@ -5,7 +5,7 @@
 #' get quantiles and probabilities from the fitted distributions
 #' 
 #' 
-#' @param fit The output of a \code{fitdist} command.
+#' @param fit An object of class \code{elicitation}.
 #' @param quantiles A vector of desired quantiles for feedback. If this
 #' argument is left out, the default is to use the same quantiles that were
 #' elicited from the experts.
