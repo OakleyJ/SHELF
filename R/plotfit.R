@@ -103,7 +103,7 @@ plotfit <- function(fit,
     if(xl == -Inf & min(fit$limits[,1]) > -Inf){xl <- min(fit$limits[,1]) }
     if(xu == Inf & max(fit$limits[,2]) < Inf){xu <- max(fit$limits[,2]) }
     if(int == FALSE){suppressWarnings(print(makeGroupPlot(fit, xl, xu, d, lwd)))}else{
-      shinyplotgroup(fit, xl, xu, lpw)
+      shinyplotgroup(fit, xl, xu, lpw, lwd)
     }
   }
   
@@ -120,8 +120,8 @@ plotfit <- function(fit,
       f2 <- feedback(fit, quantiles=0.99, dist=d)
       xu <- max(f2$expert.quantiles)
     }
-    if(int == FALSE){print(makeLinearPoolPlot(fit, xl, xu,  d , lpw))}else{
-      shinyplotgroup(fit, xl, xu, lpw)
+    if(int == FALSE){print(makeLinearPoolPlot(fit, xl, xu,  d , lpw, lwd))}else{
+      shinyplotgroup(fit, xl, xu, lpw, lwd)
     }
     
   }

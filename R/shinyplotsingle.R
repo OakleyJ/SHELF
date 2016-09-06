@@ -50,8 +50,18 @@ shinyplotsingle<- function(fit, xl, xu, ql, qu, ex){
     output$distPlot <- renderPlot({
       xlimits<-eval(parse(text=paste("c(",input$xlimits,")")))
       dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
-      drawdensity(fit, d=dist[as.numeric(input$radio)], ql=input$fq1, qu=input$fq2, xl=xlimits[1], xu=xlimits[2], ex=ex)
-      
+      #print(drawdensity(fit, d=dist[as.numeric(input$radio)], 
+      #                  ql=input$fq1, 
+      #                  qu=input$fq2, 
+      #                  xl=xlimits[1], 
+      #                  xu=xlimits[2], 
+      #                  ex=ex))
+      print(makeSingleExpertPlot(fit, d=dist[as.numeric(input$radio)], 
+                        ql=input$fq1, 
+                        qu=input$fq2, 
+                        pl=xlimits[1], 
+                        pu=xlimits[2], 
+                        ex=ex))
     })
     
     ssq <- fit$ssq[1, is.na(fit$ssq[1,])==F]
