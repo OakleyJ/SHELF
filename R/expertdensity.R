@@ -7,8 +7,7 @@ function(fit, d = "best", ex = 1, pl, pu, nx = 200){
 	x <- seq(from = pl, to = pu, length = nx)
 	
 	if(d == "best"){
-		ssq <- fit$ssq[ex, 1 - is.na(fit$ssq[ex,])]
-		best.index <- which(ssq == min(ssq))[1]
+		best.index <- which.min(fit$ssq[ex, ])
 	}
 	index<-switch(which(d==c("normal", "t", "gamma", "lognormal", "logt","beta", "hist", "best")), 1, 2, 3, 4, 5, 6, 7, best.index)
 	
