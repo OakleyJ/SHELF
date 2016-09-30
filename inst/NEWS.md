@@ -20,7 +20,7 @@ SHELF v1.2.0 (2016-08-16)
 
 * Vignettes added: overview of SHELF, eliciting a Dirichlet distribution, eliciting a bivariate distribution with a bivariate normal copula 
 
-SHELF v1.2.0.9001 (2016-09-06) 
+SHELF v1.2.1 (2016-09-30) 
 ==============================
 
 * Bug fixed: interactive plots now work for plotting individual distributions for multiple experts

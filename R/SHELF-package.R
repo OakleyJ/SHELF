@@ -10,7 +10,7 @@
 #' pool can be calculated.
 #' 
 #' \tabular{ll}{ Package: \tab SHELF\cr Type: \tab Package\cr Version: \tab
-#' 1.2.0.9001\cr Date: \tab 2016-09-06\cr License: \tab GPL-2 | GPL-3\cr }
+#' 1.2.1\cr Date: \tab 2016-09-30\cr License: \tab GPL-2 | GPL-3\cr }
 #' 
 #' @name SHELF-package
 #' @aliases SHELF-package SHELF
@@ -20,8 +20,8 @@
 #' @examples
 #' \dontrun{
 #' ## 1) Elicit judgements from two experts individually 
-#' # Expert 1 states P(X<30)=0.25, P(X<40)=0.5, P(X<50)=0.75
-#' # Expert 2 states P(X<20)=0.25, P(X<25)=0.5, P(X<35)=0.75
+#' # Expert A states P(X<30)=0.25, P(X<40)=0.5, P(X<50)=0.75
+#' # Expert B states P(X<20)=0.25, P(X<25)=0.5, P(X<35)=0.75
 #' # Both experts state 0<X<100.
 #' 
 #' ## 2) Fit distributions to each expert's judgements
@@ -57,7 +57,7 @@
 #' elicit()
 #' 
 #' ## Enter judgements using the roulette method
-#' roulette(Lo = 0, Up = 100, nbins = 10, gridheight = 10)
+#' roulette(lower = 0, upper = 100, nbins = 10, gridheight = 10)
 #' }
 {
 }
