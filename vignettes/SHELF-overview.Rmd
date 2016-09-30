@@ -25,8 +25,8 @@ As an example, suppose the uncertain quantity is the percentage $X$ of voters wh
 
 # Eliciting individual distributions from multiple experts
 
-Suppose we have two experts, who first consider their judgements independently. Expert 1 states $$P(X\le25)=0.25, P(X\le30)=0.5, P(X\le35)=0.75,$$ and
-Expert 2 states $$P(X\le30)=0.25, P(X\le35)=0.5, P(X<50)=0.75.$$
+Suppose we have two experts, who first consider their judgements independently. Expert A states $$P(X\le25)=0.25, P(X\le30)=0.5, P(X\le35)=0.75,$$ and
+Expert B states $$P(X\le30)=0.25, P(X\le35)=0.5, P(X<50)=0.75.$$
 
 
 

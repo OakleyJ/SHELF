@@ -24,3 +24,5 @@ SHELF v1.2.0.9001 (2016-09-06)
 ==============================
 
 * Bug fixed: interactive plots now work for plotting individual distributions for multiple experts
+
+* Bug fixed: plotting best fitting individual distributions for multiple experts

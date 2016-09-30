@@ -94,8 +94,8 @@ p <- c(0.25,0.5,0.75)
 fitdist(vals=v, probs=p, lower=0)
 
 # Two experts, different elicited quantiles and limits.
-# Expert 1: P(X<50)=0.25, P(X<60=0.5), P(X<65)=0.75, and provides bounds 10<X<100
-# Expert 2: P(X<40)=0.33, P(X<50=0.5), P(X<60)=0.66, and provides bounds 0<X
+# Expert A: P(X<50)=0.25, P(X<60=0.5), P(X<65)=0.75, and provides bounds 10<X<100
+# Expert B: P(X<40)=0.33, P(X<50=0.5), P(X<60)=0.66, and provides bounds 0<X
 v <- matrix(c(50,60,65,40,50,60),3,2)
 p <- matrix(c(.25,.5,.75,.33,.5,.66),3,2)
 l <- c(10,0)

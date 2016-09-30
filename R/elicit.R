@@ -46,7 +46,8 @@ elicit<- function(){
         numericInput("fq2", label = h5("upper feedback quantile"), value = 0.95,min=0,max=1)
       ),
             mainPanel(
-        plotOutput("distPlot")
+        plotOutput("distPlot"),
+        tableOutput("values")
       )
     )
   )),
@@ -78,7 +79,7 @@ elicit<- function(){
       best.index <- which(ssq == min(ssq))[1]
       
       ex<-1
-      xlimits<-eval(parse(text=paste("c(",input$xlimits,")")))
+      xlimits<-eval(parse(text=paste("c(",input$limits,")")))
       pl<-xlimits[1]
       pu<-xlimits[2]
       if(as.numeric(input$radio)==8){index<-best.index}else{index<-as.numeric(input$radio) - 1}
