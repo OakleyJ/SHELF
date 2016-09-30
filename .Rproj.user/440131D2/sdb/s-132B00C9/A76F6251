@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "# Test script for plots and shiny functions\n\nlibrary(SHELF)\n\nv <- matrix(c(20,30,50,55,60,70),3,2)\np <- c(0.25,0.5,0.75)\nmyfit<-fitdist(vals=v, probs=p, lower=0, upper = 100)\n\n\nplotfit(myfit, xl =0, xu=100, d = \"beta\", lp = T, int = T)\n\nv2 <- c(20, 30 , 50)\nmyfit2 <-fitdist(vals=v2, probs=p, lower=0, upper = 100)\nplotfit(myfit2, int = T)\n\nelicit()\n\nv3 <-c(25, 50, 75)\nmyfit3 <-fitdist(vals=v3, probs=p, lower=0, upper = 100)\nplotfit(myfit3, ql =  0.025, qu = 0.975, d = \"gamma\", xl = 0, xu = 100, int = T)\nplotfit(myfit3, ql =  0.025, qu = 0.975, d = \"beta\")\n\nroulette()\n",
+    "created" : 1473867624100.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3260931415",
+    "id" : "A76F6251",
+    "lastKnownWriteTime" : 1473868221,
+    "last_content_update" : 1473868221081,
+    "path" : "~/Dropbox/Research/R packages/SHELF/Plots test script.R",
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

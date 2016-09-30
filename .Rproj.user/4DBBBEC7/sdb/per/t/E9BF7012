@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "library(testthat)\nlibrary(SHELF)\n\ntest_check(\"SHELF\")\n\n",
+    "created" : 1474454484759.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4043748611",
+    "id" : "E9BF7012",
+    "lastKnownWriteTime" : 1450371162,
+    "last_content_update" : 1450371162,
+    "path" : "~/Dropbox/Research/R packages/SHELF/SHELF1.2.0.9001/tests/testthat.R",
+    "project_path" : "tests/testthat.R",
+    "properties" : {
+    },
+    "relative_order" : 12,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

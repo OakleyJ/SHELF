@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Plot test script\"\noutput: html_document\n---\n\n```{r setup, include=FALSE}\nknitr::opts_chunk$set(echo = TRUE)\n```\n\n```{r}\nlibrary(SHELF)\n\nv <- matrix(c(20,30,50,55,60,70),3,2)\np <- c(0.25,0.5,0.75)\nmyfit<-fitdist(vals=v, probs=p, lower=0, upper = 100)\n```\n\n```{r}\nplotfit(myfit, xl =0, xu=100, d = \"beta\")\nplotfit(myfit, d = \"gamma\", fs = 18, lwd = 0.5)\nplotfit(myfit, xl =0, xu=100, d = \"lognormal\", fs = 12, lwd = 5)\nplotfit(myfit, xl =0, xu=100, d = \"lognormal\", fs = 12, lwd = 1, ex = 1)\nplotfit(myfit, xl =-100, xu=200, d = \"normal\", ex = 1)\nplotfit(myfit, xl =0, xu=100, d = \"beta\", ex = 1, ql = 0.025, qu = 0.975)\nplotfit(myfit, xl =0, xu=100, d = \"beta\", lp = T)\nplotfit(myfit, xl =0, xu=100, d = \"beta\", lp = T, lpw=c(10,1))\nv2 <- c(20, 30 , 50)\nmyfit2 <-fitdist(vals=v2, probs=p, lower=0, upper = 100)\nplotfit(myfit2, ql =  0.025, qu = 0.975, d = \"beta\", xl = 0, xu =100)\n```\n\nCheck these are not all normal!\n\n```{r}\n\np <- c(1/3, 0.5, 2/3)\nv <- matrix(c(12, 15, 20, 8, 10, 12, 27, 30, 35), 3, 3)\nindividual.fits <- fitdist(vals = v, probs = p, lower = 0)\nplotfit(individual.fits)\nplotfit(individual.fits, xu = 60)\n```\n\n\n",
+    "created" : 1473867645672.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3949902924",
+    "id" : "6CC84929",
+    "lastKnownWriteTime" : 1473868087,
+    "last_content_update" : 1473868087864,
+    "path" : "~/Dropbox/Research/R packages/SHELF/Plot-testing.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

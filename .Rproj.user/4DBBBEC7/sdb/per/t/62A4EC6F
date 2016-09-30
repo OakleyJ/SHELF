@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "\ntest_that(\"normal distribution fitting and feedback works\",{\n  skip_on_cran()\n  m <- 10\n  s <- 20\n  vals <- c(m - s, m , m + 2 * s)\n  myfit <- fitdist(vals, pnorm(vals, m, s ))\n  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(m -0.5*s, m+s))\n  norm.parameters <- unlist(myfit$Normal)\n  best.name <- unlist(myfit$best.fitting)\n  attributes(best.name) <- attributes(norm.parameters) <- NULL\n  expect_equal(norm.parameters, c(m, s))\n  expect_equal(best.name, 1)\n  expect_equal(fb$fitted.quantiles[, 1], \n               signif(qnorm(c(0.05, 0.95), m, s),3))\n  expect_equal(fb$fitted.probabilities[, 1],\n               signif(pnorm(c(m -0.5*s, m+s), m, s),3))\n})\n\ntest_that(\"scaled beta distribution fitting and feedback works\",{\n  skip_on_cran()\n  a <- 5\n  b <- 20\n  l <- 10\n  u <- 60\n  vals <- c(18, 20, 24)\n  myfit <- fitdist(vals, pbeta((vals-l)/(u-l), a, b ), lower = l, upper = u)\n  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(19, 29))\n  beta.parameters <- unlist(myfit$Beta)\n  best.name <- as.character(unlist(myfit$best.fitting))\n  attributes(beta.parameters) <- NULL\n  expect_equal(beta.parameters, c(a, b), tolerance = 0.001)\n  expect_equal(best.name, \"Beta\")\n  expect_equal(fb$fitted.quantiles[, 6], \n               signif(l + (u-l) * qbeta(c(0.05, 0.95), a, b),3))\n  expect_equal(fb$fitted.probabilities[, 6],\n               signif(pbeta((c(19, 29)-l)/(u-l), a, b),3))\n})\n\ntest_that(\"shifted gamma distribution fitting and feedback works\",{\n  skip_on_cran()\n  a <- 50\n  b <- 2\n  l <- 10\n  vals <- c(32, 35, 37)\n  myfit <- fitdist(vals, pgamma(vals-l, a, b ), lower = l)\n  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(33, 40))\n  gamma.parameters <- unlist(myfit$Gamma)\n  best.name <- as.character(unlist(myfit$best.fitting))\n  attributes(gamma.parameters) <- NULL\n  expect_equal(gamma.parameters, c(a, b), tolerance = 0.001)\n  expect_equal(best.name, \"Gamma\")\n  expect_equal(fb$fitted.quantiles[, 3], \n               signif(l + qgamma(c(0.05, 0.95), a, b),3))\n  expect_equal(fb$fitted.probabilities[, 3],\n               signif(pgamma(c(33, 40)-l, a, b),3))\n})\n\ntest_that(\"precision fitting works - normal\",{\n  skip_on_cran()\n  med <- 10\n  k <- 1\n  # sigma^-2 ~ gamma(a, b)\n  a <- 3\n  b <- 4\n  sigmasq <- 1 / qgamma(c(0.05, 0.95), a, b)\n  probs <- pnorm(rep(med + k, 2), med, sigmasq^0.5) - 0.5\n  pfit <- fitprecision(c(med, med + k), probs, pplot = F)\n  gamma.parameters <- unlist(pfit$Gamma)\n  attributes(gamma.parameters) <- NULL\n  expect_equal(gamma.parameters, c(a, b), tolerance = 1e-4)\n})\n\ntest_that(\"precision fitting works - lognormal\",{\n  skip_on_cran()\n  med <- 10\n  k <- 5\n  # sigma^-2 ~ gamma(a, b)\n  a <- 3\n  b <- 4\n  sigmasq <- 1 / qgamma(c(0.05, 0.95), a, b)\n  probs <- plnorm(rep(med + k, 2), log(med), sigmasq^0.5) - 0.5\n  pfit <- fitprecision(interval = c(med, med + k), propvals = probs,\n                       trans = \"log\", pplot = F)\n  gamma.parameters <- unlist(pfit$Gamma)\n  attributes(gamma.parameters) <- NULL\n  expect_equal(gamma.parameters, c(a, b), tolerance = 1e-4)\n})\n",
+    "created" : 1474454500664.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "507547316",
+    "id" : "62A4EC6F",
+    "lastKnownWriteTime" : 1474457301,
+    "last_content_update" : 1474457301817,
+    "path" : "~/Dropbox/Research/R packages/SHELF/SHELF1.2.0.9001/tests/testthat/test-fitting.R",
+    "project_path" : "tests/testthat/test-fitting.R",
+    "properties" : {
+    },
+    "relative_order" : 13,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

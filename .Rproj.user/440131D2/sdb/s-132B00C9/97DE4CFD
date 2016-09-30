@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Appendix: R Session for Elicitation Record Part 2\"\noutput: pdf_document\n---\nDefine a vector of probabilities \\texttt{p} for the median and tertiles, and a matrix \\texttt{v} of the elicited values, one column per expert.\n\n```{r}\nlibrary(SHELF)\np <- c(1/3, 0.5, 2/3)\nv <- matrix(c(12, 15, 20, 8, 10, 12, 27, 30, 35), 3, 3)\nv\n```\n\nFit distributions to each expert's judgements, and plot.\n```{r}\nindividual.fits <- fitdist(vals = v, probs = p, lower = 0)\nplotfit(individual.fits)\n```\n\n```{r}\nplotfit(individual.fits, xu=75)\n```\n",
+    "created" : 1473867991865.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "130245789",
+    "id" : "97DE4CFD",
+    "lastKnownWriteTime" : 1473348457,
+    "last_content_update" : 1473348457,
+    "path" : "~/Dropbox/Research/Projects/SHELF/SHELF3/Samples/elicitation-record-R-Script.Rmd",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

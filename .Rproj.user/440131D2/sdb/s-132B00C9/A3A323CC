@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "SHELF v1.1.0 (2016-01-29) \n=========================\n\n* Change in fitdist to starting values in optimisation: will now check for exact fits if only two probabilities elicited \n\n* New functions added for eliciting beliefs about uncertain population distributions:  cdffeedback, cdfplot, fitprecision, pdfplots\n\nSHELF v1.2.0 (2016-08-16) \n==============================\n\n* Roulette elicitation method now implemented using shiny\n\n* New functions fitDirchlet and feedbackDirichlet for eliciting Dirichlet distributions\n\n* New functions copulaSample and elicitConcProb for eliciting dependent distributions using multivariate normal copulas\n\n* New function compareIntervals for comparing fitted intervals for individual distributions from multiple experts\n\n* Change to expert.names from numbers to letters in fitdist\n\n* Vignettes added: overview of SHELF, eliciting a Dirichlet distribution, eliciting a bivariate distribution with a bivariate normal copula \n\nSHELF v1.2.0.9001 (2016-09-06) \n==============================\n\n* Bug fixed: interactive plots now work for plotting individual distributions for multiple experts\n\n* Bug fixed: plotting best fitting individual distributions for multiple experts",
+    "created" : 1475229543747.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "373168739",
+    "id" : "A3A323CC",
+    "lastKnownWriteTime" : 1473348537,
+    "last_content_update" : 1473348537,
+    "path" : "~/Dropbox/Research/R packages/SHELF/SHELF1.2.0.9001/NEWS.md",
+    "project_path" : "NEWS.md",
+    "properties" : {
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "markdown"
+}

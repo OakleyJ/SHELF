@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"SHELF elictation\"\ndate: \"`r Sys.Date()`\"\noutput: slidy_presentation\n---\n\n## Parameter\nParameter definition:\n\nEvidence:\n\nPlausible range:\n\n\n```{r, echo = F, results = \"hide\"}\nsuppressMessages(library(SHELF))\nlibrary(knitr)\n```\n\n```{r, echo = F, results = \"hide\"}\nexpert.names <- c(\"A\", \"B\")\n```\n\n# Group elicitation\n\n```{r}\nv <- matrix(c(30, 40, 50, 20, 25, 35), 3, 2)\np <- c(0.25, 0.5, 0.75)\nmyfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)\nplotfit(myfit, lp=T)\ncolnames(v) <- expert.names\nkable(v)\n```\n\n# Consensus distribution\n\n```{r}\nv <-c(25, 30, 40)\np <-c(0.25, 0.5, 0.75)\nmyfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)\nplotfit(myfit, ql=0.05, qu=0.95)\nfeedback(myfit, quantiles=c(0.05,0.95))\n```\n\n",
+    "created" : 1450386781214.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2000038232",
+    "id" : "DD5C2124",
+    "lastKnownWriteTime" : 1450387159,
+    "last_content_update" : 0,
+    "path" : "~/Dropbox/Research/R packages/SHELF/test.Rmd",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "Package: SHELF\nType: Package\nTitle: Tools to Support the Sheffield Elicitation Framework \nVersion: 1.2.0.9001\nDate: 2016-09-06\nAuthor: Jeremy Oakley\nMaintainer: Jeremy Oakley <j.oakley@sheffield.ac.uk>\nDescription: Implements various methods for eliciting a probability distribution\n    for a single parameter from an expert or a group of experts. The expert\n    provides a small number of probability judgements, corresponding\n    to points on his or her cumulative distribution function. A range of parametric\n    distributions can then be fitted and displayed, with feedback provided in the\n    form of fitted probabilities and percentiles. A graphical interface for the roulette elicitation\n    method is also provided. For multiple experts, a weighted linear pool can be\n    calculated. Also includes functions for eliciting beliefs about population distributions.\nLicense: GPL-2 | GPL-3\nDepends: R (>= 3.3.1)\nRoxygenNote: 5.0.1\nSuggests: testthat,\n    knitr,\n    rmarkdown,\n    GGally\nImports: ggplot2,\n    grid,\n    shiny,\n    stats,\n    graphics,\n    tidyr,\n    MASS,\n    ggExtra\nURL: https://github.com/OakleyJ/SHELF\nBugReports: https://github.com/OakleyJ/SHELF/issues\nVignetteBuilder: knitr\n",
+    "created" : 1469115388899.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1050971314",
+    "id" : "7C029FC1",
+    "lastKnownWriteTime" : 1475224975,
+    "last_content_update" : 1475224975674,
+    "path" : "~/Dropbox/Research/R packages/SHELF/SHELF1.2.0.9001/DESCRIPTION",
+    "project_path" : "DESCRIPTION",
+    "properties" : {
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "dcf"
+}

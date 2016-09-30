@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "^.*\\.Rproj$\n^\\.Rproj\\.user$\n^NEWS\\.md$\n",
+    "created" : 1475230085860.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "986223343",
+    "id" : "91EA2465",
+    "lastKnownWriteTime" : 1475230224,
+    "last_content_update" : 1475230224919,
+    "path" : "~/Desktop/test.Rbuildignore",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 10,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "text"
+}
