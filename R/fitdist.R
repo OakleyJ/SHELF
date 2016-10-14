@@ -110,10 +110,16 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 	logt.parameters <- matrix(NA, n.experts, 3)
 	beta.parameters <- matrix(NA, n.experts, 2)
 	ssq<-matrix(NA, n.experts, 6)
-	expertnames <- paste("expert.", LETTERS[1:n.experts], sep="")
+	
+	
+	if(n.experts > 1){
+	  expertnames <- paste("expert.", LETTERS[1:n.experts], sep="")
+	  }else{expertnames <- NULL
+	  }
 	
 	limits <- data.frame(lower = lower, upper = upper)
 	row.names(limits) <- expertnames
+	
 	
 	for(i in 1:n.experts){
 		if (min(probs[,i]) > 0.4 ){stop("smallest elicited probability must be less than 0.4")}
@@ -122,7 +128,7 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
     if (min(vals[,i]) < lower[i]){stop("elicited parameter values cannot be smaller than lower parameter limit")}
 		if (max(vals[,i]) > upper[i]){stop("elicited parameter values cannot be greater than upper parameter limit")}
 		if (tdf[i] <= 0 ){stop("Student-t degrees of freedom must be greater than 0")}
-		if (min(probs[-1,i] - probs[-nrow(probs),i]) <= 0 ){stop("probabilities must be specified in ascending order")}
+		if (min(probs[-1,i] - probs[-nrow(probs),i]) < 0 ){stop("probabilities must be specified in ascending order")}
 		if (min(vals[-1,i] - vals[-nrow(vals),i]) <= 0 ){stop("parameter values must be specified in ascending order")}
     
 	  minprob <- min(probs[, i])

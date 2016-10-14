@@ -4,10 +4,10 @@ shinyplotsingle<- function(fit, xl, xu, ql, qu, ex){
   
   # Determine set of suitable distributions
   if(fit$limits[ex, 1]>=0 & fit$limits[ex, 2] < Inf){
-    distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Gamma" = 4, "log normal" = 5, "Log Student t" = 6, "Beta" = 7, "Best fitting" =8)
+    distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Gamma" = 4, "Log normal" = 5, "Log Student t" = 6, "Beta" = 7, "Best fitting" =8)
   }
   if(fit$limits[ex, 1]>=0 & fit$limits[ex, 2] == Inf){
-    distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Gamma" = 4, "log normal" = 5, "Log Student t" = 6, "Best fitting" =8)
+    distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Gamma" = 4, "Log normal" = 5, "Log Student t" = 6, "Best fitting" =8)
   }
   if(fit$limits[ex, 1]==-Inf & fit$limits[ex, 2] == Inf){
     distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Best fitting" =8)
