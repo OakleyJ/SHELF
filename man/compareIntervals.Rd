@@ -4,7 +4,8 @@
 \alias{compareIntervals}
 \title{Plot fitted intervals for each expert}
 \usage{
-compareIntervals(fit, interval = 0.95, dist = "best", fs = 12)
+compareIntervals(fit, interval = 0.95, dist = "best", fs = 12,
+  xlab = "x", ylab = "expert")
 }
 \arguments{
 \item{fit}{An object of class \code{elicitation}}
@@ -18,6 +19,10 @@ that the displayed interval contains the uncertain quantity will be p)}
 \code{"best"} (for best fitting). Can be a vector if different distributions are desired for each expert.}
 
 \item{fs}{font size used in the plot.}
+
+\item{xlab}{A string or expression giving the x-axis label.}
+
+\item{ylab}{A string or expression giving the y-axis label.}
 }
 \description{
 Following elicitation of distributions from individual experts, plot fitted probability 

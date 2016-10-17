@@ -11,6 +11,8 @@
 #' \code{"logt"},\code{"beta"}, and
 #' \code{"best"} (for best fitting). Can be a vector if different distributions are desired for each expert.
 #' @param fs font size used in the plot.
+#' @param xlab A string or expression giving the x-axis label.
+#' @param ylab A string or expression giving the y-axis label.
 #' 
 #' @examples
 #' 
@@ -21,7 +23,8 @@
 #' compareIntervals(myfit, interval = 0.5)
 #' }
 #' @export
-compareIntervals <- function(fit, interval = 0.95, dist = "best", fs = 12){
+compareIntervals <- function(fit, interval = 0.95, dist = "best", fs = 12, 
+                             xlab = "x", ylab = "expert"){
   
   low <- med <- up <- NULL # hack to avoid R CMD check NOTE
   
@@ -36,7 +39,7 @@ compareIntervals <- function(fit, interval = 0.95, dist = "best", fs = 12){
   p1<-ggplot(df1, aes(x = low, y = expert)) +
     geom_segment(aes(yend = expert, xend = up)) +
     geom_point(aes(x = med), colour = "red", size = 3) +
-    labs(x= "X")
+    labs(x = xlab, y = ylab)
   print(p1)
   print(fb$distributions)  
 }
