@@ -1,6 +1,6 @@
 makeSingleExpertPlot <-
 function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1,
-         lwd = 1){
+         lwd = 1, xlab, ylab){
   
 	if(d == "best"){
 		ssq <- fit$ssq[ex, is.na(fit$ssq[ex,])==F]
@@ -223,7 +223,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1,
 	p1 <- ggplot(df1, aes(x = x, y = fx)) +
 	  geom_line(size = lwd) +
 	  xlim(pl, pu) + 
-	  labs(title = dist.title, x = "x", y = expression(f[X](x)) )
+	  labs(title = dist.title, x = xlab, y = ylab )
 	if(is.na(ql) == F  ){
 	  p1 <- p1 + geom_ribbon(data = subset(df1, x<=x.q1), 
 	                         aes(ymax = fx, ymin = 0),

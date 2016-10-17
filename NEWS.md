@@ -31,3 +31,5 @@ SHELF v1.2.1.9001 (2016-14-06)
 ==============================
 
 * Accept non-decreasing probabilities in elicited judgements, rather than only strictly increasing probabilities
+
+* Can specify own axes labels in the plotfit command with arguments xlab and ylab

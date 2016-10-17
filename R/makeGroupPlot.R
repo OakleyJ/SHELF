@@ -1,5 +1,5 @@
 makeGroupPlot <-
-function(fit, pl, pu, d = "best", lwd){
+function(fit, pl, pu, d = "best", lwd, xlab, ylab){
 	
   expert <- NULL # hack to avoid R CMD check NOTE
   
@@ -17,7 +17,7 @@ function(fit, pl, pu, d = "best", lwd){
 	df1 <- data.frame(x = x, fx = fx, 
 	                  expert = rep(LETTERS[c(1:n.experts)], each =200))
 	p1 <- ggplot(df1, aes(x = x, y = fx, colour = expert)) + geom_line(size=lwd) +
-	  labs(x = "x", y = expression(f[X](x)))
+	  labs(x = xlab, y = ylab)
 	
 	
 	p1

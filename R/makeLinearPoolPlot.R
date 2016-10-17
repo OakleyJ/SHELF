@@ -1,5 +1,5 @@
 makeLinearPoolPlot <-
-function(fit, xl, xu, d = "best", w = 1, lwd){
+function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab){
 	
   expert <- NULL # hack to avoid R CMD check NOTE
   
@@ -28,7 +28,7 @@ function(fit, xl, xu, d = "best", w = 1, lwd){
 	                             rep("linear pool", 200)))
 	p1 <- ggplot(df1, aes(x = x, y = fx, colour =  expert, linetype=expert, size =expert)) + 
 	  geom_line(size=lwd) + 
-	  labs(x="x", y=expression(f[X](x))) +
+	  labs(x = xlab, y = ylab) +
 	  scale_linetype_manual(values = c(rep("dashed", n.experts), "solid"))+
 	  scale_size_manual(values=c(rep(1, n.experts), 1.5))
 	

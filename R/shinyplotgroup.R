@@ -1,5 +1,5 @@
 
-shinyplotgroup<- function(fit, xl, xu, lpw, lwd){
+shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab){
   
   if(length(unique(fit$limits[,1]))>1 | length(unique(fit$limits[,2]))>1 ){stop("Parameter limits must be the same for each expert")}
   
@@ -56,11 +56,12 @@ shinyplotgroup<- function(fit, xl, xu, lpw, lwd){
         print(makeGroupPlot(fit, pl = xlimits[1], 
                                  pu = xlimits[2], 
                                  d=dist[as.numeric(input$radio)],
-                            lwd))
+                            lwd, xlab, ylab))
       }else{
         print(makeLinearPoolPlot(fit, xl = xlimits[1], 
                                  xu = xlimits[2], 
-                                 d=dist[as.numeric(input$radio)], w = lpw, lwd))
+                                 d=dist[as.numeric(input$radio)], w = lpw, lwd, 
+                                 xlab, ylab))
       }
      
     })

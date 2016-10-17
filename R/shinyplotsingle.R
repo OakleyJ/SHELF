@@ -1,4 +1,4 @@
-shinyplotsingle<- function(fit, xl, xu, ql, qu, ex){
+shinyplotsingle<- function(fit, xl, xu, ql, qu, ex, xlab, ylab){
   
   plotlimits <- paste(xl, xu , sep = ",")
   
@@ -61,7 +61,7 @@ shinyplotsingle<- function(fit, xl, xu, ql, qu, ex){
                         qu=input$fq2, 
                         pl=xlimits[1], 
                         pu=xlimits[2], 
-                        ex=ex))
+                        ex=ex, xlab, ylab))
     })
     
     ssq <- fit$ssq[1, is.na(fit$ssq[1,])==F]

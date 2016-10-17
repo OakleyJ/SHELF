@@ -6,7 +6,7 @@
 \usage{
 plotfit(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf, ql = NA,
   qu = NA, lp = FALSE, ex = NA, sf = 3, ind = TRUE, lpw = 1,
-  fs = 12, lwd = 1)
+  fs = 12, lwd = 1, xlab = "x", ylab = expression(f[X](x)))
 }
 \arguments{
 \item{fit}{An object of class \code{elicitation}.}
@@ -55,6 +55,10 @@ weighting is desired.}
 \item{fs}{The font size used in the plot.}
 
 \item{lwd}{The line width used in the plot.}
+
+\item{xlab}{A string or expression giving the x-axis label.}
+
+\item{ylab}{A string or expression giving the y-axis label.}
 }
 \description{
 Plots the fitted density function for one or more experts. Can also plot a
