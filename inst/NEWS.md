@@ -20,9 +20,18 @@ SHELF v1.2.0 (2016-08-16)
 
 * Vignettes added: overview of SHELF, eliciting a Dirichlet distribution, eliciting a bivariate distribution with a bivariate normal copula 
 
-SHELF v1.2.1 (2016-09-30) 
+SHELF v1.2.1 (2016-09-06) 
 ==============================
 
 * Bug fixed: interactive plots now work for plotting individual distributions for multiple experts
 
 * Bug fixed: plotting best fitting individual distributions for multiple experts
+
+SHELF v1.2.2 (2016-11-14) 
+==============================
+
+* Accept non-decreasing probabilities in elicited judgements, rather than only strictly increasing probabilities
+
+* Can specify own axes labels in the plotfit command with arguments xlab and ylab
+
+* Update to Multivariate-normal-copula.Rmd vignette, to match update to GGally

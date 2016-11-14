@@ -25,7 +25,7 @@
 #' v2 <- c(0.22, 0.3, 0.35)
 #' myfit1 <- fitdist(v1, p1, 0, 1)
 #' myfit2 <- fitdist(v2, p1, 0, 1)
-#' elicitQuadProb(myfit1, myfit2, 0.55, 0.3, d=c("Beta", "Beta"))
+#' elicitConcProb(myfit1, myfit2, 0.55, 0.3, d=c("Beta", "Beta"))
 #' }
 #' @import shiny
 #' @importFrom ggExtra ggMarginal

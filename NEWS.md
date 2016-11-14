@@ -27,9 +27,11 @@ SHELF v1.2.1 (2016-09-06)
 
 * Bug fixed: plotting best fitting individual distributions for multiple experts
 
-SHELF v1.2.1.9001 (2016-14-06) 
+SHELF v1.2.2 (2016-11-14) 
 ==============================
 
 * Accept non-decreasing probabilities in elicited judgements, rather than only strictly increasing probabilities
 
 * Can specify own axes labels in the plotfit command with arguments xlab and ylab
+
+* Update to Multivariate-normal-copula.Rmd vignette, to match update to GGally

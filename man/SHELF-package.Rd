@@ -16,7 +16,7 @@ elicitation method is also provided. For multiple experts, a weighted linear
 pool can be calculated.
 
 \tabular{ll}{ Package: \tab SHELF\cr Type: \tab Package\cr Version: \tab
-1.2.1.9001\cr Date: \tab 2016-14-30\cr License: \tab GPL-2 | GPL-3\cr }
+1.2.2\cr Date: \tab 2016-11-14\cr License: \tab GPL-2 | GPL-3\cr }
 }
 \examples{
 \dontrun{

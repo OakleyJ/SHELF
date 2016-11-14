@@ -188,9 +188,9 @@ GGally::ggpairs(data.frame(theta),
         lower = list(continuous = GGally::wrap(GGally::ggally_points, 
                                        color = "red",
                                        alpha = 0.1)),
-        columnLabels = c(expression(X[1]),
-                                    expression(X[2]),
-                                               expression(X[3])))
+        columnLabels = c("X[1]", "X[2]", "X[3]"),
+        labeller = ggplot2::label_parsed)
+
                                  
 ```
 
