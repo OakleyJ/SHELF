@@ -67,8 +67,10 @@ roulette <- function(lower=0, upper=100, gridheight=10, nbins=10, round.end = T)
     observeEvent(input$location, {
       vals$x <-input$location$x
       vals$y <-input$location$y
+
+      
       if(vals$x > lower & vals$x <upper & vals$y < gridheight){
-        index<-ceiling(vals$x/upper*nbins)
+        index <- which(vals$x >= bin.left & vals$x < bin.right)
         vals$probs[index]<-ceiling(max(vals$y,0))
         vals$p <- cumsum(vals$probs)/sum(vals$probs)
         vals$v <- bin.right
