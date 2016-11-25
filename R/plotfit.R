@@ -102,6 +102,7 @@ plotfit <- function(fit,
   if(is.na(qu)==F & (qu <0 | qu>1 )){stop("Upper feedback quantile must be between 0 and 1")}
   
   theme_set(theme_grey(base_size = fs))
+  theme_update(plot.title = element_text(hjust = 0.5))
 
   if(nrow(fit$vals)>1 & is.na(ex)==T & lp==F){
     if(xl == -Inf & min(fit$limits[,1]) > -Inf){xl <- min(fit$limits[,1]) }
