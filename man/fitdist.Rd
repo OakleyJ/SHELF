@@ -38,12 +38,12 @@ An object of class \code{elicitation}. This is a list containing the elements
 \item{Student.t}{Parameters of the fitted t distributions. Note that (X -
 location) / scale has a standard t distribution. The degrees of freedom is
 not fitted; it is specified as an argument to \code{fitdist}.}
-\item{Gamma}{Parameters of the fitted gamma distributions. Note that E(X) =
+\item{Gamma}{Parameters of the fitted gamma distributions. Note that E(X - \code{lower}) =
 shape / rate.} 
 \item{Log.normal}{Parameters of the fitted log normal
-distributions: the mean and standard deviation of log X.}
+distributions: the mean and standard deviation of log (X - \code{lower}).}
 \item{Log.Student.t}{Parameters of the fitted log student t distributions.
-Note that (log(X) - location) / scale has a standard t distribution. The
+Note that (log(X- \code{lower}) - location) / scale has a standard t distribution. The
 degrees of freedom is not fitted; it is specified as an argument to
 \code{fitdist}.} 
 \item{Beta}{Parameters of the fitted beta distributions. X
@@ -51,7 +51,7 @@ is scaled to the interval [0,1] via Y = (X - \code{lower})/(\code{upper} -
 \code{lower}), and E(Y) = shape1 / (shape1 + shape2).} 
 \item{ssq}{Sum of
 squared errors for each fitted distribution and expert. Each error is the
-different between an elicited cumulative probability and the corresponding
+difference between an elicited cumulative probability and the corresponding
 fitted cumulative probability.} 
 \item{best.fitting}{The best fitting
 distribution for each expert, determined by the smallest sum of squared

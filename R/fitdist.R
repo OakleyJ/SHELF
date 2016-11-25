@@ -30,12 +30,12 @@
 #' \item{Student.t}{Parameters of the fitted t distributions. Note that (X -
 #' location) / scale has a standard t distribution. The degrees of freedom is
 #' not fitted; it is specified as an argument to \code{fitdist}.}
-#' \item{Gamma}{Parameters of the fitted gamma distributions. Note that E(X) =
+#' \item{Gamma}{Parameters of the fitted gamma distributions. Note that E(X - \code{lower}) =
 #' shape / rate.} 
 #' \item{Log.normal}{Parameters of the fitted log normal
-#' distributions: the mean and standard deviation of log X.}
+#' distributions: the mean and standard deviation of log (X - \code{lower}).}
 #' \item{Log.Student.t}{Parameters of the fitted log student t distributions.
-#' Note that (log(X) - location) / scale has a standard t distribution. The
+#' Note that (log(X- \code{lower}) - location) / scale has a standard t distribution. The
 #' degrees of freedom is not fitted; it is specified as an argument to
 #' \code{fitdist}.} 
 #' \item{Beta}{Parameters of the fitted beta distributions. X
@@ -43,7 +43,7 @@
 #' \code{lower}), and E(Y) = shape1 / (shape1 + shape2).} 
 #' \item{ssq}{Sum of
 #' squared errors for each fitted distribution and expert. Each error is the
-#' different between an elicited cumulative probability and the corresponding
+#' difference between an elicited cumulative probability and the corresponding
 #' fitted cumulative probability.} 
 #' \item{best.fitting}{The best fitting
 #' distribution for each expert, determined by the smallest sum of squared
@@ -135,26 +135,34 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 	  maxprob <- max(probs[, i])
 		
 	  q.fit <- approx(x = probs[,i], y = vals[,i], xout = c(0.4, 0.5, 0.6))$y
-	  l <- q.fit[1]
-	  u <- q.fit[3]
+	  l <- q.fit[1] # estimated 40th percentile on original scale
+	  u <- q.fit[3] # estimated 60th percentile on original scale
 	  
 	  if(minprob > 0 & maxprob < 1){
 		  minvals <- min(vals[, i])
 		  maxvals <- max(vals[, i])
 		  minq <- qnorm(minprob)
 		  maxq <- qnorm(maxprob)
+		  # Estimate m and v assuming X~N(m,v)
 		  m <- (minvals * maxq - maxvals * minq) / (maxq - minq)
 		  v <- ((maxvals - minvals) / (maxq - minq))^2
 		}else{
-		  m <- q.fit[2]
-		  v<- (u - l)^2 / 0.25
+		  m <- q.fit[2] # Estimated median on original scale
+		  v<- (u - l)^2 / 0.25 # Estimated variance on original scale
 		} 
 	
-		normal.fit <- optim(c(m, 0.5*log(v)), normal.error, values = vals[,i], probabilities = probs[,i], weights = weights[,i])   
-    normal.parameters[i,] <- c(normal.fit$par[1],exp(normal.fit$par[2]))
+		normal.fit <- optim(c(m, 0.5*log(v)), 
+		                    normal.error, values = vals[,i], 
+		                    probabilities = probs[,i], 
+		                    weights = weights[,i])   
+    normal.parameters[i,] <- c(normal.fit$par[1], exp(normal.fit$par[2]))
     ssq[i,1] <- normal.fit$value
 	
-		t.fit <- optim(c(m, 0.5*log(v)), t.error, values = vals[,i], probabilities = probs[,i], weights = weights[,i], degreesfreedom = tdf[i])
+		t.fit <- optim(c(m, 0.5*log(v)), t.error, 
+		               values = vals[,i], 
+		               probabilities = probs[,i], 
+		               weights = weights[,i], 
+		               degreesfreedom = tdf[i])
     	t.parameters[i, 1:2] <- c(t.fit$par[1], exp(t.fit$par[2]))
     	t.parameters[i, 3] <- tdf[i]
     	ssq[i,2] <- t.fit$value
@@ -164,17 +172,29 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 			vals.scaled1 <- vals[,i] - lower[i]
 			m.scaled1 <- m - lower[i]
 		
-			gamma.fit<-optim(c(log(m.scaled1^2/v), log(m.scaled1/v)), gamma.error, values = vals.scaled1, probabilities = probs[,i], weights = weights[,i])
+			gamma.fit<-optim(c(log(m.scaled1^2/v), log(m.scaled1/v)), 
+			                 gamma.error, values = vals.scaled1, 
+			                 probabilities = probs[,i], 
+			                 weights = weights[,i])
     		gamma.parameters[i,] <- exp(gamma.fit$par)
     		ssq[i,3] <- gamma.fit$value
     		
-    		std<-((log(u)-log(l))/1.35)
+    		std<-((log(u - lower[i])-log(l - lower[i]))/1.35)
     	
-    		lognormal.fit <- optim(c(log(m.scaled1), log(std)), lognormal.error, values = vals.scaled1, probabilities = probs[,i], weights = weights[,i])
+    		lognormal.fit <- optim(c(log(m.scaled1), log(std)), 
+    		                       lognormal.error, 
+    		                       values = vals.scaled1, 
+    		                       probabilities = probs[,i], 
+    		                       weights = weights[,i])
     		lognormal.parameters[i, 1:2] <- c(lognormal.fit$par[1], exp(lognormal.fit$par[2]))
     		ssq[i,4] <- lognormal.fit$value
     	
-    		logt.fit <- optim(c(log(m.scaled1), log(std)), logt.error, values = vals.scaled1, probabilities = probs[,i], weights = weights[,i], degreesfreedom = tdf[i])
+    		logt.fit <- optim(c(log(m.scaled1), log(std)), 
+    		                  logt.error, 
+    		                  values = vals.scaled1, 
+    		                  probabilities = probs[,i], 
+    		                  weights = weights[,i], 
+    		                  degreesfreedom = tdf[i])
     		logt.parameters[i,1:2] <- c(logt.fit$par[1], exp(logt.fit$par[2]))
     		logt.parameters[i,3] <- tdf[i]
     		ssq[i,5] <- logt.fit$value
@@ -191,7 +211,11 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
     		             (vals[, i] - lower[i]) / (upper[i] - lower[i]))){
     		  alp <- bet <- 1
     		}
-    		beta.fit <- optim(c(log(alp), log(bet)), beta.error, values = vals.scaled2, probabilities = probs[,i], weights = weights[,i])
+    		beta.fit <- optim(c(log(alp), log(bet)), 
+    		                  beta.error, 
+    		                  values = vals.scaled2, 
+    		                  probabilities = probs[,i], 
+    		                  weights = weights[,i])
     		beta.parameters[i,] <- exp(beta.fit$par)
     		ssq[i,6] <- beta.fit$value	
 		

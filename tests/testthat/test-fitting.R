@@ -95,6 +95,26 @@ test_that("lognormal distribution fitting and feedback works",{
                signif(plnorm(c(25, 55), m, s),3))
 })
 
+test_that("shifted lognormal distribution fitting and feedback works",{
+  skip_on_cran()
+  m <- 2
+  s <- 0.5
+  l <- -10
+  vals <- c(-6, -2, 2, 6)
+  myfit <- fitdist(vals, plnorm(vals - l, m, s ), lower = l)
+  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(-4, 4))
+  lnorm.parameters <- unlist(myfit$Log.normal)
+  best.name <- as.character(unlist(myfit$best.fitting))
+  attributes(lnorm.parameters) <- NULL
+  expect_equal(lnorm.parameters, c(m, s), tolerance = 0.001)
+  expect_equal(best.name, "Log normal")
+  expect_equal(fb$fitted.quantiles[, 4], 
+               signif(qlnorm(c(0.05, 0.95), m, s)+l, 3) )
+  expect_equal(fb$fitted.probabilities[, 4],
+               signif(plnorm(c(-4, 4) - l, m, s),3))
+})
+
+
 
 test_that("shifted gamma distribution fitting and feedback works",{
   skip_on_cran()
