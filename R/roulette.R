@@ -62,8 +62,10 @@ roulette <- function(lower=0, upper=100, gridheight=10, nbins=10){
                                                                                   "Beta" = 7, 
                                                                                   "Best fitting" =8), selected = 2 ),
                  numericInput("tdf", label = h5("Student-t degrees of freedom"), value = 3),
-                 numericInput("fq1", label = h5("lower feedback quantile"), value = 0.05,min=0,max=1),
-                 numericInput("fq2", label = h5("upper feedback quantile"), value = 0.95,min=0,max=1),
+                 numericInput("fq1", label = h5("lower feedback quantile"), value = 0.05,
+                              min = 0, max = 1, step = 0.01),
+                 numericInput("fq2", label = h5("upper feedback quantile"), value = 0.95, 
+                              min = 0, max = 1, step = 0.01),
                  actionButton("exit", "Finish")),
     mainPanel(plotOutput("plot1", click = "location"),
               plotOutput("plot2"))
@@ -141,7 +143,6 @@ roulette <- function(lower=0, upper=100, gridheight=10, nbins=10){
             
             myfit <-fitdist(newvals[i1:i2], newprobs[i1:i2] , lower, upper)
           }
-        print(myfit)
         dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
         plotfit(myfit, d=dist[as.numeric(input$radio)], int = F, ql=input$fq1, qu=input$fq2, xl = lower, xu = upper)
         
