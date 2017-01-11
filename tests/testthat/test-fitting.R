@@ -77,20 +77,21 @@ test_that("scaled beta distribution fitting and feedback works",{
                signif(pbeta((c(19, 29)-l)/(u-l), a, b),3))
 })
 
-test_that("lognormal distribution fitting and feedback works",{
+test_that("shifted lognormal distribution fitting and feedback works",{
   skip_on_cran()
+  l <- -100
   m <- log(30)
   s <- 0.5
-  vals <- c(22, 30, 42)
-  myfit <- fitdist(vals, plnorm(vals, m, s ), lower = 0)
-  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(25, 55))
+  vals <- c(22, 30, 42) + l
+  myfit <- fitdist(vals, plnorm(vals - l, m, s ), lower = l)
+  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(25, 55) + l)
   lnorm.parameters <- unlist(myfit$Log.normal)
   best.name <- as.character(unlist(myfit$best.fitting))
   attributes(lnorm.parameters) <- NULL
   expect_equal(lnorm.parameters, c(m, s), tolerance = 0.001)
   expect_equal(best.name, "Log normal")
   expect_equal(fb$fitted.quantiles[, 4], 
-               signif(qlnorm(c(0.05, 0.95), m, s),3))
+               signif(l + qlnorm(c(0.05, 0.95), m, s),3))
   expect_equal(fb$fitted.probabilities[, 4],
                signif(plnorm(c(25, 55), m, s),3))
 })
