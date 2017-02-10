@@ -50,4 +50,3 @@ plotfit(myfit)
 \author{
 Jeremy Oakley <j.oakley@sheffield.ac.uk>
 }
-

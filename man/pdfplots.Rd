@@ -53,4 +53,3 @@ pdfplots(medianfit, prfit, alpha = 0.01)
 \code{multiplot} function obtained from
  \url{http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/}
 }
-

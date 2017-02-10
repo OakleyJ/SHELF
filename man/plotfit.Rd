@@ -102,4 +102,3 @@ plotfit(myfit, d = "beta",  lp = T, lpw = c(2,1), ql = 0.05, qu = 0.95, ind=FALS
 \author{
 Jeremy Oakley <j.oakley@sheffield.ac.uk>
 }
-

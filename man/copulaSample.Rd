@@ -48,4 +48,3 @@ copulaSample(myfit1, myfit2, myfit3, qp=quad.probs, n=100, d=NULL)
 \author{
 Jeremy Oakley <j.oakley@sheffield.ac.uk>
 }
-

@@ -35,3 +35,10 @@ SHELF v1.2.2 (2016-11-14)
 * Can specify own axes labels in the plotfit command with arguments xlab and ylab
 
 * Update to Multivariate-normal-copula.Rmd vignette, to match update to GGally
+
+SHELF v1.2.3 (2017-02-10) 
+==============================
+
+* Bug fixed: can fit (and plot) distributions bounded below when lower limit is negative
+
+* Bug fixed: roulette method shiny interface works with non-integer bin boundaries

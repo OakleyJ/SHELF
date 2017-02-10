@@ -37,4 +37,3 @@ myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
 compareIntervals(myfit, interval = 0.5)
 }
 }
-

@@ -48,10 +48,9 @@ d <- fitDirichlet(myfit1, myfit2, myfit3,
                   n.fitted = "opt")
 }
 }
-\author{
-Jeremy Oakley <j.oakley@sheffield.ac.uk>
-}
 \references{
 Zapata-Vazquez, R., O'Hagan, A. and Bastos, L. S. (2014). Eliciting expert judgements about a set of proportions. Journal of Applied Statistics 41, 1919-1933.
 }
-
+\author{
+Jeremy Oakley <j.oakley@sheffield.ac.uk>
+}

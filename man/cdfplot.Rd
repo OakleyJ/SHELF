@@ -47,4 +47,3 @@ medianfit <- fitdist(vals = c(50, 60, 70), probs = c(0.05, 0.5,  0.95), lower = 
 cdfplot(medianfit, prfit)
  }
 }
-

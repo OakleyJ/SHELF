@@ -71,4 +71,3 @@ feedback(myfit, quantiles=c(0.33,0.66), ex=2)
 \author{
 Jeremy Oakley <j.oakley@sheffield.ac.uk>
 }
-

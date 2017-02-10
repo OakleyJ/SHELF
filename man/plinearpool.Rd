@@ -60,4 +60,3 @@ qlinearpool(myfit, q=c(0.05, 0.5, 0.95), d="gamma")
 \author{
 Jeremy Oakley <j.oakley@sheffield.ac.uk>
 }
-

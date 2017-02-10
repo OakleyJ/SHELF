@@ -45,4 +45,3 @@ elicitConcProb(myfit1, myfit2, 0.55, 0.3, d=c("Beta", "Beta"))
 \author{
 Jeremy Oakley <j.oakley@sheffield.ac.uk>
 }
-

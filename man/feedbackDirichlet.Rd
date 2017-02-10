@@ -30,4 +30,3 @@ feedbackDirichlet(d = c(20, 10, 5),
 \author{
 Jeremy Oakley <j.oakley@sheffield.ac.uk>
 }
-

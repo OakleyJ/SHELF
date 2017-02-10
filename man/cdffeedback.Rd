@@ -65,4 +65,3 @@ cdffeedback(medianfit, prfit, quantiles = c(0.01, 0.99),
             vals = c(65, 75), alpha = 0.05, n.rep = 10000)
  }  
 }
-

@@ -35,4 +35,3 @@ elicit()
 \author{
 Jeremy Oakley <j.oakley@sheffield.ac.uk>
 }
-

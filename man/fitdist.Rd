@@ -106,4 +106,3 @@ fitdist(vals=v, probs=p, lower=l, upper=u)
 \author{
 Jeremy Oakley <j.oakley@sheffield.ac.uk>
 }
-
