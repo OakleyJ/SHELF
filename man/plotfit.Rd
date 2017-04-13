@@ -6,7 +6,8 @@
 \usage{
 plotfit(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf, ql = NA,
   qu = NA, lp = FALSE, ex = NA, sf = 3, ind = TRUE, lpw = 1,
-  fs = 12, lwd = 1, xlab = "x", ylab = expression(f[X](x)))
+  fs = 12, lwd = 1, xlab = "x", ylab = expression(f[X](x)),
+  legend_full = TRUE)
 }
 \arguments{
 \item{fit}{An object of class \code{elicitation}.}
@@ -37,7 +38,7 @@ Only displayed when plotting the density function for a single expert.}
 \item{qu}{An upper quantile to be indicated on the density function plot.
 Only displayed when plotting the density function for a single expert.}
 
-\item{lp}{For multiple experts, set \code{lp=TRUE} to plot a linear pool.}
+\item{lp}{For multiple experts, set \code{lp = TRUE} to plot a linear pool.}
 
 \item{ex}{If judgements have been elicited from multiple experts, but a
 density plot for one expert only is required, the expert to be used in the
@@ -46,7 +47,7 @@ plot.}
 \item{sf}{The number of significant figures to be displayed for the
 parameter values.}
 
-\item{ind}{If plotting a linear pool, set \code{ind=FALSE} to suppress
+\item{ind}{If plotting a linear pool, set \code{ind = FALSE} to suppress
 plotting of the individual density functions.}
 
 \item{lpw}{A vector of weights to be used in linear pool, if unequal
@@ -59,6 +60,10 @@ weighting is desired.}
 \item{xlab}{A string or expression giving the x-axis label.}
 
 \item{ylab}{A string or expression giving the y-axis label.}
+
+\item{legend_full}{If plotting a linear pool, set \code{ind = TRUE} for each expert
+to be plotted with a different colour, and \code{ind = FALSE} for each expert to be 
+plotted with the same colour, reducing the legend size.}
 }
 \description{
 Plots the fitted density function for one or more experts. Can also plot a

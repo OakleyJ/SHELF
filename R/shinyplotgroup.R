@@ -1,5 +1,5 @@
 
-shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab){
+shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab, legend_full){
   
   if(length(unique(fit$limits[,1]))>1 | length(unique(fit$limits[,2]))>1 ){stop("Parameter limits must be the same for each expert")}
   
@@ -35,7 +35,10 @@ shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab){
         radioButtons("radio", label = h5("Distribution"), choices = distributionchoices, selected = 1 ),
    
    checkboxGroupInput("lp", label = h5("Linear pool"), 
-                      choices = list("Display linear pool" = 1))
+                      choices = list("Display linear pool" = 1)),
+   radioButtons("leg", label = h5("Linear pool legend"),
+                choices = list("full" = 1, "reduced" = 2), selected = 1 )
+                     
       ),
             mainPanel(
         plotOutput("distPlot"),
@@ -61,7 +64,7 @@ shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab){
         print(makeLinearPoolPlot(fit, xl = xlimits[1], 
                                  xu = xlimits[2], 
                                  d=dist[as.numeric(input$radio)], w = lpw, lwd, 
-                                 xlab, ylab))
+                                 xlab, ylab, legend_full = input$leg ==1))
       }
      
     })

@@ -27,13 +27,13 @@
 #' Only displayed when plotting the density function for a single expert.
 #' @param qu An upper quantile to be indicated on the density function plot.
 #' Only displayed when plotting the density function for a single expert.
-#' @param lp For multiple experts, set \code{lp=TRUE} to plot a linear pool.
+#' @param lp For multiple experts, set \code{lp = TRUE} to plot a linear pool.
 #' @param ex If judgements have been elicited from multiple experts, but a
 #' density plot for one expert only is required, the expert to be used in the
 #' plot.
 #' @param sf The number of significant figures to be displayed for the
 #' parameter values.
-#' @param ind If plotting a linear pool, set \code{ind=FALSE} to suppress
+#' @param ind If plotting a linear pool, set \code{ind = FALSE} to suppress
 #' plotting of the individual density functions.
 #' @param lpw A vector of weights to be used in linear pool, if unequal
 #' weighting is desired.
@@ -41,6 +41,9 @@
 #' @param lwd The line width used in the plot.
 #' @param xlab A string or expression giving the x-axis label.
 #' @param ylab A string or expression giving the y-axis label.
+#' @param legend_full If plotting a linear pool, set \code{ind = TRUE} for each expert
+#' to be plotted with a different colour, and \code{ind = FALSE} for each expert to be 
+#' plotted with the same colour, reducing the legend size.
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
 #' @examples
 #' 
@@ -91,7 +94,8 @@ plotfit <- function(fit,
                     fs = 12,
                     lwd = 1,
                     xlab = "x",
-                    ylab = expression(f[X](x))){
+                    ylab = expression(f[X](x)),
+                    legend_full = TRUE){
   
 
   if(d=="beta" & (min(fit$limits) == -Inf | max(fit$limits) == Inf )){stop("Parameter limits must be finite to fit a beta distribution")}
@@ -125,8 +129,8 @@ plotfit <- function(fit,
       f2 <- feedback(fit, quantiles=0.99, dist=d)
       xu <- max(f2$expert.quantiles)
     }
-    if(int == FALSE){print(makeLinearPoolPlot(fit, xl, xu,  d , lpw, lwd, xlab, ylab))}else{
-      shinyplotgroup(fit, xl, xu, lpw, lwd, xlab, ylab)
+    if(int == FALSE){print(makeLinearPoolPlot(fit, xl, xu,  d , lpw, lwd, xlab, ylab, legend_full))}else{
+      shinyplotgroup(fit, xl, xu, lpw, lwd, xlab, ylab, legend_full)
     }
     
   }
