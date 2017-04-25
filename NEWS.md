@@ -46,4 +46,6 @@ SHELF v1.2.3 (2017-02-10)
 SHELF v1.2.3.9001 (2017-04-13) 
 ==============================
 
-* Bug fixed: ensure solid line used for linear pool when plotting. Option in plotfit added to plot all individual densities with same colour, to simplify legend,
+* Bug fixed: ensure solid line used for linear pool when plotting. Option in plotfit added to plot all individual densities with same colour, to simplify legend.
+
+* New function linearPoolDensity for extracting density values from the linear pool.
