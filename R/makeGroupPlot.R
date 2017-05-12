@@ -5,6 +5,14 @@ function(fit, pl, pu, d = "best", lwd, xlab, ylab){
   
 	n.experts <- nrow(fit$vals)
 	
+	if(n.experts < 27){
+	  expertnames <- LETTERS[1:n.experts]
+	}
+	
+	if(n.experts > 26){
+	  expertnames <- factor(1:n.experts)
+	}
+	
 	x <- matrix(0, 200 * n.experts, 1)
 	fx <- x
 	
@@ -15,7 +23,7 @@ function(fit, pl, pu, d = "best", lwd, xlab, ylab){
 		fx[(1+(i-1)*200):(i*200), 1] <-densitydata$fx
 	}
 	df1 <- data.frame(x = x, fx = fx, 
-	                  expert = rep(LETTERS[c(1:n.experts)], each =200))
+	                  expert = rep(expertnames, each =200))
 	p1 <- ggplot(df1, aes(x = x, y = fx, colour = expert)) + geom_line(size=lwd) +
 	  labs(x = xlab, y = ylab)
 	

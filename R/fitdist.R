@@ -111,11 +111,15 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 	beta.parameters <- matrix(NA, n.experts, 2)
 	ssq<-matrix(NA, n.experts, 6)
 	
+	expertnames <- NULL
 	
-	if(n.experts > 1){
+	if(n.experts > 1 & n.experts < 27){
 	  expertnames <- paste("expert.", LETTERS[1:n.experts], sep="")
-	  }else{expertnames <- NULL
-	  }
+	}
+	
+	if(n.experts > 27){
+	  expertnames <- paste("expert.", 1:n.experts, sep="")
+	}
 	
 	limits <- data.frame(lower = lower, upper = upper)
 	row.names(limits) <- expertnames

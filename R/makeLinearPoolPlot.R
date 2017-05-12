@@ -1,9 +1,18 @@
 makeLinearPoolPlot <-
 function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, legend_full = TRUE){
 	
-  expert <- NULL # hack to avoid R CMD check NOTE
+  expert <- ftype <- NULL # hack to avoid R CMD check NOTE
   
 	n.experts <- nrow(fit$vals)
+	
+	if(n.experts < 27){
+	  expertnames <- LETTERS[1:n.experts]
+	}
+	
+	if(n.experts > 26){
+	  expertnames <- 1:n.experts
+	}
+	
 	x <- matrix(0, 200, n.experts)
 	fx <- x
   if(min(w)<0 | max(w)<=0){stop("expert weights must be non-negative, and at least one weight must be greater than 0.")}
@@ -24,11 +33,11 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, legend_full = TRUE){
 	
 	df1 <- data.frame(x = rep(x[, 1], n.experts + 1),
 	                  fx = c(as.numeric(fx), fx.lp),
-	                  expert = c(rep(LETTERS[1:n.experts], each =200),
+	                  expert = c(rep(expertnames, each =200),
 	                             rep("linear pool", 200)),
 	                  ftype = c(rep("individual", 200 * n.experts), 
 	                           rep("linear pool", 200)))
-	df1$expert <- factor(df1$expert, levels = c(LETTERS[1:n.experts], "linear pool"))
+	df1$expert <- factor(df1$expert, levels = c(expertnames, "linear pool"))
 	
 	if(legend_full){
 	  p1 <- ggplot(df1, aes(x = x, y = fx, 
