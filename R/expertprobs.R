@@ -31,7 +31,7 @@ function(fit, x, d = "best", ex = 1){
 	if(index==5){
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}
-		px <- pt( (log(x - xl) - fit$Log.Student.t[ex,1]) / fit$Log.Student.t[ex,2], fit$LogStudent.t[ex,3]) 
+		px <- pt( (log(x - xl) - fit$Log.Student.t[ex,1]) / fit$Log.Student.t[ex,2], fit$Log.Student.t[ex,3]) 
 	}
 		
 	if(index==6){

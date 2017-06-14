@@ -31,7 +31,7 @@ function(fit, q, d = "best", ex = 1){
 	if(index==5){
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}
-		qx <- xl + exp(fit$Log.Student.t[ex,1] + fit$Log.Student.t[ex,2] * qt( q , fit$LogStudent.t[ex,3])) 
+		qx <- xl + exp(fit$Log.Student.t[ex,1] + fit$Log.Student.t[ex,2] * qt( q , fit$Log.Student.t[ex,3])) 
 	}
 		
 	if(index==6){

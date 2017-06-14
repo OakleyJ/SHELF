@@ -51,3 +51,5 @@ SHELF v1.2.3.9001 (2017-04-13)
 * New function linearPoolDensity for extracting density values from the linear pool.
 
 * Bug fixed: can now accept more than 26 experts.
+
+* Bug fixed: qlinearpool/plinearpool now works with log t distributions.
