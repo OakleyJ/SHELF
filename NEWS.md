@@ -53,3 +53,5 @@ SHELF v1.2.3.9001 (2017-04-13)
 * Bug fixed: can now accept more than 26 experts.
 
 * Bug fixed: qlinearpool/plinearpool now works with log t distributions.
+
+* New function: elicitHeterogen(), for eliciting prior for variance of random effects in meta-analysis

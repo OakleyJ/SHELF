@@ -9,8 +9,8 @@
 #' @param upper The upper limit on the x-axis of the roulette grid.
 #' @param gridheight The maximum number of probs that can be allocated to a
 #' single bin.
-#' @param nbins The number of equally sized bins drawn between \code{Lo} and
-#' \code{Up}.
+#' @param nbins The number of equally sized bins drawn between \code{lower} and
+#' \code{upper}.
 #' @return A list, with outputs 
 #' \item{v }{ upper limits of
 #' each bin.}
