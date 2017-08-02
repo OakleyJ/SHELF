@@ -18,17 +18,21 @@ single bin.}
 \item{nbins}{The number of equally sized bins drawn between \code{lower} and
 \code{upper}.}
 
-\item{scale.free}{Logical.}
+\item{scale.free}{Logical. Default is \code{TRUE} for a scale free treatment effect,
+such as an odds ratio, hazard ratio or relative risk. Set to \code{FALSE} for a treatment effect
+that is scale dependent, or is on the probit scale. An approximation to the treatment effect
+on the logit scale will be used (assuming a dichotomised response).}
 
 \item{sigma}{Individual observation standard deviation, required if \code{scale.free} is
-\code{FALSE}}
+\code{FALSE}.}
 }
 \value{
 BUGS code for incorporating the prior within a BUGS model. Additionally, a list with outputs 
-\item{v }{ upper limits of
-each bin.}
-\item{p }{ cumulative probabilities for each
-upper bin limit.}
+\item{allocation }{table of bins, with number of probs allocated to each bin.}
+\item{Gamma }{parameters of the fitted gamma distribution.}
+\item{Log.normal }{parameters of the fitted lognormal distribution.}
+\item{sumsq }{sum of squares of elicited - fitted probabilities for each distribution.}
+\item{best.fitting}{the distribution with the lowest sum of squares.}
 }
 \description{
 Opens a shiny app for the roulette elicitation method. The user clicks in the
