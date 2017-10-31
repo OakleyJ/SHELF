@@ -42,3 +42,16 @@ SHELF v1.2.3 (2017-02-10)
 * Bug fixed: can fit (and plot) distributions bounded below when lower limit is negative
 
 * Bug fixed: roulette method shiny interface works with non-integer bin boundaries
+
+SHELF v1.3.0 (2017-10-31) 
+==============================
+
+* Bug fixed: ensure solid line used for linear pool when plotting. Option in plotfit added to plot all individual densities with same colour, to simplify legend.
+
+* New function: linearPoolDensity, for extracting density values from the linear pool.
+
+* Bug fixed: can now accept more than 26 experts.
+
+* Bug fixed: qlinearpool/plinearpool now works with log t distributions.
+
+* New function: elicitHeterogen, for eliciting prior for variance of random effects in meta-analysis
