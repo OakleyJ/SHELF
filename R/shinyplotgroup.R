@@ -1,23 +1,25 @@
 
 shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab, legend_full){
   
-  if(length(unique(fit$limits[,1]))>1 | length(unique(fit$limits[,2]))>1 ){stop("Parameter limits must be the same for each expert")}
+  #if(length(unique(fit$limits[,1]))>1 | length(unique(fit$limits[,2]))>1 ){stop("Parameter limits must be the same for each expert")}
   
   plotlimits <- paste(xl, xu , sep = ",")
   
   # Determine set of suitable distributions
-  if(fit$limits[1, 1]>=0 & fit$limits[1, 2] < Inf){
+  if(fit$limits[1, 1]>=-Inf & fit$limits[1, 2] < Inf){
     distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Gamma" = 4, "Log normal" = 5, "Log Student t" = 6, "Beta" = 7, "Best fitting" =8)
   }
-  if(fit$limits[1, 1]>=0 & fit$limits[1, 2] == Inf){
+  if(fit$limits[1, 1]>=-Inf & fit$limits[1, 2] == Inf){
     distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Gamma" = 4, "Log normal" = 5, "Log Student t" = 6, "Best fitting" =8)
   }
   if(fit$limits[1, 1]==-Inf & fit$limits[1, 2] == Inf){
     distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Best fitting" =8)
   }
-  if(fit$limits[1, 1]>-Inf & fit$limits[1, 1] < 0 & fit$limits[1, 2] < Inf){
-    distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Beta" = 7, "Best fitting" =8)
-  }
+ # if(fit$limits[1, 1]>-Inf & fit$limits[1, 1] < 0 & fit$limits[1, 2] < Inf){
+#    distributionchoices <- list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Beta" = 7, "Best fitting" =8)
+#  }
+  
+ 
   
   ###
   
@@ -56,10 +58,14 @@ shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab, legend_full){
       xlimits<-eval(parse(text=paste("c(",input$xlimits,")")))
       dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
       if(is.null(input$lp)){
+        if(input$radio == 0){
+          print(plotTertiles(fit$vals, fit$limits[, 1], fit$limits[, 2]))
+          
+        }else{
         print(makeGroupPlot(fit, pl = xlimits[1], 
                                  pu = xlimits[2], 
                                  d=dist[as.numeric(input$radio)],
-                            lwd, xlab, ylab))
+                            lwd, xlab, ylab))}
       }else{
         print(makeLinearPoolPlot(fit, xl = xlimits[1], 
                                  xu = xlimits[2], 
