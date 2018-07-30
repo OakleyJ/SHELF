@@ -1,7 +1,7 @@
-#' Elicit judgements and fit distributions interactively using the tertile method
+#' Elicit judgements and fit distributions interactively using the quartile method
 #' 
 #' Opens up a web browser (using the shiny package), from which you can specify
-#' the median and tertiles, fit distributions and plot the fitted density functions with
+#' the quartiles, fit distributions and plot the fitted density functions with
 #' additional feedback.
 #' 
 #' Parameter limits determine which distributions can be fitted. Finite
@@ -18,32 +18,39 @@
 #' 
 #' \dontrun{
 #' 
-#' elicitTertiles()
+#' elicitQuartiles()
 #' 
 #' }
 #' @import shiny
 #' @import ggplot2
 #' @export
-elicitTertiles<- function(){
+elicitQuartiles<- function(){
   
   runApp(list(
   ui = shinyUI(fluidPage(
     
     # Application title
-    titlePanel("Elicitation: tertile method"),
+    titlePanel("Elicitation: quartile method"),
     
-    # Sidebar with a slider input for the number of bins
+    
     sidebarLayout(
       sidebarPanel(
         textInput("limits", label = h5("Parameter limits"), value = "0, 100"),
-        textInput("values", label = h5("1st Tertile, Median, 2nd Tertile"), value = "33, 50, 66"),
-        checkboxInput("showfit", label = "Show fitted distribution"),
+        textInput("values", label = h5("Lower quartile, median, upper quartile"),
+                  value = "25, 50, 75"),
+        checkboxInput("showfit", label = "Show fitted distribution", value = FALSE),
         checkboxInput("showfeedback", label = "Show feedback", value = FALSE),
-        radioButtons("radio", label = h5("Distribution"), choices = list("Histogram" = 1, "Normal" = 2, "Student t" = 3, "Gamma" = 4, "Log normal" = 5, "Log Student t" = 6, "Beta" = 7, "Best fitting" =8), selected = 1 ),
+        radioButtons("radio", label = h5("Distribution"), 
+                     choices = list("Histogram" = 1, "Normal" = 2, 
+                                    "Student t" = 3, "Gamma" = 4, 
+                                    "Log normal" = 5, "Log Student t" = 6, 
+                                    "Beta" = 7, "Best fitting" =8), selected = 1 ),
         numericInput("tdf", label = h5("Student-t degrees of freedom"), value = 3),
-        numericInput("fq1", label = h5("lower feedback quantile"), value = 0.05,min=0,max=1),
-        numericInput("fq2", label = h5("upper feedback quantile"), value = 0.95,min=0,max=1),
-        numericInput("fs", label = h5("font size"), value = 12)
+        numericInput("fq1", label = h5("Lower feedback quantile"), 
+                     value = 0.05, min=0, max=1),
+        numericInput("fq2", label = h5("Upper feedback quantile"), 
+                     value = 0.95, min=0, max=1),
+        numericInput("fs", label = h5("Font size"), value = 12)
       ),
             mainPanel(
         plotOutput("distPlot"),
@@ -57,22 +64,22 @@ elicitTertiles<- function(){
     output$distPlot <- renderPlot({
       limits <- eval(parse(text=paste("c(",input$limits,")")))
       v <- eval(parse(text=paste("c(",input$values,")")))
-      myfit <- fitdist(vals = v, probs=c(1/3, 0.5, 2/3),
+      myfit <- fitdist(vals = v, probs=c(0.25, 0.5, 0.75),
                      lower=limits[1], upper=limits[2], tdf=input$tdf)
       
       dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
       
       p1 <-ggplot()+
         annotate("rect", xmin = limits[1], 
-                 xmax = v[1], ymin=0.2, ymax = 0.8, fill = "#66c2a5")+
-        annotate("rect", xmin = v[1], xmax = v[3], 
-                 ymin=0.2, ymax = 0.8, fill = "#fc8d62")+
-        annotate("rect", xmin = v[3], xmax = limits[2], ymin=0.2, ymax = 0.8, fill = "#8da0cb")+
+                 xmax = v[1], ymin=0.2, ymax = 0.8, fill = "#a6cee3")+
+        annotate("rect", xmin = v[1], xmax = v[2], 
+                 ymin=0.2, ymax = 0.8, fill = "#1f78b4")+
+        annotate("rect", xmin = v[2], xmax = v[3], ymin=0.2, ymax = 0.8, fill = "#b2df8a")+
+        annotate("rect", xmin = v[3], xmax = limits[2], ymin=0.2, ymax = 0.8, fill = "#33a02c")+
         xlim(limits[1], limits[2])+
-        geom_vline(xintercept = v[2], linetype = "dashed")+
         theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())+
         scale_y_continuous(breaks = NULL, limits = c(0, 1))+
-        labs(title = "Tertiles and median", y = expression(f[X](x))) +
+        labs(title = "Quartiles", y = expression(f[X](x))) +
         theme(plot.title = element_text(hjust = 0.5),
               axis.title.y = element_text(colour = "white"),
               text = element_text(size = input$fs))
@@ -101,15 +108,15 @@ elicitTertiles<- function(){
     
 
     quantileValues <- reactive({
-      
+
       limits<-eval(parse(text=paste("c(",input$limits,")")))
       v<-eval(parse(text=paste("c(",input$values,")")))
-      fit<-fitdist(vals=v, probs=c(1/3, 0.5, 2/3),
+      fit<-fitdist(vals=v, probs=c(0.25, 0.5, 0.75),
                    lower=limits[1], upper=limits[2], tdf=input$tdf)
-      
+
       ssq <- fit$ssq[1, is.na(fit$ssq[1,])==F]
       best.index <- which(ssq == min(ssq))[1]
-      
+
       ex<-1
       xlimits<-eval(parse(text=paste("c(",input$limits,")")))
       pl<-xlimits[1]
@@ -124,17 +131,18 @@ elicitTertiles<- function(){
         x <- c(pl, fit$vals[ex,], pu)
         values <- qhist(c(input$fq1,input$fq2), x, p)
       }
-      
+
       if(as.numeric(input$radio)>1){
-        temp<-feedback(fit, quantiles=c(input$fq1,input$fq2), ex=1)
+        temp <- feedback(fit, quantiles=c(input$fq1,input$fq2), ex=1)
         values=temp$fitted.quantiles[,index]
       }
       data.frame(quantiles=c(input$fq1,input$fq2), values=values)
-      
-    }) 
-    
+
+    })
+
     output$values <- renderTable({
       if(input$showfeedback){quantileValues()}
+      
       
     })
     

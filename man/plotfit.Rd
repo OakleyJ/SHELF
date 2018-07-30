@@ -4,10 +4,10 @@
 \alias{plotfit}
 \title{Plot the fitted density function for one or more experts}
 \usage{
-plotfit(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf, ql = NA,
-  qu = NA, lp = FALSE, ex = NA, sf = 3, ind = TRUE, lpw = 1,
-  fs = 12, lwd = 1, xlab = "x", ylab = expression(f[X](x)),
-  legend_full = TRUE)
+plotfit(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf,
+  ql = NA, qu = NA, lp = FALSE, ex = NA, sf = 3, ind = TRUE,
+  lpw = 1, fs = 12, lwd = 1, xlab = "x",
+  ylab = expression(f[X](x)), legend_full = TRUE)
 }
 \arguments{
 \item{fit}{An object of class \code{elicitation}.}

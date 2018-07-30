@@ -4,7 +4,8 @@
 \alias{fitdist}
 \title{Fit distributions to elicited probabilities}
 \usage{
-fitdist(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3)
+fitdist(vals, probs, lower = -Inf, upper = Inf, weights = 1,
+  tdf = 3)
 }
 \arguments{
 \item{vals}{A vector of elicited values for one expert, or a matrix of

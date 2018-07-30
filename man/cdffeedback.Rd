@@ -4,9 +4,9 @@
 \alias{cdffeedback}
 \title{Feedback for the elicited distribution of the population CDF}
 \usage{
-cdffeedback(medianfit, precisionfit, quantiles = c(0.05, 0.95), vals = NA,
-  alpha = 0.05, median.dist = "best", precision.dist = "gamma",
-  n.rep = 10000)
+cdffeedback(medianfit, precisionfit, quantiles = c(0.05, 0.95),
+  vals = NA, alpha = 0.05, median.dist = "best",
+  precision.dist = "gamma", n.rep = 10000)
 }
 \arguments{
 \item{medianfit}{The output of a \link{fitdist} command following elicitation

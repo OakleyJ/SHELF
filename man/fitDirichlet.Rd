@@ -4,7 +4,8 @@
 \alias{fitDirichlet}
 \title{Fit a Dirichlet distribution to elicited marginal distributions for proportions}
 \usage{
-fitDirichlet(..., categories = NULL, n.fitted = "opt", plotBeta = TRUE)
+fitDirichlet(..., categories = NULL, n.fitted = "opt",
+  plotBeta = TRUE, xlab = "x", ylab = expression(f[X](x)))
 }
 \arguments{
 \item{...}{A list of objects of class \code{elicitation}.
