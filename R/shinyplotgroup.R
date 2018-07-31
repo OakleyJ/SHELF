@@ -38,6 +38,8 @@ shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab, legend_full){
    
    checkboxGroupInput("lp", label = h5("Linear pool"), 
                       choices = list("Display linear pool" = 1)),
+   textInput("weights", label = h5("Linear pool weights"), 
+             paste(rep(1, nrow(fit$vals)), collapse = ", ")),
    radioButtons("leg", label = h5("Linear pool legend"),
                 choices = list("full" = 1, "reduced" = 2), selected = 1 )
                      
@@ -52,6 +54,11 @@ shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab, legend_full){
   )),
    
   server = function(input, output) {
+    
+    lpweights <- reactive({
+      eval(parse(text=paste("c(",input$weights,")")))
+    })
+    
     
     fit <- get("fit")
     output$distPlot <- renderPlot({
@@ -69,7 +76,7 @@ shinyplotgroup<- function(fit, xl, xu, lpw, lwd, xlab, ylab, legend_full){
       }else{
         print(makeLinearPoolPlot(fit, xl = xlimits[1], 
                                  xu = xlimits[2], 
-                                 d=dist[as.numeric(input$radio)], w = lpw, lwd, 
+                                 d=dist[as.numeric(input$radio)], w = lpweights(), lwd, 
                                  xlab, ylab, legend_full = input$leg ==1))
       }
      

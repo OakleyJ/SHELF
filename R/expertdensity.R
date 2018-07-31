@@ -1,10 +1,10 @@
 expertdensity <-
-function(fit, d = "best", ex = 1, pl, pu, nx = 200){
+function(fit, d = "best", ex = 1, pl, pu, ql = NULL, qu = NULL, nx = 200){
 	
   if(pl == -Inf){pl <- qnorm(0.001, fit$Normal[ex,1], fit$Normal[ex,2])}
   if(pu == Inf){pu <- qnorm(0.999, fit$Normal[ex,1], fit$Normal[ex,2])}
   
-	x <- seq(from = pl, to = pu, length = nx)
+	x <- unique(sort(c(seq(from = pl, to = pu, length = nx), ql, qu)))
 	
 	if(d == "best"){
 		best.index <- which.min(fit$ssq[ex, ])

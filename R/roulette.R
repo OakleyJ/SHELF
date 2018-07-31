@@ -11,12 +11,11 @@
 #' single bin.
 #' @param nbins The number of equally sized bins drawn between \code{lower} and
 #' \code{upper}.
-#' @return A list, with outputs 
-#' \item{v }{ upper limits of
-#' each bin.}
-#' \item{p }{ cumulative probabilities for each
-#' upper bin limit.}
+#' Click the Finish button to quit the elicitation session.
 #' 
+#' @return An object of class \code{elicitation}, which is returned once the 
+#' Finish button has been clicked. See \code{\link{fitdist}} for details.
+#'  
 #' @note Regarding the option ``spread end probs over empty bins'' 
 #' (unchecked as the default): suppose for example, the leftmost and rightmost non-empty
 #' bins are [10,20] and [70,80], and each contain one prob, with 20 probs used in total. If the option
@@ -28,12 +27,7 @@
 #' @examples
 #' 
 #' \dontrun{
-#' x <- roulette(lower = 0, upper = 100)
-#' # Then allocate probs to bins and click "Finish"
-#' 
-#' # To fit distributions and see the results
-#' myfit <- fitdist(vals = x$v, probs = x$p, lower = 0, upper = 100)
-#' plotfit(myfit)
+#' roulette(lower = 0, upper = 100)
 #' }
 #' @export
 
@@ -67,7 +61,10 @@ roulette <- function(lower=0, upper=100, gridheight=10, nbins=10){
   
   server <- function(input, output) {
     
-    vals <- reactiveValues(x=-1, y=-1, probs = rep(0,nbins), p=NULL, v = bin.right )
+    vals <- reactiveValues(x=-1, y=-1, 
+                           probs = rep(0,nbins), 
+                           allBinsPr=NULL, nonempty = NULL
+                           )
     
     observeEvent(input$location, {
       vals$x <-input$location$x
@@ -77,22 +74,30 @@ roulette <- function(lower=0, upper=100, gridheight=10, nbins=10){
       if(vals$x > lower & vals$x <upper & vals$y < gridheight){
         index <- which(vals$x >= bin.left & vals$x < bin.right)
         vals$probs[index]<-ceiling(max(vals$y,0))
-        vals$p <- cumsum(vals$probs)/sum(vals$probs)
-        vals$v <- bin.right
+        vals$allBinsPr <- cumsum(vals$probs)/sum(vals$probs)
+        vals$nonempty <- vals$allBinsPr > 0 & vals$allBinsPr < 1
       }
-      observe({
-        if(input$exit > 0){
-          stopApp(list(v = vals$v, p = vals$p))
-        }
-      }) 
-      
-      if(input$round.end == T){
-        index <- vals$p>0 & vals$p<1
-        vals$v <- vals$v[index]
-        vals$p <- vals$p[index]
-      }
-      
+     
     })
+    
+    v <- reactive({
+      if(input$round.end == FALSE){bin.right}else{
+        bin.right[vals$nonempty]
+      }
+    })
+    p <- reactive({
+      if(input$round.end == FALSE){vals$allBinsPr}else{
+        vals$allBinsPr[vals$nonempty]
+      }
+    })
+    
+    myfit <- reactive({
+      fitdist(v(), p(), lower, upper)
+    })
+    
+    observeEvent(input$exit, {
+        stopApp(myfit())
+      }) 
     
     output$plot1 <- renderPlot({
       par(ps=15)
@@ -119,26 +124,15 @@ roulette <- function(lower=0, upper=100, gridheight=10, nbins=10){
         }
       }
       
-      
-      
-      
     })
     
     output$plot2 <- renderPlot({
-      if((sum(vals$probs >0) >2 & input$fit & input$round.end) | 
-         (sum(vals$probs >0) >=2 & input$fit & !input$round.end)){
-        if(input$round.end){
-          myfit <-fitdist(vals$v, vals$p, lower, upper)}else{
-            
-            newvals <- c(lower, vals$v)
-            newprobs <- c(0, vals$p)
-            i1 <- max(which(newprobs == 0))
-            i2 <- match(1, newprobs)
-            
-            myfit <-fitdist(newvals[i1:i2], newprobs[i1:i2] , lower, upper)
-          }
+      
+      if((min(p()) < 0.4 & max(p())>0.6 & input$fit & input$round.end) | 
+         (sum(p() > 0) >=2 & input$fit & !input$round.end)){
         dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
-        plotfit(myfit, d=dist[as.numeric(input$radio)], int = F, ql=input$fq1, qu=input$fq2, xl = lower, xu = upper)
+        plotfit(myfit(), d=dist[as.numeric(input$radio)], 
+                int = F, ql=input$fq1, qu=input$fq2, xl = lower, xu = upper)
         
       }
       
@@ -146,7 +140,7 @@ roulette <- function(lower=0, upper=100, gridheight=10, nbins=10){
     
   }
   
-  elicited <- runApp(list(ui=ui, server=server))
+  elicited <- suppressWarnings(runApp(list(ui=ui, server=server)))
   
-  elicited
+  #elicited
 }

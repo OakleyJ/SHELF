@@ -11,8 +11,11 @@
 #' based on fitting a normal distribution.
 #' 
 #' 
-#' Press Esc in the R console window to exit the elicitation session.
+#' Click the Finish button to quit the elicitation session.
 #' 
+#' @return An object of class \code{elicitation}, which is returned once the 
+#' Finish button has been clicked. See \code{\link{fitdist}} for details.
+#'  
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
 #' @examples
 #' 
@@ -43,6 +46,7 @@ elicitTertiles<- function(){
         numericInput("tdf", label = h5("Student-t degrees of freedom"), value = 3),
         numericInput("fq1", label = h5("lower feedback quantile"), value = 0.05,min=0,max=1),
         numericInput("fq2", label = h5("upper feedback quantile"), value = 0.95,min=0,max=1),
+        actionButton("exit", "Finish"),
         numericInput("fs", label = h5("font size"), value = 12)
       ),
             mainPanel(
@@ -54,22 +58,36 @@ elicitTertiles<- function(){
    
   server = function(input, output) {
     
+    limits <- reactive({
+      eval(parse(text = paste("c(", input$limits, ")")))
+    })
+    
+    v <- reactive({
+      eval(parse(text = paste("c(", input$values, ")")))
+    })
+    
+    myfit <- reactive({
+      fitdist(vals = v(), probs=c(1/3, 0.5, 2/3),
+              lower=limits()[1], upper=limits()[2], tdf=input$tdf)
+    })
+    
+    observeEvent(input$exit, {
+      stopApp(myfit())
+    }) 
+    
     output$distPlot <- renderPlot({
-      limits <- eval(parse(text=paste("c(",input$limits,")")))
-      v <- eval(parse(text=paste("c(",input$values,")")))
-      myfit <- fitdist(vals = v, probs=c(1/3, 0.5, 2/3),
-                     lower=limits[1], upper=limits[2], tdf=input$tdf)
       
       dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
       
       p1 <-ggplot()+
-        annotate("rect", xmin = limits[1], 
-                 xmax = v[1], ymin=0.2, ymax = 0.8, fill = "#66c2a5")+
-        annotate("rect", xmin = v[1], xmax = v[3], 
+        annotate("rect", xmin = limits()[1], 
+                 xmax = v()[1], ymin=0.2, ymax = 0.8, fill = "#66c2a5")+
+        annotate("rect", xmin = v()[1], xmax = v()[3], 
                  ymin=0.2, ymax = 0.8, fill = "#fc8d62")+
-        annotate("rect", xmin = v[3], xmax = limits[2], ymin=0.2, ymax = 0.8, fill = "#8da0cb")+
-        xlim(limits[1], limits[2])+
-        geom_vline(xintercept = v[2], linetype = "dashed")+
+        annotate("rect", xmin = v()[3], xmax = limits()[2],
+                 ymin=0.2, ymax = 0.8, fill = "#8da0cb")+
+        xlim(limits()[1], limits()[2])+
+        geom_vline(xintercept = v()[2], linetype = "dashed")+
         theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())+
         scale_y_continuous(breaks = NULL, limits = c(0, 1))+
         labs(title = "Tertiles and median", y = expression(f[X](x))) +
@@ -77,8 +95,8 @@ elicitTertiles<- function(){
               axis.title.y = element_text(colour = "white"),
               text = element_text(size = input$fs))
       if(input$showfit){
-        p2 <- makeSingleExpertPlot(myfit, d=dist[as.numeric(input$radio)],
-                                   limits[1], limits[2], ql=input$fq1, qu=input$fq2,
+        p2 <- makeSingleExpertPlot(myfit(), d=dist[as.numeric(input$radio)],
+                                   limits()[1], limits()[2], ql=input$fq1, qu=input$fq2,
                                    sf = 3, ex = 1,
                                    lwd = 1, xlab = "x",
                                    ylab = expression(f[X](x))) +
@@ -101,32 +119,27 @@ elicitTertiles<- function(){
     
 
     quantileValues <- reactive({
-      
-      limits<-eval(parse(text=paste("c(",input$limits,")")))
-      v<-eval(parse(text=paste("c(",input$values,")")))
-      fit<-fitdist(vals=v, probs=c(1/3, 0.5, 2/3),
-                   lower=limits[1], upper=limits[2], tdf=input$tdf)
-      
-      ssq <- fit$ssq[1, is.na(fit$ssq[1,])==F]
+      ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
       best.index <- which(ssq == min(ssq))[1]
       
-      ex<-1
-      xlimits<-eval(parse(text=paste("c(",input$limits,")")))
-      pl<-xlimits[1]
-      pu<-xlimits[2]
+      ex <- 1
+      pl <- limits()[1]
+      pu <- limits()[2]
       if(as.numeric(input$radio)==8){index<-best.index}else{index<-as.numeric(input$radio) - 1}
       if(as.numeric(input$radio)==1){
-        if(pl == -Inf & fit$limits[ex,1] > -Inf){pl <- fit$limits[ex,1]}
-        if(pu == Inf & fit$limits[ex,2] < Inf){pu <- fit$limits[ex,2] }
-        if(pl == -Inf & fit$limits[ex,1] == -Inf){pl <- qnorm(0.001, fit$Normal[ex,1], fit$Normal[ex,2])}
-        if(pu == Inf & fit$limits[ex,2] == Inf){pu <- qnorm(0.999, fit$Normal[ex,1], fit$Normal[ex,2])}
-        p <- c(0, fit$probs[ex,], 1)
-        x <- c(pl, fit$vals[ex,], pu)
+        if(pl == -Inf & myfit()$limits[ex,1] > -Inf){pl <- myfit()$limits[ex,1]}
+        if(pu == Inf & myfit()$limits[ex,2] < Inf){pu <- myfit()$limits[ex,2] }
+        if(pl == -Inf & myfit()$limits[ex,1] == -Inf){
+          pl <- qnorm(0.001, myfit()$Normal[ex,1], myfit()$Normal[ex,2])}
+        if(pu == Inf & myfit()$limits[ex,2] == Inf){
+          pu <- qnorm(0.999, myfit()$Normal[ex,1], myfit()$Normal[ex,2])}
+        p <- c(0, myfit()$probs[ex,], 1)
+        x <- c(pl, myfit()$vals[ex,], pu)
         values <- qhist(c(input$fq1,input$fq2), x, p)
       }
       
       if(as.numeric(input$radio)>1){
-        temp<-feedback(fit, quantiles=c(input$fq1,input$fq2), ex=1)
+        temp<-feedback(myfit(), quantiles=c(input$fq1,input$fq2), ex=1)
         values=temp$fitted.quantiles[,index]
       }
       data.frame(quantiles=c(input$fq1,input$fq2), values=values)

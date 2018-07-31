@@ -28,7 +28,8 @@ Imports: ggplot2,
     tidyr,
     MASS,
     ggExtra,
-    gridExtra
+    gridExtra,
+    scales
 URL: https://github.com/OakleyJ/SHELF
 BugReports: https://github.com/OakleyJ/SHELF/issues
 VignetteBuilder: knitr

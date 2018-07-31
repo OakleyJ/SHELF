@@ -6,6 +6,10 @@
 \usage{
 elicitTertiles()
 }
+\value{
+An object of class \code{elicitation}, which is returned once the 
+Finish button has been clicked. See \code{\link{fitdist}} for details.
+}
 \description{
 Opens up a web browser (using the shiny package), from which you can specify
 the median and tertiles, fit distributions and plot the fitted density functions with
@@ -18,7 +22,7 @@ and both limits must be finite for to fit a beta distribution. If a
 histogram is fitted without specifying finite limits, endpoints are chosen
 based on fitting a normal distribution.
 
-Press Esc in the R console window to exit the elicitation session.
+Click the Finish button to quit the elicitation session.
 }
 \examples{
 

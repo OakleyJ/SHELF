@@ -15,14 +15,12 @@ roulette(lower = 0, upper = 100, gridheight = 10, nbins = 10)
 single bin.}
 
 \item{nbins}{The number of equally sized bins drawn between \code{lower} and
-\code{upper}.}
+\code{upper}.
+Click the Finish button to quit the elicitation session.}
 }
 \value{
-A list, with outputs 
-\item{v }{ upper limits of
-each bin.}
-\item{p }{ cumulative probabilities for each
-upper bin limit.}
+An object of class \code{elicitation}, which is returned once the 
+Finish button has been clicked. See \code{\link{fitdist}} for details.
 }
 \description{
 Opens a shiny app for the roulette elicitation method. The user clicks in the
@@ -39,12 +37,7 @@ is checked, it is assumed P(X<20) = P(X>70) = 0.05 only.
 \examples{
 
 \dontrun{
-x <- roulette(lower = 0, upper = 100)
-# Then allocate probs to bins and click "Finish"
-
-# To fit distributions and see the results
-myfit <- fitdist(vals = x$v, probs = x$p, lower = 0, upper = 100)
-plotfit(myfit)
+roulette(lower = 0, upper = 100)
 }
 }
 \author{

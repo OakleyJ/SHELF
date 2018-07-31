@@ -1,5 +1,6 @@
 makeLinearPoolPlot <-
-function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, legend_full = TRUE){
+function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, 
+         legend_full = TRUE, ql = NULL, qu = NULL, nx = 200, addquantile = FALSE){
 	
   expert <- ftype <- NULL # hack to avoid R CMD check NOTE
   
@@ -13,7 +14,9 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, legend_full = TRUE){
 	  expertnames <- 1:n.experts
 	}
 	
-	x <- matrix(0, 200, n.experts)
+	nxTotal <- nx + length(c(ql, qu))
+	
+	x <- matrix(0, nxTotal, n.experts)
 	fx <- x
   if(min(w)<0 | max(w)<=0){stop("expert weights must be non-negative, and at least one weight must be greater than 0.")}
   
@@ -21,10 +24,10 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, legend_full = TRUE){
 	  w <- rep(w, n.experts)
 	}
   
-	weight <- matrix(w/sum(w), 200, n.experts, byrow = T)
+	weight <- matrix(w/sum(w), nxTotal, n.experts, byrow = T)
  
 	for(i in 1:n.experts){
-		densitydata <- expertdensity(fit, d, ex = i, xl, xu)
+		densitydata <- expertdensity(fit, d, ex = i, xl, xu, ql, qu, nx)
 		x[, i] <- densitydata$x
 		fx[, i] <-densitydata$fx 
 	}
@@ -33,10 +36,10 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, legend_full = TRUE){
 	
 	df1 <- data.frame(x = rep(x[, 1], n.experts + 1),
 	                  fx = c(as.numeric(fx), fx.lp),
-	                  expert = c(rep(expertnames, each =200),
-	                             rep("linear pool", 200)),
-	                  ftype = c(rep("individual", 200 * n.experts), 
-	                           rep("linear pool", 200)))
+	                  expert = c(rep(expertnames, each =nxTotal),
+	                             rep("linear pool", nxTotal)),
+	                  ftype = c(rep("individual", nxTotal * n.experts), 
+	                           rep("linear pool", nxTotal)))
 	df1$expert <- factor(df1$expert, levels = c(expertnames, "linear pool"))
 	
 	if(legend_full){
@@ -55,6 +58,17 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, legend_full = TRUE){
 	    }
 	p1 <- p1 + geom_line(aes(group = expert)) + 
 	  labs(x = xlab, y = ylab)
+	
+	if((!is.null(ql)) & (!is.null(qu)) & addquantile){
+	  ribbon_col <- scales::hue_pal()(n.experts + 1)[n.experts + 1]
+	  p1 <- p1 + geom_ribbon(data = with(df1, subset(df1, x <= ql  &expert == "linear pool")),
+	                         aes(ymax = fx, ymin = 0),
+	                         alpha = 0.2, show.legend = FALSE, colour = NA, fill =ribbon_col ) +
+	    geom_ribbon(data = with(df1, subset(df1, x >=qu  &expert == "linear pool")),
+	                aes(ymax = fx, ymin = 0),
+	                alpha = 0.2, show.legend = FALSE, colour = NA, fill =ribbon_col )
 	    
+	  
+	}    
 	p1
 }
