@@ -138,9 +138,9 @@ plotfit <- function(fit,
   if(nrow(fit$vals)>1 & is.na(ex)==F){
     if(xl == -Inf & fit$limits[ex,1] > -Inf){xl <- fit$limits[ex,1] }
     if(xu == Inf & fit$limits[ex,2] < Inf){xu <- fit$limits[ex,2] }
-    if(int == FALSE){suppressWarnings(makeSingleExpertPlot(fit, d, xl, xu, 
+    if(int == FALSE){suppressWarnings(print(makeSingleExpertPlot(fit, d, xl, xu, 
                                                                  ql, qu, sf, ex = 1, 
-                                                                 lwd, xlab, ylab))}else{
+                                                                 lwd, xlab, ylab)))}else{
       shinyplotsingle(fit, xl, xu, ql, qu, ex, xlab, ylab)
     }
     

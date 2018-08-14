@@ -63,14 +63,7 @@ with
 \sigma^2 &= `r sigsq`.
 \end{align*}
 
-```{r, fig.cap = "Elicited and fitted probabilities using the normal distribution"}
-if(showplots){
-  curve(pnorm(x, mean = mu, sd = sqrt(sigsq)), from = lx, to = ux, xlab = "x",
-        ylab = "P(X <= x)", ylim = c(0, 1))
-  points(fit$vals[expert, ], fit$probs[expert, ], pch = 16, col = "red")
-  
-}
-```
+
 
 
 Sample `n = 1000` random values with the command
@@ -97,20 +90,13 @@ with
 \end{align*}
 
 
-```{r, fig.cap = "Elicited and fitted probabilities using the $t$-distribution"}
-if(showplots){
-  curve(pt((x - m)/s, df = tdf), from = lx, to = ux, xlab = "x",
-        ylab = "P(X <= x)", ylim = c(0, 1))
-  points(fit$vals[expert, ], fit$probs[expert, ], pch = 16, col = "red")
-  
-}
-```
+
 
 Sample `n = 1000` random values with the command
 
 ` `r m` + `r s` * rt(n = 1000, df = `r tdf`) `
 <hr>
-#### Log normal (lower limit: `r fit$limits[expert, 1]`)
+#### Log normal 
 
 
 ```{r, echo = FALSE}
@@ -118,6 +104,7 @@ if(is.na(fit$ssq[4])){
   equationLogNormal <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
   samplingLogNormal <- NULL
   samplingLogNormalText <- NULL
+  shiftLognormal <- NULL
 }else{
   mu <- signif(fit$Log.normal[expert, 1], 3)
   sigsq <- signif(fit$Log.normal[expert, 2]^2, 3)  
@@ -132,21 +119,24 @@ with $$\\mu = ", mu,"$$ $$\\sigma^2  = ", sigsq, "$$")
 sigsq,"))`" )
   
   samplingLogNormalText <- "Sample `n = 1000` random values with the command"
+  
+  if(fit$limits[expert, 1] != 0){
+    shiftLognormal <- paste0("Log normal distribution shifted to have support over the interval $(",
+                               fit$limits[expert, 1],
+                               ",\\, \\infty ]$.")
+  }else{
+    shiftLognormal <- NULL
+  }
+  
 } 
 ```
 
-`r paste(equationLogNormal)`
 
-```{r, fig.cap = "Elicited and fitted probabilities using the log normal distribution"}
-if(showplots & !is.na(fit$ssq[4])){
-  curve(plnorm(x - fit$limits[1, expert],
-               meanlog = mu, 
-               sdlog = sqrt(sigsq)), from = lx, to = ux, xlab = "x",
-        ylab = "P(X <= x)", ylim = c(0, 1))
-  points(fit$vals[expert, ], fit$probs[expert, ], pch = 16, col = "red")
-  
-}
-```
+
+
+`r paste(shiftLognormal)`
+
+`r paste(equationLogNormal)`
 
 
 `r paste(samplingLogNormalText)`
@@ -155,13 +145,14 @@ if(showplots & !is.na(fit$ssq[4])){
 
 
 <hr>
-#### Gamma  (lower limit: `r fit$limits[expert, 1]`)
+#### Gamma  
 
 ```{r}
 if(is.na(fit$ssq[3])){
   equationGamma <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
   samplingGamma <- NULL
   samplingGammaText <- NULL
+  shiftGamma <- NULL
 }else{
   shape <- signif(fit$Gamma[expert, 1], 3)
   rate <- signif(fit$Gamma[expert, 2], 3)  
@@ -176,35 +167,35 @@ with $$\\alpha = ", shape,"$$ $$\\beta  = ", rate, "$$")
 rate,")`" )
   
   samplingGammaText <- "Sample `n = 1000` random values with the command"
+  
+   if(fit$limits[expert, 1] != 0){
+    shiftGamma <- paste0("Gamma distribution shifted to have support over the interval $(",
+                               fit$limits[expert, 1],
+                               ",\\, \\infty ]$.")
+  }else{
+    shiftGamma <- NULL
+  }
+  
 } 
 ```
 
+`r paste(shiftGamma)`
 
 `r paste(equationGamma)`
-
-```{r, fig.cap = "Elicited and fitted probabilities using the gamma distribution"}
-if(showplots & !is.na(fit$ssq[3])){
-  curve(pgamma(x - fit$limits[1, expert],
-               shape = shape, 
-               rate = rate), from = lx, to = ux, xlab = "x",
-        ylab = "P(X <= x)", ylim = c(0, 1))
-  points(fit$vals[expert, ], fit$probs[expert, ], pch = 16, col = "red")
-  
-}
-```
 
 `r paste(samplingGammaText)`
 
 `r paste(samplingGamma)`
 
 <hr>
-#### Log Student$-t$  (lower limit: `r fit$limits[expert, 1]`)
+#### Log Student$-t$ 
 
 ```{r}
 if(is.na(fit$ssq[4])){
   equationLogStudentT <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
   samplingLogStudentT <- NULL
   samplingLogStudentTText <- NULL
+  shiftLogStudentT <- NULL
 }else{
   m <- signif(fit$Log.Student.t[expert, 1], 3)
   s <- signif(fit$Log.Student.t[expert, 2], 3)
@@ -218,21 +209,22 @@ with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
   samplingLogStudentT <- paste0(lower, " exp(", m, " + ", s, " * rt(n = 1000, df = ", tdf,"))`" )
   
   samplingLogStudentTText <- "Sample `n = 1000` random values with the command"
+  
+  if(fit$limits[expert, 1] != 0){
+    shiftLogStudentT <- paste0("Log Student-$t$ distribution shifted to have support over the interval $(",
+                               fit$limits[expert, 1],
+                               ",\\, \\infty ]$.")
+  }else{
+    shiftLogStudentT <- NULL
+  }
 } 
 ```
 
+`r paste(shiftLogStudentT)`
 
 `r paste(equationLogStudentT)`
 
-```{r, fig.cap = "Elicited and fitted probabilities using the log Student-$t$ distribution"}
-if(showplots & !is.na(fit$ssq[5])){
-  curve(pt((log(x) - m)/s - fit$limits[1, expert],
-               df = tdf), from = lx, to = ux, xlab = "x",
-        ylab = "P(X <= x)", ylim = c(0, 1))
-  points(fit$vals[expert, ], fit$probs[expert, ], pch = 16, col = "red")
-  
-}
-```
+
 
 `r paste(samplingLogStudentTText)`
 
@@ -241,7 +233,7 @@ if(showplots & !is.na(fit$ssq[5])){
 
 
 <hr>
-#### Beta  (lower limit: `r fit$limits[expert, 1]`, upper limit: `r fit$limits[expert, 2]`)
+#### Beta 
 ```{r, echo = FALSE}
 if(fit$limits[expert, 1] == 0)
   x <- paste0("x")
@@ -265,19 +257,32 @@ shape2 <- signif(fit$Beta[expert, 2], 3)
 
 ```{r, echo = FALSE}
 if(is.na(fit$ssq[6])){
-  equationBeta <- NULL
+  scalingBeta <- NULL
+  equationBeta <- "Distribution not fitted. Arguments `lower` and `upper` need to be specified in the `fitdist` command."
   samplingBeta <- NULL
   samplingBetaText <- NULL
 }else{
   if(r == 1 & fit$limits[expert, 1] == 0){
-  equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)}x ^{\\alpha - 1} \\left(1 - x\\right)^{\\beta - 1}, \\quad  0 < x < 1, $$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")}
+  equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)}x ^{\\alpha - 1} \\left(1 - x\\right)^{\\beta - 1}, \\quad  0 < x < 1, $$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+  scalingBeta <- NULL
+  }
   if(r == 1 & fit$limits[expert, 1] != 0){
     equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(", x,"\\right) ^{\\alpha - 1} \\left(1 - \\left(", x,"\\right)\\right)^{\\beta - 1}, \\quad  ", fit$limits[expert, 1]," < x <", fit$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
+                          fit$limits[expert, 1],
+                          ", ",
+                          fit$limits[expert, 2],
+                          "].")
   }
   
   
   if(r !=1){
     equationBeta <- paste0("$$f_X(x) = \\frac{1}{", r, "}\\times\\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(\\frac{", x,"}{", r,"}\\right) ^{\\alpha - 1} \\left(1 - \\left(\\frac{", x,"}{", r,"}\\right)\\right)^{\\beta - 1}, \\quad  ", fit$limits[expert, 1]," < x <", fit$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
+                          fit$limits[expert, 1],
+                          ", ",
+                          fit$limits[expert, 2],
+                          "].")
     
   }
   
@@ -287,18 +292,10 @@ if(is.na(fit$ssq[6])){
 } 
 ```
 
+`r paste(scalingBeta)`
+
 `r paste(equationBeta)`
 
-```{r, fig.cap = "Elicited and fitted probabilities using the beta distribution"}
-if(showplots & !is.na(fit$ssq[6])){
-  curve(pbeta((x - fit$limits[1, expert])/r,
-               shape1 = shape1, 
-               shape2 = shape2), from = lx, to = ux, xlab = "x",
-        ylab = "P(X <= x)", ylim = c(0, 1))
-  points(fit$vals[expert, ], fit$probs[expert, ], pch = 16, col = "red")
-  
-}
-```
 
 `r paste(samplingBetaText)`
 
