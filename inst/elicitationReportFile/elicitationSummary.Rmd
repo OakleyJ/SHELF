@@ -100,7 +100,7 @@ Sample `n = 1000` random values with the command
 
 
 ```{r, echo = FALSE}
-if(is.na(fit$ssq[4])){
+if(is.na(fit$ssq[expert, 4])){
   equationLogNormal <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
   samplingLogNormal <- NULL
   samplingLogNormalText <- NULL
@@ -123,7 +123,7 @@ sigsq,"))`" )
   if(fit$limits[expert, 1] != 0){
     shiftLognormal <- paste0("Log normal distribution shifted to have support over the interval $(",
                                fit$limits[expert, 1],
-                               ",\\, \\infty ]$.")
+                               ",\\, \\infty )$.")
   }else{
     shiftLognormal <- NULL
   }
@@ -148,7 +148,7 @@ sigsq,"))`" )
 #### Gamma  
 
 ```{r}
-if(is.na(fit$ssq[3])){
+if(is.na(fit$ssq[expert, 3])){
   equationGamma <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
   samplingGamma <- NULL
   samplingGammaText <- NULL
@@ -171,7 +171,7 @@ rate,")`" )
    if(fit$limits[expert, 1] != 0){
     shiftGamma <- paste0("Gamma distribution shifted to have support over the interval $(",
                                fit$limits[expert, 1],
-                               ",\\, \\infty ]$.")
+                               ",\\, \\infty )$.")
   }else{
     shiftGamma <- NULL
   }
@@ -191,7 +191,7 @@ rate,")`" )
 #### Log Student$-t$ 
 
 ```{r}
-if(is.na(fit$ssq[4])){
+if(is.na(fit$ssq[expert, 4])){
   equationLogStudentT <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
   samplingLogStudentT <- NULL
   samplingLogStudentTText <- NULL
@@ -213,7 +213,7 @@ with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
   if(fit$limits[expert, 1] != 0){
     shiftLogStudentT <- paste0("Log Student-$t$ distribution shifted to have support over the interval $(",
                                fit$limits[expert, 1],
-                               ",\\, \\infty ]$.")
+                               ",\\, \\infty )$.")
   }else{
     shiftLogStudentT <- NULL
   }
@@ -256,7 +256,7 @@ shape2 <- signif(fit$Beta[expert, 2], 3)
 ```
 
 ```{r, echo = FALSE}
-if(is.na(fit$ssq[6])){
+if(is.na(fit$ssq[expert, 6])){
   scalingBeta <- NULL
   equationBeta <- "Distribution not fitted. Arguments `lower` and `upper` need to be specified in the `fitdist` command."
   samplingBeta <- NULL

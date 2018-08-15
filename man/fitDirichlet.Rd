@@ -25,6 +25,10 @@ elicited marginals.}
 
 \item{plotBeta}{logical. Plot the original elicited marginals and the fitted marginals from the 
 Dirichlet fit.}
+
+\item{xlab}{x-axis label on the marginal distribution plot.}
+
+\item{ylab}{y-axis label on the marginal distribution plot.}
 }
 \value{
 The parameters of the fitted Dirichlet distribution.

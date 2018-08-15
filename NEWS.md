@@ -1,11 +1,13 @@
-SHELF v1.3.0.9001 (2018-07-30) 
+SHELF v1.4.0 (2018-08-18) 
 ==============================
 
-* New function: condDirichlet, for viewing conditional distributions from elicited Dirichlet distributions
+* New function: generateReport(): renders an Rmarkdown document to give formulae and parameter values for all the fitted distributions
 
-* New functions: elicitQuartiles and elicitTertiles: shiny apps for eliciting with the quartile and tertile methods
+* New function: condDirichlet(), for viewing conditional distributions from elicited Dirichlet distributions
 
-* New function: plotWeightLP: shiny app for plotting a weighted linear pool
+* New functions: plotQuartiles() and plotTertiles(), for displaying individuals quartiles/tertiles elicited from a group of experts
+
+* New functions: elicitQuartiles() and elicitTertiles(): shiny apps for eliciting with the quartile and tertile methods
 
 * elicit() and roulette() functions now both return the elicited values and results as objects of class "elicitation"
 

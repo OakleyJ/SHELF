@@ -6,6 +6,9 @@
 \usage{
 condDirichlet(d)
 }
+\arguments{
+\item{d}{A fitted Dirichlet distribution, produced from a \code{fitDirichlet} command.}
+}
 \description{
 Opens up a web browser (using the shiny package), from which you can choose to condition
 on one of the category probability values, and then display the resulting conditional marginal

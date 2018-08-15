@@ -21,6 +21,8 @@
 #' elicited marginals.
 #' @param plotBeta logical. Plot the original elicited marginals and the fitted marginals from the 
 #' Dirichlet fit. 
+#' @param xlab x-axis label on the marginal distribution plot.
+#' @param ylab y-axis label on the marginal distribution plot.
 #
 
 #' @return The parameters of the fitted Dirichlet distribution.

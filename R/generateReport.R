@@ -26,14 +26,6 @@
 generateReport <- function(fit, output_format = "html_document",
                            sf = 3, expert = 1, view = TRUE){
     
-    if (!require(rmarkdown)) 
-        stop("this function requires R package rmarkdown to be installed")
-   # if (!require(pander)) 
-    #    stop("this function requires R package pander to be installed")
-    
-    
-    # TODO: to loop over all outputs for the validation bit. 
-    
     path <- rmarkdown::render(input = 
                      system.file("elicitationReportFile", "elicitationSummary.Rmd",
                                  package="SHELF"),

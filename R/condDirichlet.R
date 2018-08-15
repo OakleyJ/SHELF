@@ -6,7 +6,7 @@
 #' 
 #' 
 #' Press Esc in the R console window to exit the elicitation session.
-#' 
+#' @param d A fitted Dirichlet distribution, produced from a \code{fitDirichlet} command.
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
 #' @examples
 #' \dontrun{
@@ -26,6 +26,9 @@
 #' @import ggplot2
 #' @export
 condDirichlet<- function(d){
+  
+  Category <- x <- fx <- parameters<- NULL # hack to avoid R CMD check NOTE
+  
   
   runApp(list(
     ui = shinyUI(fluidPage(
@@ -106,7 +109,7 @@ condDirichlet<- function(d){
           facet_wrap(~ Category, ncol = 1) +
           labs(colour = " Distribution") +
           ylab(expression(f[X](x)))+
-          geom_vline(data=dplyr::filter(df.all, Category == names(d)[selected]),
+          geom_vline(data = subset(df.all, Category == names(d)[selected]),
                      aes(xintercept=input$x),  colour="#00BFC4")
         print(p1)
         

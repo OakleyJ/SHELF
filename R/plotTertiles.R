@@ -27,6 +27,10 @@
 #' @export
 
 plotTertiles <- function(vals, lower, upper){
+  
+  low <- L <- T1 <- M <- T2 <- U <- enumber <- NULL # hack to pass CRAN check
+  
+  
   n.experts <- ncol(vals)
   expert <-factor(LETTERS[1 : n.experts], levels = LETTERS[n.experts : 1])
   

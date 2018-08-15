@@ -27,6 +27,9 @@
 #' @export
 
 plotQuartiles <- function(vals, lower, upper){
+  
+  low <- L <- Q1 <- M <- Q2 <- U <- enumber <- NULL # hack to pass CRAN check
+  
   n.experts <- ncol(vals)
   expert <-factor(LETTERS[1 : n.experts], levels = LETTERS[n.experts : 1])
   
@@ -50,5 +53,5 @@ plotQuartiles <- function(vals, lower, upper){
 
 gg_color_hue <- function(n) {
   hues = seq(15, 375, length = n + 1)
-  hcl(h = hues, l = 65, c = 100)[1:n]
+  grDevices::hcl(h = hues, l = 65, c = 100)[1:n]
 }
