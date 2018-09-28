@@ -1,5 +1,6 @@
 makeSingleExpertPlot <-
-function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1,
+function(fit, d = "best", pl = -Inf, pu = Inf,
+         ql = NA, qu = NA, sf = 3, ex = 1,
          lwd = 1, xlab, ylab){
   
 	if(d == "best"){

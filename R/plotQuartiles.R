@@ -26,7 +26,7 @@
 #' }
 #' @export
 
-plotQuartiles <- function(vals, lower, upper){
+plotQuartiles <- function(vals, lower, upper, fs){
   
   low <- L <- Q1 <- M <- Q2 <- U <- enumber <- NULL # hack to pass CRAN check
   
@@ -39,15 +39,13 @@ plotQuartiles <- function(vals, lower, upper){
   colnames(df1) <- c("L", "Q1", "M", "Q2", "U")
   df1$expert <- expert
   df1$enumber <- n.experts:1
-  theme_set(theme_grey(base_size = 18))
   ggplot(df1, aes(x = low, y = expert)) +
     geom_segment(aes(yend = expert, x=L, xend = Q1), lwd = 10, col = cols[1])+
     geom_segment(aes(yend = expert, x=Q1, xend = M), lwd = 10, col = cols[2])+
     geom_segment(aes(yend = expert, x=M, xend = Q2), lwd = 10, col = cols[3])+
     geom_segment(aes(yend = expert, x=Q2, xend = U), lwd = 10, col = cols[4])+
-    geom_segment(aes(y = enumber -0.15, yend = enumber + 0.15, x = M, xend =M),
-                 lwd = 1, linetype = "dashed")+
-    labs(x = "X")
+    labs(x = "X") +
+    theme(text = element_text(size = fs))
 }
 
 

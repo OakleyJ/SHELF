@@ -5,7 +5,15 @@ function(fit, q, d = "best", ex = 1){
 		ssq <- fit$ssq[ex, 1 - is.na(fit$ssq[ex,])]
 		best.index <- which(ssq == min(ssq))[1]
 	}
-	index<-switch(which(d==c("normal", "t", "gamma", "lognormal", "logt","beta", "best")), 1, 2, 3, 4, 5, 6, best.index)
+	index <- switch(which(d==c("normal",
+	                           "t",
+	                           "gamma",
+	                           "lognormal",
+	                           "logt",
+	                           "beta",
+	                           "best",
+	                           "hist")),
+	                1, 2, 3, 4, 5, 6, best.index, 7)
 	
 		
 	if(index==1){
@@ -40,6 +48,14 @@ function(fit, q, d = "best", ex = 1){
 		if(xl == -Inf){xl <- 0}
 		if(xu == Inf){xu <- 1}
 		qx <- xl + (xu - xl) * qbeta(q, fit$Beta[ex,1], fit$Beta[ex,2])
+	}
+	
+	if(index==7){
+	  qx <- approx(c(0, fit$probs[ex, ], 1),
+	               c(fit$limits[ex, 1],
+	                 fit$vals[ex, ],
+	                 fit$limits[ex, 2]),
+	               xout = q)$y
 	}
 	
 qx	

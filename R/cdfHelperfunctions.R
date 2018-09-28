@@ -121,3 +121,16 @@ getmediandist <- function(medianfit, d){
   }
   list(rand = rand, quan = quan, m = m, s=s)
 }
+
+addQuantileCDF <- function(lower, x1, q1, upper){
+  # Function to add a fitted quantile to a CDF plot
+  # P(X <= x1) = q1
+  if(lower < x1 & x1 < upper){return(
+  annotate("segment", x = c(lower, x1),
+           y = c(q1, q1),
+           xend = c(x1, x1),
+           yend = c(q1, 0),
+           linetype = 2))}else{
+             return(NULL)
+           }
+}

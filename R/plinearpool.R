@@ -56,7 +56,7 @@ function(fit, x, d = "best", w = 1){
 	px <- matrix(0, length(x), n.experts)
 	weight <- matrix(w/sum(w), length(x), n.experts, byrow = T)
 	for(i in 1:n.experts){
-		px[,i] <- expertprobs(fit, x, d, ex = i)
+		px[, i] <- expertprobs(fit, x, d, ex = i)
 	}
 	
 	apply(px * weight, 1, sum)

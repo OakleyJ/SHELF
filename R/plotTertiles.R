@@ -26,7 +26,7 @@
 #' }
 #' @export
 
-plotTertiles <- function(vals, lower, upper){
+plotTertiles <- function(vals, lower, upper, fs = 12){
   
   low <- L <- T1 <- M <- T2 <- U <- enumber <- NULL # hack to pass CRAN check
   
@@ -40,14 +40,14 @@ plotTertiles <- function(vals, lower, upper){
   colnames(df1) <- c("L", "T1", "M", "T2", "U")
   df1$expert <- expert
   df1$enumber <- n.experts:1
-  theme_set(theme_grey(base_size = 18))
   ggplot(df1, aes(x = low, y = expert)) +
     geom_segment(aes(yend = expert, x=L, xend = T1), lwd = 10, col = cols[1])+
     geom_segment(aes(yend = expert, x=T1, xend = T2), lwd = 10, col = cols[2])+
     geom_segment(aes(yend = expert, x=T2, xend = U), lwd = 10, col = cols[3])+
     geom_segment(aes(y = enumber -0.15, yend = enumber + 0.15, x = M, xend =M),
                  lwd = 1, linetype = "dashed")+
-    labs(x = "X")
+    labs(x = "X") +
+    theme(text = element_text(size = fs))
 }
 
 

@@ -1,6 +1,7 @@
 makeLinearPoolPlot <-
 function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, 
-         legend_full = TRUE, ql = NULL, qu = NULL, nx = 200, addquantile = FALSE){
+         legend_full = TRUE, ql = NULL, qu = NULL, 
+         nx = 200, addquantile = FALSE, fs = 12){
 	
   expert <- ftype <- NULL # hack to avoid R CMD check NOTE
   
@@ -56,11 +57,19 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab,
 	        scale_size_manual(name = "distribution", values = lwd * c(.5, 1.5)) +
 	        scale_color_manual(name = "distribution", values = c("black", "red"))
 	    }
-	p1 <- p1 + geom_line(aes(group = expert)) + 
-	  labs(x = xlab, y = ylab)
+	
+	if(d == "hist"){
+	  p1 <- p1 + geom_step(aes(group = expert))
+	}else{
+	  p1 <- p1 + geom_line(aes(group = expert))
+	}
+	 p1 <- p1 + labs(x = xlab, y = ylab)
 	
 	if((!is.null(ql)) & (!is.null(qu)) & addquantile){
-	  ribbon_col <- scales::hue_pal()(n.experts + 1)[n.experts + 1]
+	  if(legend_full){
+	    ribbon_col <- scales::hue_pal()(n.experts + 1)[n.experts + 1]}else{
+	      ribbon_col <- "red"
+	    }
 	  p1 <- p1 + geom_ribbon(data = with(df1, subset(df1, x <= ql  &expert == "linear pool")),
 	                         aes(ymax = fx, ymin = 0),
 	                         alpha = 0.2, show.legend = FALSE, colour = NA, fill =ribbon_col ) +
@@ -70,5 +79,5 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab,
 	    
 	  
 	}    
-	p1
+	p1 + theme(text = element_text(size = fs))
 }

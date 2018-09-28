@@ -9,11 +9,20 @@ function(fit, d = "best", ex = 1, pl, pu, ql = NULL, qu = NULL, nx = 200){
 	if(d == "best"){
 		best.index <- which.min(fit$ssq[ex, ])
 	}
-	index<-switch(which(d==c("normal", "t", "gamma", "lognormal", "logt","beta", "hist", "best")), 1, 2, 3, 4, 5, 6, 7, best.index)
+	index <- switch(which(d==c("normal",
+	                           "t",
+	                           "gamma",
+	                           "lognormal",
+	                           "logt",
+	                           "beta",
+	                           "hist",
+	                           "best")),
+	                1, 2, 3, 4, 5, 6, 7,
+	                best.index)
 	
 		
 	if(index==1){
-		fx <- dnorm(x, fit$Normal[ex,1], fit$Normal[ex,2]) 		
+		fx <- dnorm(x, fit$Normal[ex,1], fit$Normal[ex,2]) 
 	}
 	
 	if(index==2){
@@ -49,8 +58,13 @@ function(fit, d = "best", ex = 1, pl, pu, ql = NULL, qu = NULL, nx = 200){
 	}
 
 	if(index==7){
-
-	  fx <- dhist(x,fit$vals[ex,], fit$probs[ex,])}
+	 
+	  fx <- dhist(x, c(fit$limits[ex, 1],
+	                   fit$vals[ex,],
+	                   fit$limits[ex, 2]),
+	              c(0, fit$probs[ex, ],1))
+	  fx[length(fx)] <- 0
+	  }
 
  
 list(x = x, fx = fx)	

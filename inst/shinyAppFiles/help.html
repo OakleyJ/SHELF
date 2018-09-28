@@ -1,0 +1,35 @@
+<html>
+
+<head>
+<title>Title</title>
+</head>
+
+<body>
+
+
+<h3>Parameter limits</h3>
+<p> Specify a lower and upper limit, with a comma in between. The limits will set the range on the x-axis in the various plots, and the range covered by the bins in the roulette method. The limits will also affect the fitted distributions: the gamma, log normal and log Student-t will all be shifted to have support over the range [lower, infinity), and the beta distributed will be shifted and scaled to have support over the range [lower, upper]. </p>
+
+<h3>Elicitation method</h3>
+<p>For the <b>General</b> method, specify (any number of) cumulative probabilities P(X<=x). </p>
+<ul>
+<li> Specify values x1, x2,... in the <b>Parameter values</b> box, in increasing order, separated by commas.
+<li> Specify the corresponding probabilities P(X<=x1), P(X<=x2),... in the <b>Cumulative probabilities</b> box, separated by commas. The smallest probability needs to be less than 0.4, and the largest probability needs to be greater than 0.6.
+</ul>
+If the <b>Roulette method</b> is selected, click on the Roulette tab and click directly in the plot to allocate probs. Click just below the line at 0 on the y-axis to clear a column. 
+
+<h3>Output tabs</h3>
+<ul>
+<li> <b>PDF</b>. A display of the fitted density function, if <b>show fitted PDF</b> is selected, using the selected <b>Distribution</b>. Fitted quantiles are displayed using the red shaded areas, if the quantiles are within the displayed range set by <b>Parameter limits</b>
+<li> <b>CDF</b>. A display of the fitted distribution function, if <b>show fitted CDF</b> is selected, using the selected <b>Distribution</b>. Fitted quantiles are indicated, and the quantiles are within the displayed range set by <b>Parameter limits</b>
+<li> <b>Tertiles</b>. Shows three equally likely regions, as specified by the tertiles, and the median (indicated by the dashed line). The tertiles displayed will either be the elicited tertiles, if they have been provided, or estimates obtained by linear interpolation of the elicited probabilities, with the <b>Parameter limits</b> assumed to have cumulative probabilities of 0 and 1.
+<li> <b>Quartiles</b>. Shows four equally likely regions, as specified by the quartiles. The quartiles displayed will either be the elicited quartiles, if they have been provided, or estimates obtained by linear interpolation of the elicited probabilities, with the <b>Parameter limits</b> assumed to have cumulative probabilities of 0 and 1.
+</ul>
+
+<h3>Download report</h3>
+This will generate a pdf file, with each fitted distribution specified.
+<p></p>
+</body>
+
+
+</html>
