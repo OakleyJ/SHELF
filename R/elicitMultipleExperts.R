@@ -17,7 +17,6 @@
 #' 
 #' }
 #' @import shiny
-#' @import rhandsontable
 #' @export
 
 elicitMultiple <- function(){
@@ -75,7 +74,6 @@ elicitMultiple <- function(){
                             one column per expert. Enter lower plausible limits in the first row,
                             upper plausible limits in the last row, and quantile values in between, 
                             corresponding to the cumulative probabilities."),
-                   #rHandsontableOutput("hot"),
                    fluidRow(
                      column(2, tableOutput("ShowJudgements")),
                      column(7, offset = 1,  uiOutput("EnterJudgements"))

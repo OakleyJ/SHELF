@@ -1,3 +1,12 @@
+SHELF v1.4.0.9000 (2018-08-18) 
+==============================
+
+* Significant update to elicit() shiny app: can now swtich between multiple methods within the same app
+
+* New shiny app elicitMultiple() for fitting individual distributions to multiple experts' judgements
+
+* Bug fixed: plinearpool() now chooses the best fitting distribution for each expert if argument d = "best" is specified.  
+
 SHELF v1.4.0 (2018-08-18) 
 ==============================
 
