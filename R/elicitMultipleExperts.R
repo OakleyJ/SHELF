@@ -1,10 +1,12 @@
 #' Elicit individual judgements and fit distributions for multiple experts
 #' 
 #' Opens up a web browser (using the shiny package), from which you can specify
-#' judgements, fit distributions and plot the fitted density functions with
-#' additional feedback.
+#' judgements, fit distributions and plot the fitted density functions and a 
+#' (weighted) linear pool with additional feedback.
 #' 
-#' Click the Finish button to quit the elicitation session.
+#' Click the "Quit" button to exit the app and return
+#' the results from the \code{fitdist} command. Click "Download report" to generate a report
+#' of all the fitted distributions.
 #' 
 #' @return An object of class \code{elicitation}, which is returned once the 
 #' Finish button has been clicked. See \code{\link{fitdist}} for details.
@@ -26,7 +28,7 @@ elicitMultiple <- function(){
   
   ui <- shinyUI(fluidPage(
     
-    titlePanel("Group elicitation"),
+    titlePanel("SHELF: individual distributions"),
     sidebarLayout(
       sidebarPanel(
         wellPanel(
@@ -62,12 +64,30 @@ elicitMultiple <- function(){
                          value = 0.95,min=0,max=1)
             )
           )
-        ),
-        numericInput("fs", label = h5("font size"), value = 12)
+        )
         
       ),
       
       mainPanel(
+        wellPanel(
+          fluidRow(
+            column(2, 
+                   numericInput("fs", label = NULL, value = 12)
+            ),
+            column(3, 
+                   h5("Font size (plots)")
+            ),
+            column(3, offset = 1,
+                   downloadButton("report", "Download report")
+            ),
+            column(2, offset = 1,
+                   actionButton("exit", "Quit")
+            )
+          )
+        ),
+        hr(),
+        
+        
         tabsetPanel(
           tabPanel("Judgements",
                    helpText("Enter the judgements in the table below,
@@ -219,10 +239,36 @@ if they have been provided,
       
     })
     
+    observeEvent(input$exit, {
+      stopApp(myfit())
+    })
+    
+    output$report <- downloadHandler(
+      filename = "distributions-report.pdf",
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it, in
+        # case we don't have write permissions to the current working dir (which
+        # can happen when deployed).
+        tempReport <- file.path(tempdir(), "elicitationShinySummaryGroup.Rmd")
+        file.copy(system.file("shinyAppFiles", "elicitationShinySummaryGroup.Rmd",
+                              package="SHELF"),
+                  tempReport, overwrite = TRUE)
+        
+        # Set up parameters to pass to Rmd document
+        params <- list(fit = myfit())
+        
+        # Knit the document, passing in the `params` list, and eval it in a
+        # child of the global environment (this isolates the code in the document
+        # from the code in this app).
+        rmarkdown::render(tempReport, output_file = file,
+                          params = params,
+                          envir = new.env(parent = globalenv())
+        )
+      }
+    )
     
   })
   
   ## run app 
   runApp(list(ui=ui, server=server))
-  return(invisible())
 }

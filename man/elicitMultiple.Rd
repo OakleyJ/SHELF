@@ -12,11 +12,13 @@ Finish button has been clicked. See \code{\link{fitdist}} for details.
 }
 \description{
 Opens up a web browser (using the shiny package), from which you can specify
-judgements, fit distributions and plot the fitted density functions with
-additional feedback.
+judgements, fit distributions and plot the fitted density functions and a 
+(weighted) linear pool with additional feedback.
 }
 \details{
-Click the Finish button to quit the elicitation session.
+Click the "Quit" button to exit the app and return
+the results from the \code{fitdist} command. Click "Download report" to generate a report
+of all the fitted distributions.
 }
 \examples{
 
