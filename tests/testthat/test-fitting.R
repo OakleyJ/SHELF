@@ -200,7 +200,7 @@ test_that("linear pooling works",{
 test_that("linear pooling works - different lower limits",{
   skip_on_cran()
   llimits <- c(-2, 1, -4)
-  p1 <- c(0.25, 0.5, 0.75)
+  p1 <- c(0.25, 0.5, 0.6, 0.75)
   a <- 10; b <- 4
   v1 <- llimits[1] + qgamma(p1, a, b)
   mu <- 3 ; sigma <- 2
