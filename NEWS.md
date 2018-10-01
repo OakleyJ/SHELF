@@ -5,7 +5,9 @@ SHELF v1.4.0.9000 (2018-08-18)
 
 * New shiny app elicitMultiple() for fitting individual distributions to multiple experts' judgements
 
-* Bug fixed: plinearpool() now chooses the best fitting distribution for each expert if argument d = "best" is specified.  
+* Bug fixed: plinearpool() now chooses the best fitting distribution for each expert if argument d = "best" is specified.
+
+* Bug fixed: qlinearpool() could return NA in some cases if argument d = "best" was specified: now fixed.
 
 SHELF v1.4.0 (2018-08-18) 
 ==============================

@@ -2,7 +2,7 @@ expertquantiles <-
 function(fit, q, d = "best", ex = 1){
 	
 	if(d == "best"){
-		ssq <- fit$ssq[ex, 1 - is.na(fit$ssq[ex,])]
+		ssq <- fit$ssq[ex, !is.na(fit$ssq[ex,])]
 		best.index <- which(ssq == min(ssq))[1]
 	}
 	index <- switch(which(d==c("normal",
