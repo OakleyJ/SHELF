@@ -1,6 +1,11 @@
 SHELF v1.4.0.9000 (2018-08-18) 
 ==============================
 
+* Update to fitprecision(): interval used in the proportion method can now be a 
+tail area of the population distribution
+
+* New shiny app elicitBivariate() for eliciting bivariate distributions using a Gaussian copula
+
 * Significant update to elicit() shiny app: can now swtich between multiple methods within the same app
 
 * New shiny app elicitMultiple() for fitting individual distributions to multiple experts' judgements

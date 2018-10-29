@@ -8,14 +8,18 @@
 #' The expert provides a pair of probability judgements
 #'  \deqn{P(\theta < \theta_1 ) = p_1,} and \deqn{P(\theta < \theta_2) = p_2,}
 #'  where \eqn{\theta} is the proportion of the population that lies in the interval
-#'  \eqn{[k_1, k_2]}. The judgements are made conditional on the population median 
-#'  equalling \eqn{k_1}. Note that, unlike the \link{fitdist} command, a 'best fitting'
+#'  \eqn{[k_1, k_2]}, conditional on the population median taking some hypothetical value (\eqn{k_1}
+#'  by default). \eqn{k_1} can be set to \code{-Inf}, or \eqn{k_2} can be set to \code{Inf};
+#'  in either case, the hypothetical median value must be specified. If both \eqn{k_1}
+#'  and \eqn{k_2} are finite, the hypothetical median must be one of the interval endpoints.
+#'  Note that, unlike the \link{fitdist} command, a 'best fitting'
 #'  distribution is not reported, as the distributions are fitted to two elicited
 #'  probabilities only.    
 #' 
 #' @param interval A vector specifying the endpoints of an interval \eqn{[k_1, k_2]}.  
 #' @param propvals A vector specifying two values \eqn{\theta_1, \theta_2} for the proportion.
 #' @param propprobs A vector specifying two probabilities \eqn{p_1, p_2}.
+#' @param med The hypothetical value of the population median.
 #' @param trans A string variable taking the value \code{"identity"}, \code{"log"} or
 #' \code{"logit"} corresponding to whether the population distribution is normal, lognormal
 #' or logit-normal respectively.
@@ -44,9 +48,18 @@
 #' @export
 
 fitprecision <- function(interval, propvals, 
-                         propprobs = c(0.05, 0.95), 
+                         propprobs = c(0.05, 0.95),
+                         med = interval[1],
                          trans = "identity", pplot = TRUE,
                          fontsize = 18){
+  
+  if (!all(is.finite(interval)) & med == interval[1] ){
+    stop('argument med must be specified if using tail proportions.')
+  }
+  
+  if (all(is.finite(interval)) & !is.element(med, interval)){
+    stop('for finite interval, med must be one of the interval endpoints.')
+  }
   
   if (max(propvals >=0.5) | min(propvals <=0)){
     stop('propvals must be between 0 and 0.5')
@@ -55,8 +68,22 @@ fitprecision <- function(interval, propvals,
   if (trans != "identity" & trans != "log" & trans != "logit"){
     stop('argument trans must be one of "identity", "log" or "logit"')}
   
+  # Convert interval and proportions to the case
+  # P(X in [k1, k2] | mu = k1), if necessary
+  
+  if (interval[1] == -Inf){
+    interval <- c(interval[2], med)
+    propvals <- sort(0.5 - propvals)
+  }
+  
+  if (interval[2] == Inf){
+    interval <- c(med, interval[1])
+    propvals <- sort(0.5 - propvals)
+  }
+  
   if (trans == "identity"){
-    precisionvalues <- (qnorm(propvals + 0.5) / (interval[2] - interval[1]))^2
+    precisionvalues <- (qnorm(propvals + 0.5) /
+                          (interval[2] - interval[1]))^2
     dens <- dnorm
     quan <- qnorm
     m <- interval[1]
@@ -76,7 +103,8 @@ fitprecision <- function(interval, propvals,
     m <- logit(interval[1])
   }
   
-  precisionfit <- fitdist(vals = precisionvalues, probs = propprobs, lower = 0)
+  precisionfit <- fitdist(vals = precisionvalues, probs = propprobs,
+                          lower = 0)
   precisionfit$transform <- trans
   
   if(pplot == TRUE){

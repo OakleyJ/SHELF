@@ -144,11 +144,26 @@ test_that("precision fitting works - normal",{
   a <- 3
   b <- 4
   sigmasq <- 1 / qgamma(c(0.05, 0.95), a, b)
-  probs <- pnorm(rep(med + k, 2), med, sigmasq^0.5) - 0.5
-  pfit <- fitprecision(c(med, med + k), probs, pplot = F)
-  gamma.parameters <- unlist(pfit$Gamma)
-  attributes(gamma.parameters) <- NULL
-  expect_equal(gamma.parameters, c(a, b), tolerance = 1e-4)
+  probs1 <- pnorm(rep(med + k, 2), med, sigmasq^0.5) - 0.5
+  pfit1 <- fitprecision(c(med, med + k), probs1, pplot = F)
+  gamma.parameters1 <- unlist(pfit1$Gamma)
+  attributes(gamma.parameters1) <- NULL
+  expect_equal(gamma.parameters1, c(a, b), tolerance = 1e-4)
+  
+  probs2 <- pnorm(rep(med - k, 2), med, sigmasq^0.5) 
+  pfit2 <- fitprecision(c(-Inf, med - k), probs2, med = med,
+                        pplot = F)
+  gamma.parameters2 <- unlist(pfit2$Gamma)
+  attributes(gamma.parameters2) <- NULL
+  expect_equal(gamma.parameters2, c(a, b), tolerance = 1e-4)
+  
+  probs3 <- 1 - pnorm(rep(med + k, 2), med, sigmasq^0.5) 
+  pfit3 <- fitprecision(c(med + k, Inf), probs3, med = med,
+                        pplot = F)
+  gamma.parameters3 <- unlist(pfit3$Gamma)
+  attributes(gamma.parameters3) <- NULL
+  expect_equal(gamma.parameters3, c(a, b), tolerance = 1e-4)
+  
 })
 
 test_that("precision fitting works - lognormal",{
@@ -159,12 +174,29 @@ test_that("precision fitting works - lognormal",{
   a <- 3
   b <- 4
   sigmasq <- 1 / qgamma(c(0.05, 0.95), a, b)
-  probs <- plnorm(rep(med + k, 2), log(med), sigmasq^0.5) - 0.5
-  pfit <- fitprecision(interval = c(med, med + k), propvals = probs,
+  
+  probs1 <- plnorm(rep(med + k, 2), log(med), sigmasq^0.5) - 0.5
+  pfit1 <- fitprecision(interval = c(med, med + k), propvals = probs1,
                        trans = "log", pplot = F)
-  gamma.parameters <- unlist(pfit$Gamma)
-  attributes(gamma.parameters) <- NULL
-  expect_equal(gamma.parameters, c(a, b), tolerance = 1e-4)
+  gamma.parameters1 <- unlist(pfit1$Gamma)
+  attributes(gamma.parameters1) <- NULL
+  expect_equal(gamma.parameters1, c(a, b), tolerance = 1e-4)
+  
+  probs2 <- plnorm(rep(med - k, 2), log(med), sigmasq^0.5) 
+  pfit2 <- fitprecision(interval = c(-Inf, med - k), propvals = probs2,
+                        med = med, 
+                        trans = "log", pplot = F)
+  gamma.parameters2 <- unlist(pfit2$Gamma)
+  attributes(gamma.parameters2) <- NULL
+  expect_equal(gamma.parameters2, c(a, b), tolerance = 1e-4)
+  
+  probs3 <- 1 - plnorm(rep(med + k, 2), log(med), sigmasq^0.5) 
+  pfit3 <- fitprecision(interval = c(med + k, Inf), propvals = probs3,
+                        med = med, 
+                        trans = "log", pplot = F)
+  gamma.parameters3 <- unlist(pfit3$Gamma)
+  attributes(gamma.parameters3) <- NULL
+  expect_equal(gamma.parameters3, c(a, b), tolerance = 1e-4)
 })
 
 
