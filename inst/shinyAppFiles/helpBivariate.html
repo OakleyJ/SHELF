@@ -1,0 +1,32 @@
+<html>
+
+<head>
+<title>Title</title>
+</head>
+
+<body>
+
+
+<h3>Parameter limits</h3>
+<p> Specify a lower and upper limit, with a comma in between. The limits will set the range on the x-axis in the various plots, and the range covered by the bins in the roulette method. The limits will also affect the fitted distributions: the gamma, log normal and log Student-t will all be shifted to have support over the range [lower, infinity), and the beta distributed will be shifted and scaled to have support over the range [lower, upper]. </p>
+
+<h3>Specifying probability judgements</h3>
+<li> Specify values x1, x2,... in the <b>Parameter values</b> box, in increasing order, separated by commas.
+<li> Specify the corresponding probabilities P(X<=x1), P(X<=x2),... in the <b>Cumulative probabilities</b> box, separated by commas. The smallest probability needs to be less than 0.4, and the largest probability needs to be greater than 0.6.
+</ul>
+
+
+<h3>Concordance probability</h3>
+Specify your probability that either both parameters are above their elicited median values, or both parameters are below their elicited medians. For two independent parameters, your probability will be 0.5. For positively correlated parameters, your probability will be greater than 0.5, and for negatively correlated parameters, your probability will be less than 0.5.
+
+<h3>Download report</h3>
+This will generate a pdf file, with each fitted distribution specified.
+
+<h3>Download sample</h3>
+This will generate a csv file with a random sample from the joint distribution of the two inputs, obtained using a Gaussian copula, with correletion determined from the elicited concordance probability. Each marginal distribution will be the distribution you have selected on the corresponding tab.
+
+<p></p>
+</body>
+
+
+</html>

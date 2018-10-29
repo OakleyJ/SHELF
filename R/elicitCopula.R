@@ -33,7 +33,7 @@
 #' quad.probs[1, 2] <- 0.4
 #' quad.probs[1, 3] <- 0.4
 #' quad.probs[2, 3] <- 0.3
-#' copulaSample(myfit1, myfit2, myfit3, qp=quad.probs, n=100, d=NULL)
+#' copulaSample(myfit1, myfit2, myfit3, cp=quad.probs, n=100, d=NULL)
 #' }
 
 #' @importFrom MASS mvrnorm
@@ -72,6 +72,29 @@ copulaSample <- function(..., cp, n, d = NULL) {
     
     theta <- matrix(0, n, n.vars)
     for (i in 1:n.vars) {
+      
+      # A little messy...
+      # We're going to extract columns from the output of feedback()
+      # Column names aren't in the same format as distribution arguments
+      # used in other functions that may call on copulaSample()
+      # so following will rename distribution argument if necessary
+      
+      if(is.element(d[i], c("normal", "t", "gamma", "lognormal",
+                            "logt", "beta", "hist", "best"))){
+        d[i] <- switch(d[i],
+                       "normal" = "Normal",
+                       "t" = "Student-t",
+                       "gamma" = "Gamma",
+                       "lognormal" = "Log normal",
+                       "logt" = "Log Student-t",
+                       "beta" = "Beta",
+                       "hist" = "Histogram",
+                       "best" = as.character(elicitation.fits[[i]]$best.fitting[1, 1])
+                       )
+        
+      }
+    
+      
       theta[, i] <- feedback(elicitation.fits[[i]],
                              quantiles = p[, i])$fitted.quantiles[d[i]][, 1]
     }

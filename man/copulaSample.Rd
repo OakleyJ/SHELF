@@ -42,7 +42,7 @@ quad.probs <- matrix(0, 3, 3)
 quad.probs[1, 2] <- 0.4
 quad.probs[1, 3] <- 0.4
 quad.probs[2, 3] <- 0.3
-copulaSample(myfit1, myfit2, myfit3, qp=quad.probs, n=100, d=NULL)
+copulaSample(myfit1, myfit2, myfit3, cp=quad.probs, n=100, d=NULL)
 }
 }
 \author{

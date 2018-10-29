@@ -1,8 +1,9 @@
 feedbacksingle <-
 function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 	
-	n.distributions <- 6
-	distribution.names <- c("Normal", "Student-t", "Gamma", "Log normal", "Log Student-t", "Beta")
+	n.distributions <- 7
+	distribution.names <- c("Normal", "Student-t", "Gamma", "Log normal",
+	                        "Log Student-t", "Beta", "Histogram")
 	d.index<-c(1:2)
 	
 	if(is.na(quantiles[1]) == F ){
@@ -21,8 +22,13 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 		Mq[,4] <- fit$limits[ex,1] + qlnorm(quantiles, fit$Log.normal[ex,1], fit$Log.normal[ex,2])
 		Mq[,5] <- fit$limits[ex,1] + exp( qt(quantiles, fit$Log.Student.t[ex,3]) * fit$Log.Student.t[ex,2] + fit$Log.Student.t[ex,1])
 		if(fit$limits[ex,2] < Inf){
-			d.index<-c(1:6)
-			Mq[,6] <- fit$limits[ex,1] + (fit$limits[ex,2] - fit$limits[ex,1]) * qbeta(quantiles, fit$Beta[ex,1], fit$Beta[ex,2] )
+			d.index<-c(1:7)
+			Mq[,6] <- fit$limits[ex,1] + 
+			  (fit$limits[ex,2] - fit$limits[ex,1]) * qbeta(quantiles, fit$Beta[ex,1], fit$Beta[ex,2] )
+			Mq[, 7] <- qhist(quantiles,
+			                 c(fit$limits[ex, "lower"], fit$vals[ex, ], fit$limits[ex, "upper"]),
+			                 c(0, fit$probs[ex, ], 1 )
+			                 )
 		}
 	}
 		
@@ -56,6 +62,9 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 		Mp[,5] <- pt(values[,5], fit$Log.Student.t[ex,3])
 		if(fit$limits[ex,2] <  Inf){
 			Mp[,6] <- pbeta(values[,6], fit$Beta[ex,1], fit$Beta[ex,2])
+			Mp[, 7] <- phist(values[, 1],
+			                 c(fit$limits[ex, "lower"], fit$vals[ex, ], fit$limits[ex, "upper"]),
+			                 c(0, fit$probs[ex, ], 1 ))
 		}
 	}	
 		
