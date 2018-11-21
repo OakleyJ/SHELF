@@ -7,8 +7,10 @@
 #' 
 #' 
 #' 
-#' @param ... A list of objects of class \code{elicitation}.
-#' command, one per marginal proportion, separated by commas.
+#' @param ... Multiple arguments, each an objects of class \code{elicitation}, 
+#' one per marginal proportion, separated by commas. The sequence can be 
+#' specified as a single argument by containing all the \code{elicitation}
+#' objects within a single \code{list} object.
 #' @param categories A vector of strings labelling the marginal proportions.
 #' @param n.fitted The method used to determine the sum of the Dirichlet parameters.
 #' Use \code{"opt"} for best fitting, derived by matching standard deviations from the elicited marginals
@@ -42,6 +44,12 @@
 #' d <- fitDirichlet(myfit1, myfit2, myfit3,
 #'                   categories = c("A","B","C"),
 #'                   n.fitted = "opt")
+#' 
+#' # Note that this will also work:
+#' d <- fitDirichlet(list(myfit1, myfit2, myfit3),
+#'                   categories = c("A","B","C"),
+#'                   n.fitted = "opt")
+#' 
 #' }
 #' @import ggplot2
 #' @importFrom tidyr gather
@@ -59,7 +67,16 @@ fitDirichlet <- function(...,
   
   Category <- x <- fx <- parameters<- NULL # hack to avoid R CMD check NOTE
   
-  beta.fits <- list(...)
+  # Coerce the elictation objects into a single list, if necessary
+
+  argument <- list(...)
+  if(class(argument[[1]]) == "list"){
+    beta.fits <- (...)
+  }
+  if(class(argument[[1]]) == "elicitation"){
+    beta.fits <- argument
+  }
+
   
   numCategories <- length(beta.fits)
   if (is.null(categories)) {

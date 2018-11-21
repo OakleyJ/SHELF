@@ -8,8 +8,10 @@ fitDirichlet(..., categories = NULL, n.fitted = "opt",
   plotBeta = TRUE, xlab = "x", ylab = expression(f[X](x)))
 }
 \arguments{
-\item{...}{A list of objects of class \code{elicitation}.
-command, one per marginal proportion, separated by commas.}
+\item{...}{Multiple arguments, each an objects of class \code{elicitation}, 
+one per marginal proportion, separated by commas. The sequence can be 
+specified as a single argument by containing all the \code{elicitation}
+objects within a single \code{list} object.}
 
 \item{categories}{A vector of strings labelling the marginal proportions.}
 
@@ -51,6 +53,12 @@ myfit3 <- fitdist(v3, p1, 0, 1)
 d <- fitDirichlet(myfit1, myfit2, myfit3,
                   categories = c("A","B","C"),
                   n.fitted = "opt")
+
+# Note that this will also work:
+d <- fitDirichlet(list(myfit1, myfit2, myfit3),
+                  categories = c("A","B","C"),
+                  n.fitted = "opt")
+
 }
 }
 \references{
