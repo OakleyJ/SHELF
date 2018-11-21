@@ -1,5 +1,9 @@
 SHELF v1.4.0.9000 (2018-08-18) 
 ==============================
+* New function sampleFit(), for generating samples from fitted distributions.
+
+* Minor change to fitDirichlet(), to allow marginal elicitation fits to be 
+specified as a single list. 
 
 * Update to fitprecision(): interval used in the proportion method can now be a 
 tail area of the population distribution
