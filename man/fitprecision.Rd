@@ -6,7 +6,7 @@
 \usage{
 fitprecision(interval, propvals, propprobs = c(0.05, 0.95),
   med = interval[1], trans = "identity", pplot = TRUE,
-  fontsize = 18)
+  fontsize = 12)
 }
 \arguments{
 \item{interval}{A vector specifying the endpoints of an interval \eqn{[k_1, k_2]}.}

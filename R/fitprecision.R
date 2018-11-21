@@ -51,7 +51,7 @@ fitprecision <- function(interval, propvals,
                          propprobs = c(0.05, 0.95),
                          med = interval[1],
                          trans = "identity", pplot = TRUE,
-                         fontsize = 18){
+                         fontsize = 12){
   
   if (!all(is.finite(interval)) & med == interval[1] ){
     stop('argument med must be specified if using tail proportions.')
@@ -68,9 +68,13 @@ fitprecision <- function(interval, propvals,
   if (trans != "identity" & trans != "log" & trans != "logit"){
     stop('argument trans must be one of "identity", "log" or "logit"')}
   
+  # Make copies for use in the density plots
+  intervalPlot <- interval
+  propvalsPlot <- propvals
+  
+  
   # Convert interval and proportions to the case
   # P(X in [k1, k2] | mu = k1), if necessary
-  
   if (interval[1] == -Inf){
     interval <- c(interval[2], med)
     propvals <- sort(0.5 - propvals)
@@ -86,25 +90,28 @@ fitprecision <- function(interval, propvals,
                           (interval[2] - interval[1]))^2
     dens <- dnorm
     quan <- qnorm
-    m <- interval[1]
+    m <- med
   }
   
   if (trans == "log"){
     precisionvalues <- (qnorm(propvals + 0.5) / (log(interval[2]) - log(interval[1])))^2
     dens <- dlnorm
     quan <- qlnorm
-    m <- log(interval[1])
+    m <- log(med)
   }
   
   if (trans == "logit"){
     precisionvalues <- (qnorm(propvals + 0.5) / (logit(interval[2]) - logit(interval[1])))^2
     dens <- dlogit
     quan <- qlogit
-    m <- logit(interval[1])
+    m <- logit(med)
   }
   
   precisionfit <- fitdist(vals = precisionvalues, probs = propprobs,
                           lower = 0)
+  
+  precisionfit$interval <- intervalPlot 
+  precisionfit$probs <- propvalsPlot
   precisionfit$transform <- trans
   
   if(pplot == TRUE){
@@ -114,22 +121,44 @@ fitprecision <- function(interval, propvals,
     xu<-quan(0.999, m, s[2])
     x <- seq(from = xl, to  = xu, length = 200)
     d1 <- dens(x, m, s[2])
-    xint <- seq(from = interval[1], to = interval[2], length = 200)
+    
+    tailInterval <- FALSE
+    
+    if(intervalPlot[1]== -Inf){
+      intervalPlot[1] <- xl
+      tailInterval <- TRUE
+    }
+    if(intervalPlot[2]== Inf){
+      intervalPlot[2] <- xu
+      tailInterval <- TRUE
+    }
+    
+    
+    xint <- seq(from = intervalPlot[1], to = intervalPlot[2], length = 200)
     dint1 <- dens(xint, m, s[2])
     d2 <- dens(x, m, s[1])
     dint2 <- dens(xint, m, s[1])
-    df<-data.frame(x=x, d1=d1, d2=d2, xint=xint, dint1=dint1, dint2=dint2)
+    
+    # lower proportion will give larger variance for a finite interval
+    # but smaller variance if tail interval is used
+    if(tailInterval){
+      df<-data.frame(x=x, d1=d2, d2=d1, xint=xint, dint1=dint2, dint2=dint1)
+    }else{
+      df<-data.frame(x=x, d1=d1, d2=d2, xint=xint, dint1=dint1, dint2=dint2)
+    }
+   
     theme_set(theme_grey(base_size = fontsize))
     
-    pcore <- ggplot(df, aes(x=x, y=d1)) + expand_limits(y = c(0, max(d2))) + labs(y = "")
+    pcore <- ggplot(df, aes(x=x, y=d1)) + expand_limits(y = c(0, max(d2))) +
+      labs(y = "")
     p1 <- pcore + geom_line() + 
       geom_area(data = df, aes(x=xint, y = dint1), fill="red", alpha=0.5) +
       labs(title = paste("lower (",propprobs[1],
-                         " quantile) proportion = ", propvals[1], sep=""))
+                         " quantile) proportion = ", propvalsPlot[1], sep=""))
     p2 <- pcore + geom_line(aes(x=x, y=d2)) + 
       geom_area(data = df, aes(x=xint, y = dint2), fill="red", alpha=0.5) +
       labs(title = paste("upper (",propprobs[2],
-                         " quantile) proportion = ", propvals[2], sep =""))
+                         " quantile) proportion = ", propvalsPlot[2], sep =""))
     multiplot(p1, p2)
   }
   
@@ -137,6 +166,7 @@ fitprecision <- function(interval, propvals,
   precisionfit$Normal <- precisionfit$Student.t <- precisionfit$Log.Student.t <- NULL
   precisionfit$best.fitting <- precisionfit$Beta <- precisionfit$ssq <- NULL
   precisionfit$limits <- NULL
-  precisionfit$vals <- propvals
+  precisionfit$vals <- NULL
+  class(precisionfit) <- "elicitationPrecision"
   precisionfit
 }
