@@ -1,0 +1,39 @@
+---
+title: "Fitted Dirichlet Distribution"
+output: pdf_document
+date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
+fontsize: 11pt
+params:
+  allFits: NA
+  categories: NA
+  n: NA
+  quantiles: NA
+  thetaMatrix: NA
+---
+
+## Elicited judgements
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r}
+mydf <- data.frame(params$quantiles, params$thetaMatrix)
+colnames(mydf) <- c("quantiles", params$categories)
+knitr::kable(mydf)
+```
+
+
+## Fitted distribution
+
+```{r}
+d <- fitDirichlet(params$allFits, categories = params$categories,
+             n.fitted = params$n)
+```
+
+### Dirichlet parameters
+
+```{r}
+d
+```
+
