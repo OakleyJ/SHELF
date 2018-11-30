@@ -16,10 +16,14 @@ sampleFit <- function(fit, n, expert = 1){
       rbeta(n, fit$Beta[expert, 1], fit$Beta[expert, 2])
   }
   
+  if(!any(is.na(fit$Normal[expert, ]))){
   x[, 2] <- rnorm(n, fit$Normal[expert, 1], fit$Normal[expert, 2])
+  }
   
+  if(!any(is.na(fit$Student.t[expert, ]))){
   x[, 3] <- fit$Student.t[expert, 1] +
     fit$Student.t[expert, 2] * rt(n, fit$Student.t[expert, 3])
+  }
   
   if(is.finite(fit$limits[expert, 1])){
     x[, 4] <- fit$limits[expert, 1] + 

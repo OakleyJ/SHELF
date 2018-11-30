@@ -5,7 +5,7 @@
 \title{Fit a distribution to judgements about a population precision}
 \usage{
 fitprecision(interval, propvals, propprobs = c(0.05, 0.95),
-  med = interval[1], trans = "identity", pplot = TRUE,
+  med = interval[1], trans = "identity", pplot = TRUE, tdf = 3,
   fontsize = 12)
 }
 \arguments{
@@ -25,6 +25,8 @@ or logit-normal respectively.}
 and precision fixed at the two elicited quantiles implied by \code{propvals} 
 and \code{propprobs}.}
 
+\item{tdf}{Degrees of freedom in the fitted log Student-t distribution.}
+
 \item{fontsize}{Font size used in the plots.}
 }
 \value{
@@ -32,6 +34,9 @@ and \code{propprobs}.}
 shape / rate.} 
 \item{Log.normal}{Parameters of the fitted log normal
 distribution: the mean and standard deviation of log precision.}
+\item{Log.Student.t}{Parameters of the fitted log student t distributions.
+Note that (log(X- \code{lower}) - location) / scale has a standard t distribution. The
+degrees of freedom is not fitted: it is specified as an input argument.} 
 \item{vals}{The elicited values \eqn{\theta_1, \theta_2}}
 \item{probs}{The elicited probabilities \eqn{p_1, p_2}}
 \item{limits}{The lower and upper limits specified by each expert (+/- Inf

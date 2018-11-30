@@ -26,6 +26,7 @@
 #' @param pplot Plot the population distributions with median set at \eqn{k_1}
 #' and precision fixed at the two elicited quantiles implied by \code{propvals} 
 #' and \code{propprobs}.
+#' @param tdf Degrees of freedom in the fitted log Student-t distribution.
 #' @param fontsize Font size used in the plots.
 #' 
 #' @return 
@@ -33,6 +34,9 @@
 #' shape / rate.} 
 #' \item{Log.normal}{Parameters of the fitted log normal
 #' distribution: the mean and standard deviation of log precision.}
+#' \item{Log.Student.t}{Parameters of the fitted log student t distributions.
+#' Note that (log(X- \code{lower}) - location) / scale has a standard t distribution. The
+#' degrees of freedom is not fitted: it is specified as an input argument.} 
 #' \item{vals}{The elicited values \eqn{\theta_1, \theta_2}}
 #' \item{probs}{The elicited probabilities \eqn{p_1, p_2}}
 #' \item{limits}{The lower and upper limits specified by each expert (+/- Inf
@@ -51,6 +55,7 @@ fitprecision <- function(interval, propvals,
                          propprobs = c(0.05, 0.95),
                          med = interval[1],
                          trans = "identity", pplot = TRUE,
+                         tdf = 3,
                          fontsize = 12){
   
   if (!all(is.finite(interval)) & med == interval[1] ){
@@ -111,7 +116,7 @@ fitprecision <- function(interval, propvals,
                           lower = 0)
   
   precisionfit$interval <- intervalPlot 
-  precisionfit$probs <- propvalsPlot
+  precisionfit$probs[1, ] <- propvalsPlot
   precisionfit$transform <- trans
   
   if(pplot == TRUE){
@@ -163,10 +168,14 @@ fitprecision <- function(interval, propvals,
   }
   
   
-  precisionfit$Normal <- precisionfit$Student.t <- precisionfit$Log.Student.t <- NULL
-  precisionfit$best.fitting <- precisionfit$Beta <- precisionfit$ssq <- NULL
-  precisionfit$limits <- NULL
-  precisionfit$vals <- NULL
-  class(precisionfit) <- "elicitationPrecision"
+  precisionfit$Normal[1, ] <- precisionfit$Student.t[1, ] <- NA
+  precisionfit$ssq[1:2] <- NA
+  
+  distnames <- c("Normal", "Student-t", "Gamma", "Log normal", "Log Student-t", "Beta")
+   
+  index <- which.min(precisionfit$ssq)
+  precisionfit$best.fitting <- data.frame(best.fit=distnames[index])
+  
+  class(precisionfit) <- "elicitation"
   precisionfit
 }
