@@ -7,8 +7,8 @@
 #' the results from the \code{fitdist} command. Click "Download report" to generate a report
 #' of all the fitted distributions.
 #'   
-#' @return An object of class \code{elicitation}, which is returned once the 
-#' Quit button has been clicked. See \code{\link{fitdist}} for details.
+#' @return The parameters of the fitted Dirichlet distribution, which are 
+#' returned once the Quit button has been clicked. 
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
 #' @examples
 #' 
@@ -36,10 +36,10 @@ elicitDirichlet <- function(){
       column(3, 
              h5("Font size (plots)")
       ),
-      column(3, offset = 1,
+      column(3, 
              downloadButton("report", "Download report")
       ),
-      column(2, offset = 1,
+      column(2, 
              actionButton("exit", "Quit")
       )
     )
@@ -93,7 +93,10 @@ elicitDirichlet <- function(){
              )
              
              
-    )
+    ),
+    tabPanel("Help",
+             includeHTML(system.file("shinyAppFiles", "DirichletHelp.html",
+                                     package="SHELF")))
     
   )
   
@@ -109,8 +112,10 @@ server = function(input, output) {
   })
   
   
+  marginalFs <- reactive(input$fs)
+
+  theta <- callModule(elicitMarginals, "marginals", marginalFs)
   
-  theta <- callModule(elicitMarginals, "marginals", fs = input$fs)
   
   output$DirichletPlot <- renderPlot({
     fitDirichlet(theta$allFits(), categories = theta$categoryLabels(),

@@ -7,8 +7,8 @@
 elicitDirichlet()
 }
 \value{
-An object of class \code{elicitation}, which is returned once the 
-Quit button has been clicked. See \code{\link{fitdist}} for details.
+The parameters of the fitted Dirichlet distribution, which are 
+returned once the Quit button has been clicked.
 }
 \description{
 Opens up a web browser (using the shiny package), from which you can elicit a

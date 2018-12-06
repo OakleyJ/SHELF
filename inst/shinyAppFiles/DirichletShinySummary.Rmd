@@ -24,16 +24,30 @@ knitr::kable(mydf)
 ```
 
 
-## Fitted distribution
+### Dirichlet density function and parameters
+
+Define the vector of unknown population proportions as 
+$$\theta := (\theta_1,\ldots,\theta_k),$$
+with $k = `r length(params$categories)`$ . We write 
+$$\theta  \sim Dirichlet(a_1,\ldots,a_k),$$
+with
+$$
+f(\theta)=\frac{\Gamma(a_1+\ldots +a_k)}{\Gamma(a_1)\ldots \Gamma(a_k)}\prod_{i=1}^k \theta_i^{a_i-1}.
+$$
+The fitted parameter values $a_1,\ldots,a_k$ are as follows:
+
+```{r}
+fitDirichlet(params$allFits, categories = params$categories,
+             n.fitted = params$n, silent = TRUE, 
+             plotBeta = FALSE)
+```
+
+## Comparing the elicited marginals with the marginals from the Dirichlet fit
 
 ```{r}
 d <- fitDirichlet(params$allFits, categories = params$categories,
              n.fitted = params$n)
 ```
 
-### Dirichlet parameters
 
-```{r}
-d
-```
 

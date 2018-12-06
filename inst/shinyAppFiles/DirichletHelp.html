@@ -1,0 +1,34 @@
+<html>
+
+<head>
+<title>Title</title>
+</head>
+
+<body>
+
+
+
+<h3>Elicitation method</h3>
+<p> This app implements the method for eliciting a Dirichlet distribution presented in Zapata-Vazquez, R., O'Hagan, A. and Bastos, L. S. (2014). Eliciting expert judgements about a set of proportions. Journal of Applied Statistics 41, 1919-1933.</p>
+<ul>
+<li> First, elicit separately a marginal distribution for the population proportion in each category: specify the quantiles ("Cumulative probabilities") to be provided, and then enter these quantile values in the table. Beta distributions will be fitted to each set of judgements.</li>
+<li> On the "Fitted Dirichlet" tab, a Dirichlet distribution will be constructed from the elicited marginals, and a plot is shown to compare the marginal distributions implied by the fitted Dirichlet against the original elicited marginals.</li>
+</ul>
+
+
+<h3>Method for fitting the Dirichlet</h3>
+<p>
+There are four available methods for determining the sum of the Dirichlet distribution, which result in different fits (though these may be fairly similar):</p>
+<ul>
+<li>"best fitting": matching standard deviations from the elicited marginals and the fitted Dirichlet;</li> 
+<li>"conservative": based on the smallest equivalent sample size (sum of the beta parameters) from the elicited marginals;</li> 
+<li>median of the smallest and largest largest equivalent sample size from the elicited marginals; </li>
+<li>mean of all the equivalent sample sizes from the elicited marginals. </li>
+</ul>  
+See Zapata-Vazquez et al. for more details.
+
+<h3>Conditional distributions</h3>
+<p>In addition to comparing the elicited and fitted marginals, you can also inspect the behaviour of the conditional distributions, as a diagnostic for the choice of the Dirichlet family of distributions. Choose one category, and then specify a hypothetical value for the true population proportion in that category. The marginals from the conditional distribution will be plotted, together with the unconditional marginal distributions. Consider how you might actually revise your marginal distributions given the hypothetical observation, and compare with conditional distributions implied by the Dirichlet. </p>
+</body>
+
+</html>

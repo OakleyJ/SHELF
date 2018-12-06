@@ -80,7 +80,7 @@ elicitMarginals <- function(input, output, session, fs){
                             input$categoryDisplay,
                             '"'),
               ylab = "density",
-              fs = fs)
+              fs = fs())
     }
   })
   
