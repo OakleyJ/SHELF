@@ -67,7 +67,7 @@ linearPoolDensity <- function(fit, xl = -Inf, xu = Inf, d = "best", lpw = 1, nx 
   weight <- matrix(lpw/sum(lpw), nx, n.experts, byrow = T)
   
   for(i in 1:n.experts){
-    densitydata <- expertdensity(fit, d, ex = i, xl, xu, nx)
+    densitydata <- expertdensity(fit, d, ex = i, pl = xl, pu = xu, nx = nx)
     x[, i] <- densitydata$x
     fx[, i] <-densitydata$fx 
   }
