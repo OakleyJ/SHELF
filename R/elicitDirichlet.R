@@ -105,6 +105,10 @@ elicitDirichlet <- function(){
 
 server = function(input, output) {
   
+  # Hack to avoid CRAN check NOTE
+  
+  Category <- fx <- x <- parameters <- NULL
+  
   fittedDirichlet <- reactive({
     fitDirichlet(theta$allFits(), categories = theta$categoryLabels(),
                  n.fitted = input$nFitted,

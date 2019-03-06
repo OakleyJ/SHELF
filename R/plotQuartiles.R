@@ -9,6 +9,7 @@
 #' row is the 25th percentile, 2nd row is the median, last row is the 75th percentile.
 #' @param lower a vector of lower plausible limits: one per expert
 #' @param upper a vector of upper plausible limits: one per expert
+#' @param fs font size to be used in the plot
 #'
 #
 
@@ -26,7 +27,7 @@
 #' }
 #' @export
 
-plotQuartiles <- function(vals, lower, upper, fs){
+plotQuartiles <- function(vals, lower, upper, fs = 12){
   
   low <- L <- Q1 <- M <- Q2 <- U <- enumber <- NULL # hack to pass CRAN check
   

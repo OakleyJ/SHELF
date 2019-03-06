@@ -116,7 +116,6 @@ fitprecision <- function(interval, propvals,
                           lower = 0)
   
   precisionfit$interval <- intervalPlot 
-  precisionfit$probs[1, ] <- propvalsPlot
   precisionfit$transform <- trans
   
   if(pplot == TRUE){

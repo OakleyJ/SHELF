@@ -4,7 +4,7 @@
 \alias{plotTertiles}
 \title{Plot elicted tertiles, median and plausible range for each expert}
 \usage{
-plotTertiles(vals, lower, upper, fs = 12)
+plotTertiles(vals, lower, upper, fs = 12, percentages = FALSE)
 }
 \arguments{
 \item{vals}{a matrix of elicited tertiles and medians: one column per expert, first 
@@ -13,6 +13,10 @@ row is the 33rd percentile, 2nd row is the median, last row is the 66th percenti
 \item{lower}{a vector of lower plausible limits: one per expert}
 
 \item{upper}{a vector of upper plausible limits: one per expert}
+
+\item{fs}{font size to be used in the plot}
+
+\item{percentages}{set to \code{TRUE} to use percentages on the x-axis}
 }
 \description{
 Displays a horizontal bar for each expert, to represent the expert's plausible range.

@@ -52,12 +52,17 @@ elicitMarginals <- function(input, output, session, fs){
   
   
   output$EnterJudgements <- renderUI({
-    initialdf <- data.frame(matrix(c(0.5, 0.55, 0.6,
+    initialdf <- matrix(c(0.5, 0.55, 0.6,
                                      0.22, 0.3, 0.35, 
                                      0.11, .15, 0.2),
-                                   length(p()), input$nTheta))
+                                   length(p()), input$nTheta)
+    colnames(initialdf) <- paste0("theta.", 1:input$nTheta)
+    rownames(initialdf) <- p()
     ns <- session$ns
-    shinyIncubator::matrixInput(ns("myvals"), "Quantiles", initialdf)
+    shinyMatrix::matrixInput(inputId = ns("myvals"), value =  initialdf,
+                             class = "numeric",
+                             cols = list(names = TRUE),
+                             rows = list(names = TRUE))
   })
   
   allFits <- reactive({

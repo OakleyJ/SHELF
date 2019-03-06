@@ -5,6 +5,11 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                         showQuantiles = FALSE,
                         ql = 0.05, 
                         qu = 0.95){
+  
+  # Hack to avoid CRAN check NOTE
+  
+  x <- NULL
+  
   p1 <- ggplot(data.frame(x = c(lower, upper)), aes(x = x)) +
     annotate("point", x = v, y = p, size = 5) + 
     annotate("point", x = c(lower, upper), y = c(0, 1), size = 5, shape = 1)+

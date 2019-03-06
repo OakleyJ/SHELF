@@ -184,13 +184,19 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
     		ssq[i,3] <- gamma.fit$value
     		
     		std<-((log(u - lower[i])-log(l - lower[i]))/1.35)
-    	
-    		lognormal.fit <- optim(c(log(m.scaled1), log(std)), 
+    		
+    		mlog <- (log(minvals - lower[i]) * 
+    		           maxq - log(maxvals - lower[i]) * minq) /
+    		  (maxq - minq)
+    		
+    		lognormal.fit <- optim(c(mlog,
+    		                         log(std)), 
     		                       lognormal.error, 
     		                       values = vals.scaled1, 
     		                       probabilities = probs[,i], 
     		                       weights = weights[,i])
-    		lognormal.parameters[i, 1:2] <- c(lognormal.fit$par[1], exp(lognormal.fit$par[2]))
+    		lognormal.parameters[i, 1:2] <- c(lognormal.fit$par[1],
+    		                                  exp(lognormal.fit$par[2]))
     		ssq[i,4] <- lognormal.fit$value
     	
     		logt.fit <- optim(c(log(m.scaled1), log(std)), 

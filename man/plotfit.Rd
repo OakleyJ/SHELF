@@ -7,7 +7,8 @@
 plotfit(fit, d = "best", int = FALSE, xl = -Inf, xu = Inf,
   ql = NA, qu = NA, lp = FALSE, ex = NA, sf = 3, ind = TRUE,
   lpw = 1, fs = 12, lwd = 1, xlab = "x",
-  ylab = expression(f[X](x)), legend_full = TRUE)
+  ylab = expression(f[X](x)), legend_full = TRUE,
+  percentages = FALSE)
 }
 \arguments{
 \item{fit}{An object of class \code{elicitation}.}
@@ -64,6 +65,8 @@ weighting is desired.}
 \item{legend_full}{If plotting a linear pool, set \code{ind = TRUE} for each expert
 to be plotted with a different colour, and \code{ind = FALSE} for each expert to be 
 plotted with the same colour, reducing the legend size.}
+
+\item{percentages}{Set to \code{TRUE} to use percentages on the x-axis.}
 }
 \description{
 Plots the fitted density function for one or more experts. Can also plot a

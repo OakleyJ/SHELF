@@ -1,3 +1,26 @@
+#' Sample from the elicited distributions 
+#' 
+#' Generates a random sample from all distributions specified
+#' within an object of class \code{elicitation}
+#' 
+
+#' @param fit An object of class elicitation
+#'
+#' @param n The required sample size for each elicitation
+#' @param expert Specify which expert's distributions to sample 
+#' from, if multiple experts' judgements have been elicited.
+#' 
+#' @return A matrix of sampled values, one column per distribution.
+#' Column names are given to label the distributions.
+#' 
+#' @examples
+#' \dontrun{
+#' v <- c(20,30,50)
+#' p <- c(0.25,0.5,0.75)
+#' myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
+#' samplefit(myfit, n = 10)
+#' }
+#'
 #' @export
 
 sampleFit <- function(fit, n, expert = 1){

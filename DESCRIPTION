@@ -19,7 +19,8 @@ RoxygenNote: 6.1.1
 Suggests: testthat,
     knitr,
     GGally
-Imports: ggplot2,
+Imports: 
+    ggplot2,
     grid,
     shiny,
     stats,
@@ -30,7 +31,9 @@ Imports: ggplot2,
     gridExtra,
     scales,
     rmarkdown,
-    grDevices
+    grDevices,
+    shinyMatrix,
+    utils
 URL: https://github.com/OakleyJ/SHELF
 BugReports: https://github.com/OakleyJ/SHELF/issues
 VignetteBuilder: knitr

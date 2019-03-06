@@ -94,11 +94,8 @@ elicitMultiple <- function(){
                             one column per expert. Enter lower plausible limits in the first row,
                             upper plausible limits in the last row, and quantile values in between, 
                             corresponding to the cumulative probabilities."),
-                   fluidRow(
-                     column(2, tableOutput("ShowJudgements")),
-                     column(7, offset = 1,  uiOutput("EnterJudgements"))
+                   uiOutput("EnterJudgements")
                  
-                   )
                    ),
           tabPanel("PDF",
                    plotOutput("distPlot"),
@@ -127,6 +124,7 @@ if they have been provided,
   
   server <- shinyServer(function(input, output) {
     
+   
     p <- reactive({
       tryCatch(eval(parse(text = paste("c(",
                                        input$probs, ")"))),
@@ -147,7 +145,7 @@ if they have been provided,
     })
     
     u <- reactive({
-      as.numeric(tail(input$myvals, 1))
+      as.numeric(utils::tail(input$myvals, 1))
     })
     
     v <- reactive({
@@ -168,16 +166,20 @@ if they have been provided,
     })
     
     output$EnterJudgements <- renderUI({
-      initialdf <- data.frame(matrix(c(0, 10, 20, 30, 100,
-                                       0, 20, 30, 50, 150), 2 + length(p()), nExp()))
+      initialdf <- matrix(c(0, 10, 20, 30, 100,
+                            0, 20, 30, 50, 150),
+                          2 + length(p()),
+                          nExp())
+      colnames(initialdf) <- LETTERS[1:nExp()]
+      rownames(initialdf) <- c("L", p(), "U")
       
-      shinyIncubator::matrixInput("myvals", "Expert judgements", initialdf)
+      shinyMatrix::matrixInput(inputId = "myvals", value =  initialdf,
+                               class = "numeric",
+                               cols = list(names = TRUE),
+                               rows = list(names = TRUE))
     })
     
-    output$ShowJudgements <- renderTable({
-      data.frame(Judgement = c("L", p(), "U"))
-    })
-    
+   
     quantileValues <- reactive({
       values <- qlinearpool(myfit(), c(input$fq1, input$fq2), 
                             d=dist[as.numeric(input$radio)], 

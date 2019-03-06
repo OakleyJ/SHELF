@@ -1,5 +1,8 @@
 SHELF v1.4.0.9000 (2018-08-18) 
 ==============================
+
+* Extra argument percentages in plotfit() and plotTertiles() for using percentage scale on x-axis
+
 * New function sampleFit(), for generating samples from fitted distributions.
 
 * Minor change to fitDirichlet(), to allow marginal elicitation fits to be 
@@ -10,7 +13,7 @@ tail area of the population distribution
 
 * New shiny app elicitBivariate() for eliciting bivariate distributions using a Gaussian copula
 
-* Significant update to elicit() shiny app: can now swtich between multiple methods within the same app
+* Significant update to elicit() shiny app: can now switch between multiple methods within the same app
 
 * New shiny app elicitMultiple() for fitting individual distributions to multiple experts' judgements
 

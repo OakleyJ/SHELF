@@ -44,6 +44,7 @@
 #' @param legend_full If plotting a linear pool, set \code{ind = TRUE} for each expert
 #' to be plotted with a different colour, and \code{ind = FALSE} for each expert to be 
 #' plotted with the same colour, reducing the legend size.
+#' @param percentages Set to \code{TRUE} to use percentages on the x-axis. 
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
 #' @examples
 #' 
@@ -95,7 +96,8 @@ plotfit <- function(fit,
                     lwd = 1,
                     xlab = "x",
                     ylab = expression(f[X](x)),
-                    legend_full = TRUE){
+                    legend_full = TRUE,
+                    percentages = FALSE){
   
 
   if(d=="beta" & (min(fit$limits) == -Inf | max(fit$limits) == Inf )){stop("Parameter limits must be finite to fit a beta distribution")}
@@ -138,9 +140,16 @@ plotfit <- function(fit,
   if(nrow(fit$vals)>1 & is.na(ex)==F){
     if(xl == -Inf & fit$limits[ex,1] > -Inf){xl <- fit$limits[ex,1] }
     if(xu == Inf & fit$limits[ex,2] < Inf){xu <- fit$limits[ex,2] }
-    if(int == FALSE){suppressWarnings(print(makeSingleExpertPlot(fit, d, xl, xu, 
-                                                                 ql, qu, sf, ex = 1, 
-                                                                 lwd, xlab, ylab)))}else{
+    if(int == FALSE){suppressWarnings(print(makeSingleExpertPlot(fit, d, 
+                                                                 xl, xu, 
+                                                                 ql, qu, 
+                                                                 sf, ex = 1, 
+                                                                 lwd, xlab, 
+                                                                 ylab,
+                                                                 percentages)
+                                            )
+                                      )
+      }else{
       shinyplotsingle(fit, xl, xu, ql, qu, ex, xlab, ylab)
     }
     
@@ -148,7 +157,11 @@ plotfit <- function(fit,
   
  
   if(nrow(fit$vals)==1){
-    if(int == FALSE){print(suppressWarnings(makeSingleExpertPlot(fit, d, xl, xu, ql, qu, sf, ex = 1, lwd, xlab, ylab)))}else{
+    if(int == FALSE){
+      print(suppressWarnings(makeSingleExpertPlot(fit, d, xl, 
+                                                  xu, ql, qu, sf, ex = 1,
+                                                  lwd, xlab, ylab,
+                                                  percentages)))}else{
       suppressWarnings(shinyplotsingle(fit, xl, xu, ql, qu, ex = 1, xlab, ylab))
     }
   }

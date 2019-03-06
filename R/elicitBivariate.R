@@ -180,6 +180,10 @@ elicitBivariate<- function(){
    
   server = function(input, output) {
     
+    # Hack to avoid CRAN check NOTE
+    
+    X1 <- X2 <- xpos <- ypos <- hjustvar <- vjustvar <- annotateText <- NULL
+    
     limits1 <- reactive({
       eval(parse(text = paste("c(", input$limits1, ")")))
     })
@@ -313,7 +317,7 @@ elicitBivariate<- function(){
     output$downloadData <- downloadHandler(
       filename = "joint-sample.csv",
       content = function(file) {
-        write.csv(df1(), file, row.names = FALSE)
+        utils::write.csv(df1(), file, row.names = FALSE)
       }
     )
     
