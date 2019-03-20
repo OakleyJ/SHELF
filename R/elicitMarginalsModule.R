@@ -56,7 +56,7 @@ elicitMarginals <- function(input, output, session, fs){
                                      0.22, 0.3, 0.35, 
                                      0.11, .15, 0.2),
                                    length(p()), input$nTheta)
-    colnames(initialdf) <- paste0("theta.", 1:input$nTheta)
+    colnames(initialdf) <- thetaNames()
     rownames(initialdf) <- p()
     ns <- session$ns
     shinyMatrix::matrixInput(inputId = ns("myvals"), value =  initialdf,

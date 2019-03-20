@@ -163,7 +163,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		
 		fx <-  1/(xu - xl) * dbeta( (x - xl) / (xu - xl), fit$Beta[ex,1], fit$Beta[ex,2])
 		
-		dist.title = main=paste("Beta(",
+		dist.title =paste("Beta(",
 		                        signif(fit$Beta[ex,1], sf),
 		                        ", ", signif(fit$Beta[ex,2], sf),
 		                        ")", sep="")

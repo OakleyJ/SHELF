@@ -65,16 +65,18 @@ elicit<- function(){
            conditionalPanel(
             condition = "input.showFittedPDF == true || input.showFittedCDF == true",
           
-          radioButtons("radio", label = "Distribution", 
-                     choiceNames =  list("Histogram" , "Normal" ,
-                                    "Student t" , "Gamma" ,
-                                    "Log normal" , "Log Student t" ,
-                                    "Beta" , "Best fitting" ),
-                     choiceValues = 1:8,
-                     selected = 1
+          selectInput("dist", label = "Distribution", 
+                      choices =  list(Histogram = "hist",
+                                      Normal = "normal", 
+                                      'Student-t' = "t",
+                                      Gamma = "gamma",
+                                      'Log normal' = "lognormal",
+                                      'Log Student-t' = "logt",
+                                      Beta = "beta", 
+                                      'Best fitting' = "best")
                      ),
         conditionalPanel(
-          condition = "input.radio == 3 || input.radio == 6",
+          condition = "input.dist == 't' || input.dist == 'logt'",
           numericInput("tdf", label = h5("Student-t degrees of freedom"),
                      value = 3)
           ),
@@ -104,17 +106,20 @@ elicit<- function(){
               
               wellPanel(
                 fluidRow(
-                  column(2, 
+                  column(1, 
                          numericInput("fs", label = NULL, value = 12)
                   ),
-                  column(3, 
+                  column(2, 
                          h5("Font size (plots)")
                   ),
-                  column(3, offset = 1,
-                         downloadButton("report", "Download report")
+                  column(2, selectInput("outFormat", label = NULL,
+                                        choices = list('html report' = "html_document",
+                                                    'pdf report' = "pdf_document",
+                                                    'Word report' = "word_document"))
                   ),
-                  column(2, offset = 1,
-                         actionButton("exit", "Quit")
+                  column(2, offset = 0.1, downloadButton("report", "Download")
+                         ),
+                  column(2, actionButton("exit", "Quit")
                   )
                 )
               ),
@@ -272,16 +277,16 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     })
 
     # Include in the package, but not in the web app.
-    # observeEvent(input$exit, {
-    #   stopApp(myfit())
-    # }) 
+     observeEvent(input$exit, {
+       stopApp(myfit())
+     }) 
     
     output$distPlot <- renderPlot({
       
     if(input$showFittedPDF){
       
       dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
-      suppressWarnings(plotfit(myfit(), d = dist[as.numeric(input$radio)],
+      suppressWarnings(plotfit(myfit(), d = input$dist,
                                int = F, ql = input$fq1, qu = input$fq2,
                                xl = limits()[1], xu = limits()[2], 
                                fs = input$fs))
@@ -298,40 +303,75 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     })
     
     output$cdf <- renderPlot({
-      dist<-c("hist","normal", "t", "gamma", "lognormal",
-              "logt","beta", "best")
-      makeCDFPlot(limits()[1], v(), p(), limits()[2], input$fs,
-                  myfit(), dist = dist[as.numeric(input$radio)],
+      
+      if(input$dist == "best"){
+        ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
+        best.index <- which(ssq == min(ssq))[1]
+        dist <-c("normal", "t", "gamma", "lognormal",
+              "logt","beta")
+        makeCDFPlot(limits()[1], v(), p(), limits()[2], input$fs,
+                  myfit(), dist = dist[best.index],
                   showFittedCDF = input$showFittedCDF,
-                  showQuantiles = TRUE)
+                  showQuantiles = TRUE)}else{
+                    makeCDFPlot(limits()[1], v(), p(), limits()[2], input$fs,
+                                myfit(), dist = input$dist,
+                                showFittedCDF = input$showFittedCDF,
+                                showQuantiles = TRUE)
+                    
+                  }
       
     })
     
 
     quantileValues <- reactive({
-      ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
-      best.index <- which(ssq == min(ssq))[1]
+      # ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
+      # best.index <- which(ssq == min(ssq))[1]
+      # 
+      # ex <- 1
+      # pl <- limits()[1]
+      # pu <- limits()[2]
+      # #  if(input$dist=="hist"){
+      #   if(pl == -Inf & myfit()$limits[ex,1] > -Inf){pl <- myfit()$limits[ex,1]}
+      #   if(pu == Inf & myfit()$limits[ex,2] < Inf){pu <- myfit()$limits[ex,2] }
+      #   if(pl == -Inf & myfit()$limits[ex,1] == -Inf){
+      #     pl <- qnorm(0.001, myfit()$Normal[ex,1], myfit()$Normal[ex,2])}
+      #   if(pu == Inf & myfit()$limits[ex,2] == Inf){
+      #     pu <- qnorm(0.999, myfit()$Normal[ex,1], myfit()$Normal[ex,2])}
+      #   p <- c(0, myfit()$probs[ex,], 1)
+      #   x <- c(pl, myfit()$vals[ex,], pu)
+      #   values <- qhist(c(input$fq1,input$fq2), x, p)
+      # }
       
-      ex <- 1
-      pl <- limits()[1]
-      pu <- limits()[2]
-      if(as.numeric(input$radio)==8){index<-best.index}else{index<-as.numeric(input$radio) - 1}
-      if(as.numeric(input$radio)==1){
-        if(pl == -Inf & myfit()$limits[ex,1] > -Inf){pl <- myfit()$limits[ex,1]}
-        if(pu == Inf & myfit()$limits[ex,2] < Inf){pu <- myfit()$limits[ex,2] }
-        if(pl == -Inf & myfit()$limits[ex,1] == -Inf){
-          pl <- qnorm(0.001, myfit()$Normal[ex,1], myfit()$Normal[ex,2])}
-        if(pu == Inf & myfit()$limits[ex,2] == Inf){
-          pu <- qnorm(0.999, myfit()$Normal[ex,1], myfit()$Normal[ex,2])}
-        p <- c(0, myfit()$probs[ex,], 1)
-        x <- c(pl, myfit()$vals[ex,], pu)
-        values <- qhist(c(input$fq1,input$fq2), x, p)
-      }
+      FB <- feedback(myfit(), 
+                                 quantiles = c(input$fq1, input$fq2),
+                                 ex = 1)
       
-      if(as.numeric(input$radio)>1){
-        temp<-feedback(myfit(), quantiles=c(input$fq1,input$fq2), ex=1)
-        values=temp$fitted.quantiles[,index]
+      
+      # 
+      # if(input$dist != "hist" & input$dist!= "best"){
+      #    values=temp$fitted.quantiles[, input$dist]
+      # }
+      
+      if(input$dist == "best"){
+        ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
+        best.index <- which(ssq == min(ssq))[1]
+        values <- FB$fitted.quantiles[, best.index]
+      }else{
+        # cleverly, I used different distribution labels in feedback...
+        index <- switch(input$dist,
+                        normal = "Normal",
+                        t = "Student-t",
+                        gamma = "Gamma",
+                        lognormal = "Log normal",
+                        logt = "Log Student-t",
+                        beta = "Beta",
+                        hist = "Histogram")
+        values <- FB$fitted.quantiles[, index]
+        
       }
+     
+      
+      
       data.frame(quantiles=c(input$fq1,input$fq2), values=values)
       
     }) 
@@ -399,7 +439,10 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     }) 
     
     output$report <- downloadHandler(
-      filename = "distributions-report.pdf",
+      filename = function(){switch(input$outFormat,
+                                   html_document = "distributions-report.html",
+                                   pdf_document = "distributions-report.pdf",
+                                   word_document = "distributions-report.docx")},
       content = function(file) {
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
@@ -417,11 +460,12 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
         # from the code in this app).
         rmarkdown::render(tempReport, output_file = file,
                           params = params,
+                          output_format = input$outFormat,
                           envir = new.env(parent = globalenv())
         )
       }
     )
     
   }
-  ))
+  ), launch.browser = TRUE)
 }

@@ -4,7 +4,9 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                         showFittedCDF = FALSE,
                         showQuantiles = FALSE,
                         ql = 0.05, 
-                        qu = 0.95){
+                        qu = 0.95,
+                        ex = 1,
+                        sf = 3){
   
   # Hack to avoid CRAN check NOTE
   
@@ -13,8 +15,7 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
   p1 <- ggplot(data.frame(x = c(lower, upper)), aes(x = x)) +
     annotate("point", x = v, y = p, size = 5) + 
     annotate("point", x = c(lower, upper), y = c(0, 1), size = 5, shape = 1)+
-    labs(title = "Cumulative distribution function",
-         y = "P(X<=x)", x = "x") +
+    labs(y = "P(X<=x)", x = "x") +
     theme(plot.title = element_text(hjust = 0.5),
           text = element_text(size = fontsize))
   
@@ -23,10 +24,11 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
   
   if(showFittedCDF){
     if(dist == "hist"){
+      dist.title <- "Histogram fit"
       p1 <- p1 + annotate("segment", x = c(lower, v),
                             y = c(0, p),
                             xend = c(v, upper),
-                            yend = c(p, 1))
+                            yend = c(p, 1)) 
       if(showQuantiles){
         xl <- qhist(ql, c(lower, v, upper), c(0, p, 1))
         xu <- qhist(qu, c(lower, v, upper), c(0, p, 1))
@@ -38,6 +40,12 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                                   
     }
     if(dist == "normal"){
+      
+      dist.title <- paste("Normal (mean = ",
+                          signif(fit$Normal[ex,1], sf),
+                          ", sd = ",
+                          signif(fit$Normal[ex,2], sf), ")",
+                          sep="")
       
       p1 <- p1 + stat_function(fun = pnorm, 
                              args = list(mean = fit$Normal[1, 1],
@@ -54,6 +62,12 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
     }
     if(dist == "t"){
       
+      dist.title=paste("Student-t(",
+                       signif(fit$Student.t[ex,1], sf),
+                       ", ",
+                       signif(fit$Student.t[ex,2], sf),
+                       ")",
+                       sep="")
       
       tcdf <- function(x){pt((x - fit$Student.t[1, 1]) /
                                fit$Student.t[1, 2], fit$Student.t[1, 3])}
@@ -72,6 +86,11 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
     }
     if(dist == "lognormal"){
       
+      dist.title = paste("Log normal(",
+                         signif(fit$Log.normal[ex,1], sf),
+                         ", ",
+                         signif(fit$Log.normal[ex,2], sf), ")",
+                         sep="")
       
       lncdf <- function(x){pnorm(log(x - lower), 
                                  mean = fit$Log.normal[1, 1],
@@ -92,6 +111,11 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
     }
     if(dist == "gamma"){
       
+      dist.title = paste("Gamma(",
+                         signif(fit$Gamma[ex,1], sf),
+                         ", ",
+                         signif(fit$Gamma[ex,2], sf),
+                         ")", sep="")
       
       gcdf <- function(x){pgamma(x - lower, 
                                  shape = fit$Gamma[1, 1],
@@ -113,6 +137,12 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
     }
     if(dist == "logt"){
       
+      dist.title = paste("Log T(",
+                         signif(fit$Log.Student.t[ex,1], sf),
+                         ", ",
+                         signif(fit$Log.Student.t[ex,2], sf),
+                         ")", sep="")
+      
       lntcdf <- function(x){pt((log(x - lower) - fit$Log.Student.t[1, 1]) /
                                  fit$Log.Student.t[1, 2], 
                                fit$Log.Student.t[1, 3])}
@@ -133,6 +163,11 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
     }
     if(dist == "beta"){
       
+      dist.title =paste("Beta(",
+                        signif(fit$Beta[ex,1], sf),
+                        ", ", signif(fit$Beta[ex,2], sf),
+                        ")", sep="")
+      
      
       bcdf <- function(x){pbeta((x - lower) / (upper - lower), 
                                  shape1 = fit$Beta[1, 1],
@@ -152,7 +187,7 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
       }
       
     }
-    
+  p1 <- p1 + labs(title = dist.title)  
   }
   
   p1
