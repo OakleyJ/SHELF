@@ -30,19 +30,21 @@ elicitDirichlet <- function(){
   titlePanel("SHELF: eliciting a Dirichlet distribution"),
   wellPanel(
     fluidRow(
-      column(2, 
-             numericInput("fs", label = NULL, value = 12)
+      column(3, selectInput("outFormat", label = "Report format",
+                            choices = list('html' = "html_document",
+                                           'pdf' = "pdf_document",
+                                           'Word' = "word_document"))
       ),
-      column(3, 
-             h5("Font size (plots)")
+      column(3, offset = 1, 
+             numericInput("fs", label = "Font size", value = 12)
+      )),
+    fluidRow(
+      column(3, downloadButton("report", "Download report")
       ),
-      column(3, 
-             downloadButton("report", "Download report")
-      ),
-      column(2, 
-             actionButton("exit", "Quit")
+      column(2, offset = 1, actionButton("exit", "Quit")
       )
     )
+    
   ),
   hr(),
   
@@ -212,7 +214,10 @@ server = function(input, output) {
   }) 
   
   output$report <- downloadHandler(
-    filename = "Dirichlet-report.pdf",
+    filename = function(){switch(input$outFormat,
+                                 html_document = "Dirichlet-report.html",
+                                 pdf_document = "Dirichlet-report.pdf",
+                                 word_document = "Dirichlet-report.docx")},
     content = function(file) {
       # Copy the report file to a temporary directory before processing it, in
       # case we don't have write permissions to the current working dir (which
@@ -234,6 +239,7 @@ server = function(input, output) {
       # from the code in this app).
       rmarkdown::render(tempReport, output_file = file,
                         params = params,
+                        output_format = input$outFormat,
                         envir = new.env(parent = globalenv())
       )
     }

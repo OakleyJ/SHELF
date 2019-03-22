@@ -22,7 +22,7 @@ showplots <- FALSE
 expert <- 1
 sf <- 3
 mydf <- data.frame( params$fit$vals[expert, ], params$fit$probs[expert, ])
-colnames(mydf) <- c( "x", "P(X<=x)")
+colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
 knitr::kable(mydf)
 ```
 

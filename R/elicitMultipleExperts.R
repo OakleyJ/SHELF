@@ -70,22 +70,21 @@ elicitMultiple <- function(){
       mainPanel(
         wellPanel(
           fluidRow(
-            column(1, 
-                   numericInput("fs", label = NULL, value = 12)
+            column(3, selectInput("outFormat", label = "Report format",
+                                  choices = list('html' = "html_document",
+                                                 'pdf' = "pdf_document",
+                                                 'Word' = "word_document"))
             ),
-            column(2, 
-                   h5("Font size (plots)")
+            column(3, offset = 1, 
+                   numericInput("fs", label = "Font size", value = 12)
+            )),
+          fluidRow(
+            column(3, downloadButton("report", "Download report")
             ),
-            column(2, selectInput("outFormat", label = NULL,
-                                  choices = list('html report' = "html_document",
-                                                 'pdf report' = "pdf_document",
-                                                 'Word report' = "word_document"))
-            ),
-            column(2, offset = 0.1, downloadButton("report", "Download")
-            ),
-            column(2, actionButton("exit", "Quit")
+            column(2, offset = 1, actionButton("exit", "Quit")
             )
           )
+          
         ),
         
         hr(),

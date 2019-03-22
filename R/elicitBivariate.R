@@ -152,26 +152,21 @@ elicitBivariate<- function(){
               ),
             wellPanel(
               fluidRow(
-                column(4, 
-                       downloadButton("report", "Download report")
-              ),
-              column(4, 
-                     downloadButton("downloadData", "Download sample")
-              )),
-              br(),
-              
+                column(3, selectInput("outFormat", label = "Report format",
+                                      choices = list('html' = "html_document",
+                                                     'pdf' = "pdf_document",
+                                                     'Word' = "word_document"))
+                ),
+                column(3, offset = 1, 
+                       numericInput("fs", label = "Font size", value = 12)
+                )),
               fluidRow(
-                column(2, 
-                       numericInput("fs", label = NULL, value = 12)
+                column(3, downloadButton("report", "Download report")
                 ),
-                column(3, 
-                       h5("Font size (plots)")
-                ),
-                
-                column(2, offset = 0,
-                       actionButton("exit", "Quit")
+                column(2, offset = 1, actionButton("exit", "Quit")
                 )
               )
+              
             )
             
       )
@@ -322,7 +317,10 @@ elicitBivariate<- function(){
     )
     
     output$report <- downloadHandler(
-      filename = "distributions-report.pdf",
+      filename = function(){switch(input$outFormat,
+                                   html_document = "distributions-report.html",
+                                   pdf_document = "distributions-report.pdf",
+                                   word_document = "distributions-report.docx")},
       content = function(file) {
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
@@ -341,6 +339,7 @@ elicitBivariate<- function(){
         # from the code in this app).
         rmarkdown::render(tempReport, output_file = file,
                           params = params,
+                          output_format = input$outFormat,
                           envir = new.env(parent = globalenv())
         )
       }

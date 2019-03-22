@@ -1,6 +1,9 @@
 ---
 title: "Fitted distributions (bivariate elicitation)"
-output: pdf_document
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
 date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
 fontsize: 11pt
 params:
