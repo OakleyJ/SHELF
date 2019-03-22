@@ -36,16 +36,15 @@ elicitMultiple <- function(){
                        value = 2, min = 1),
           textInput("probs", label = h5("Cumulative probabilities"), 
                     value = "0.25, 0.5, 0.75"),
-          radioButtons("radio", label = h5("Distribution"), 
-                       choices =  list("Histogram" = 1, 
-                                       "Normal" = 2, 
-                                       "Student t" = 3, 
-                                       "Gamma" = 4, 
-                                       "Log normal" = 5, 
-                                       "Log Student t" = 6, 
-                                       "Beta" = 7, 
-                                       "Best fitting" =8),
-                       selected = 1 )
+          selectInput("dist", label = "Distribution", 
+                      choices =  list(Histogram = "hist",
+                                      Normal = "normal", 
+                                      'Student-t' = "t",
+                                      Gamma = "gamma",
+                                      'Log normal' = "lognormal",
+                                      'Log Student-t' = "logt",
+                                      Beta = "beta", 
+                                      'Best fitting' = "best"))
           ),
           wellPanel(
           checkboxGroupInput("lp", label = h5("Linear pool"), 
@@ -71,20 +70,24 @@ elicitMultiple <- function(){
       mainPanel(
         wellPanel(
           fluidRow(
-            column(2, 
+            column(1, 
                    numericInput("fs", label = NULL, value = 12)
             ),
-            column(3, 
+            column(2, 
                    h5("Font size (plots)")
             ),
-            column(3, offset = 1,
-                   downloadButton("report", "Download report")
+            column(2, selectInput("outFormat", label = NULL,
+                                  choices = list('html report' = "html_document",
+                                                 'pdf report' = "pdf_document",
+                                                 'Word report' = "word_document"))
             ),
-            column(2, offset = 1,
-                   actionButton("exit", "Quit")
+            column(2, offset = 0.1, downloadButton("report", "Download")
+            ),
+            column(2, actionButton("exit", "Quit")
             )
           )
         ),
+        
         hr(),
         
         
@@ -182,7 +185,7 @@ if they have been provided,
    
     quantileValues <- reactive({
       values <- qlinearpool(myfit(), c(input$fq1, input$fq2), 
-                            d=dist[as.numeric(input$radio)], 
+                            d=input$dist, 
                             w = lpweights())
       data.frame(quantiles=c(input$fq1, input$fq2), values=values)
       
@@ -199,14 +202,14 @@ if they have been provided,
         
           print(makeGroupPlot(myfit(), pl = xlimits[1], 
                               pu = xlimits[2], 
-                              d=dist[as.numeric(input$radio)],
+                              d=input$dist,
                               lwd = 1,
                               xlab = "x",
                               ylab = expression(f[X](x)),
                               fs = input$fs))}else{
         print(makeLinearPoolPlot(myfit(), xl = xlimits[1], 
                                  xu = xlimits[2], 
-                                 d=dist[as.numeric(input$radio)], w = lpweights(), lwd = 1,
+                                 d=input$dist, w = lpweights(), lwd = 1,
                                  xlab = "x",
                                  ylab = expression(f[X](x)), legend_full = input$leg ==1,
                                  ql = quantileValues()[1, 2], 
@@ -246,7 +249,10 @@ if they have been provided,
     })
     
     output$report <- downloadHandler(
-      filename = "distributions-report.pdf",
+      filename = function(){switch(input$outFormat,
+                                   html_document = "distributions-report.html",
+                                   pdf_document = "distributions-report.pdf",
+                                   word_document = "distributions-report.docx")},
       content = function(file) {
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
@@ -264,6 +270,7 @@ if they have been provided,
         # from the code in this app).
         rmarkdown::render(tempReport, output_file = file,
                           params = params,
+                          output_format = input$outFormat,
                           envir = new.env(parent = globalenv())
         )
       }

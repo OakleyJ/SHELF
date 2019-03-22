@@ -44,8 +44,8 @@ function(fit, d = "best", ex = 1, pl, pu, ql = NULL, qu = NULL, nx = 200){
 	if(index==5){
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}
-		fx <- dt( (log(x - xl) - fit$Log.Student.t[ex,1]) / fit$Log.Student.t[ex,2], fit$Log.Student.t[ex,3]) / ((x - xl) * fit$Log.Student.t[ex,2])
-    fx[is.nan(fx)]<-0
+		fx <- dt( (log(abs(x - xl)) - fit$Log.Student.t[ex,1]) / fit$Log.Student.t[ex,2], fit$Log.Student.t[ex,3]) / ((x - xl) * fit$Log.Student.t[ex,2])
+    fx[x<= xl] <- 0 # Hack to avoid NaN
     
 	}
 		
