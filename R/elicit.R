@@ -2,12 +2,14 @@
 #' 
 #' Opens up a web browser (using the shiny package), from which you can specify
 #' judgements, fit distributions and plot the fitted density functions with
-#' additional feedback.
+#' additional feedback. Probabilities can be specified directly, or the roulette 
+#' elicitation method can be used. 
 #' 
 #' Click on the "Help" tab for instructions. Click the "Quit" button to exit the app and return
 #' the results from the \code{fitdist} command. Click "Download report" to generate a report
 #' of all the fitted distributions.
-#'   
+#'
+#' @aliases elicit roulette 
 #' @return An object of class \code{elicitation}, which is returned once the 
 #' Quit button has been clicked. See \code{\link{fitdist}} for details.
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
@@ -138,13 +140,13 @@ elicit<- function(){
                          helpText("The coloured bars divide the plausible range into three equally likely regions, as specified by the tertiles. The median
                                   is shown by a dashed line. The tertiles and median displayed will either be the elicited values, if they have been provided,
                                   or estimates obtained by linear interpolation of the elicited probabilities, with zero probability assumed
-                                  outside the plausible range.")),
+                                  outside the parameter limits.")),
                 tabPanel("Quartiles", plotOutput("quartiles"),
                          helpText("The coloured bars divide the plausible range 
 into four equally likely regions, as specified by the quartiles. The quartiles displayed will either be the elicited quartiles,
                                   if they have been provided,
                                   or estimates obtained by linear interpolation of the elicited probabilities, with zero probability assumed
-                                  outside the plausible range.")),
+                                  outside the parameter limits.")),
                 tabPanel("Roulette", 
                          conditionalPanel(
                            condition = "input.method == 2",

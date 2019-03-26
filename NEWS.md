@@ -1,5 +1,7 @@
-SHELF v1.4.0.9000 (2018-08-18) 
+SHELF v1.5.0 (2019-03-26) 
 ==============================
+
+* roulette() has been removed, and the roulette method is now available within elicit()
 
 * Extra argument percentages in plotfit() and plotTertiles() for using percentage scale on x-axis
 
@@ -17,9 +19,9 @@ tail area of the population distribution
 
 * New shiny app elicitMultiple() for fitting individual distributions to multiple experts' judgements
 
-* Bug fixed: plinearpool() now chooses the best fitting distribution for each expert if argument d = "best" is specified.
+* Bugs fixed: plinearpool() now chooses the best fitting distribution for each expert if argument d = "best" is specified. Correctly handles probabilities for log-t, where x is below lower limit.
 
-* Bug fixed: qlinearpool() could return NA in some cases if argument d = "best" was specified: now fixed.
+* Bugs fixed: qlinearpool() could return NA in some cases if argument d = "best" was specified: now fixed. Correctly handles probabilities for log-t, where x is below lower limit. Minor improvement to accuracy in estimated quantiles: finer grid used in linear interpolation of the quantile function.
 
 SHELF v1.4.0 (2018-08-18) 
 ==============================

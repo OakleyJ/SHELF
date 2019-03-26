@@ -131,7 +131,8 @@ plotfit <- function(fit,
       f2 <- feedback(fit, quantiles=0.99, dist=d)
       xu <- max(f2$expert.quantiles)
     }
-    if(int == FALSE){print(makeLinearPoolPlot(fit, xl, xu,  d , lpw, lwd, xlab, ylab, legend_full))}else{
+    if(int == FALSE){print(makeLinearPoolPlot(fit, xl, xu,  d , lpw,
+                                              lwd, xlab, ylab, legend_full))}else{
       shinyplotgroup(fit, xl, xu, lpw, lwd, xlab, ylab, legend_full)
     }
     
@@ -150,7 +151,7 @@ plotfit <- function(fit,
                                             )
                                       )
       }else{
-      shinyplotsingle(fit, xl, xu, ql, qu, ex, xlab, ylab)
+      shinyplotsingle(fit, xl, xu, ql, qu, ex, xlab, ylab, percentages)
     }
     
   }
@@ -162,7 +163,8 @@ plotfit <- function(fit,
                                                   xu, ql, qu, sf, ex = 1,
                                                   lwd, xlab, ylab,
                                                   percentages)))}else{
-      suppressWarnings(shinyplotsingle(fit, xl, xu, ql, qu, ex = 1, xlab, ylab))
+      suppressWarnings(shinyplotsingle(fit, xl, xu, ql, qu, ex = 1,
+                                       xlab, ylab, percentages))
     }
   }
 

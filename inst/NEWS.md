@@ -1,11 +1,27 @@
-SHELF v1.4.0.9000 (2018-08-18) 
+SHELF v1.5.0 (2019-03-26) 
 ==============================
 
-* Significant update to elicit() shiny app: can now swtich between multiple methods within the same app
+* roulette() has been removed, and the roulette method is now available within elicit()
+
+* Extra argument percentages in plotfit() and plotTertiles() for using percentage scale on x-axis
+
+* New function sampleFit(), for generating samples from fitted distributions.
+
+* Minor change to fitDirichlet(), to allow marginal elicitation fits to be 
+specified as a single list. 
+
+* Update to fitprecision(): interval used in the proportion method can now be a 
+tail area of the population distribution
+
+* New shiny app elicitBivariate() for eliciting bivariate distributions using a Gaussian copula
+
+* Significant update to elicit() shiny app: can now switch between multiple methods within the same app
 
 * New shiny app elicitMultiple() for fitting individual distributions to multiple experts' judgements
 
-* Bug fixed: plinearpool() now chooses the best fitting distribution for each expert if argument d = "best" is specified.  
+* Bugs fixed: plinearpool() now chooses the best fitting distribution for each expert if argument d = "best" is specified. Correctly handles probabilities for log-t, where x is below lower limit.
+
+* Bugs fixed: qlinearpool() could return NA in some cases if argument d = "best" was specified: now fixed. Correctly handles probabilities for log-t, where x is below lower limit. Minor improvement to accuracy in estimated quantiles: finer grid used in linear interpolation of the quantile function.
 
 SHELF v1.4.0 (2018-08-18) 
 ==============================

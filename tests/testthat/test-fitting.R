@@ -214,13 +214,16 @@ test_that("linear pooling works",{
   
   w1 <- 1/6; w2 <- 2/6; w3 <- 3/6
   xtest <- 1.5
-  qu <- 0.6
+  qu <- 0.95
   
   qlp <- qlinearpool(myfit, qu, w = c(w1, w2, w3))
   qcheck <- w1 * pgamma(qlp, a, b) + 
     w2 * pnorm(qlp, mu, sigma) +
     w3 * plnorm(qlp, log(mu), sigma)
   expect_equal(qcheck, qu , tolerance = 1e-4)
+  
+  expect_equal(plinearpool(myfit, qlp, w = c(w1, w2, w3)),
+               qu , tolerance = 1e-4)
   
   plp <- plinearpool(myfit, x = xtest, w = c(w1, w2, w3))
   pcheck <- w1 * pgamma(xtest, a, b) + 
@@ -243,13 +246,16 @@ test_that("linear pooling works - different lower limits",{
   
   w1 <- 1/6; w2 <- 2/6; w3 <- 3/6
   xtest <- 3
-  qu <- 0.4
+  qu <- 0.01
   
   qlp <- qlinearpool(myfit, qu, w = c(w1, w2, w3))
   qcheck <- w1 * pgamma(qlp - llimits[1], a, b) + 
     w2 * plnorm(qlp - llimits[2], log(mu), sigma) +
     w3 * pt((log(qlp - llimits[3]) - 1) / 2 , 3)
   expect_equal(qcheck, qu , tolerance = 1e-4)
+  
+  expect_equal(plinearpool(myfit, qlp, w = c(w1, w2, w3)),
+               qu , tolerance = 1e-4)
   
   plp <- plinearpool(myfit, x = xtest, w = c(w1, w2, w3))
   pcheck <- w1 * pgamma(xtest - llimits[1], a, b) + 

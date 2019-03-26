@@ -156,7 +156,7 @@ if they have been provided,
     })
     
     myfit <- reactive({
-      myfit<-fitdist(vals = v(),
+      myfit <-fitdist(vals = v(),
                      probs = p(),
                      lower = l(),
                      upper = u())
@@ -168,8 +168,7 @@ if they have been provided,
     })
     
     output$EnterJudgements <- renderUI({
-      initialdf <- matrix(c(0, 10, 20, 30, 100,
-                            0, 20, 30, 50, 150),
+      initialdf <- matrix(rep(1:(2 + length(p())), nExp()),
                           2 + length(p()),
                           nExp())
       colnames(initialdf) <- LETTERS[1:nExp()]
@@ -194,7 +193,7 @@ if they have been provided,
     })
     
     output$distPlot <- renderPlot({
-      req(myfit())
+      req(myfit()$ssq)
       xlimits <- c(min(l()), max(u()))
 
             if(is.null(input$lp)){

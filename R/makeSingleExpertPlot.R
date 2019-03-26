@@ -1,7 +1,9 @@
 makeSingleExpertPlot <-
 function(fit, d = "best", pl = -Inf, pu = Inf,
          ql = NA, qu = NA, sf = 3, ex = 1,
-         lwd = 1, xlab, ylab, percentages){
+         lwd = 1, xlab, ylab, percentages ){
+  
+  
   
 	if(d == "best"){
 		ssq <- fit$ssq[ex, is.na(fit$ssq[ex,])==F]

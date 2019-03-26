@@ -1,4 +1,4 @@
-shinyplotsingle<- function(fit, xl, xu, ql, qu, ex, xlab, ylab){
+shinyplotsingle<- function(fit, xl, xu, ql, qu, ex, xlab, ylab, percentages){
   
   plotlimits <- paste(xl, xu , sep = ",")
   
@@ -31,7 +31,8 @@ shinyplotsingle<- function(fit, xl, xu, ql, qu, ex, xlab, ylab){
     sidebarLayout(
       sidebarPanel(
         textInput("xlimits", label = h5("x-axis limits"), value = plotlimits),
-        radioButtons("radio", label = h5("Distribution"), choices = distributionchoices, selected = 1 ),
+        radioButtons("radio", label = h5("Distribution"), 
+                     choices = distributionchoices, selected = 1 ),
         numericInput("fq1", label = h5("lower feedback quantile"), value = ql, min=0, max=1),
         numericInput("fq2", label = h5("upper feedback quantile"), value = qu ,min=0, max=1)
       ),
@@ -56,12 +57,16 @@ shinyplotsingle<- function(fit, xl, xu, ql, qu, ex, xlab, ylab){
       #                  xl=xlimits[1], 
       #                  xu=xlimits[2], 
       #                  ex=ex))
-      print(makeSingleExpertPlot(fit, d=dist[as.numeric(input$radio)], 
-                        ql=input$fq1, 
-                        qu=input$fq2, 
-                        pl=xlimits[1], 
-                        pu=xlimits[2], 
-                        ex=ex, xlab = xlab, ylab = ylab))
+      print(makeSingleExpertPlot(fit,
+                                 d=dist[as.numeric(input$radio)],
+                                 ql=input$fq1,
+                                 qu=input$fq2,
+                                 pl=xlimits[1],
+                                 pu=xlimits[2],
+                                 ex=ex, 
+                                 xlab = xlab, 
+                                 ylab = ylab, 
+                                 percentages = percentages))
     })
     
     ssq <- fit$ssq[1, is.na(fit$ssq[1,])==F]

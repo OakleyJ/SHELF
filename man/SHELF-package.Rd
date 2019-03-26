@@ -16,7 +16,7 @@ elicitation method is also provided. For multiple experts, a weighted linear
 pool can be calculated.
 
 \tabular{ll}{ Package: \tab SHELF\cr Type: \tab Package\cr Version: \tab
-1.4.0\cr Date: \tab 2018-08-15\cr License: \tab GPL-2 | GPL-3\cr }
+1.5.0\cr Date: \tab 2019-03-26\cr License: \tab GPL-2 | GPL-3\cr }
 }
 \examples{
 \dontrun{
@@ -57,8 +57,9 @@ plotfit(myfit, int = TRUE, ex = 1)
 ## Enter judgements in interactive mode
 elicit()
 
-## Enter judgements using the roulette method
-roulette(lower = 0, upper = 100, nbins = 10, gridheight = 10)
+#' ## Enter separate judgements for each expert in interactive mode
+elicitMultiple()
+
 }
 }
 \references{

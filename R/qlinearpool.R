@@ -14,7 +14,10 @@ function(fit, q, d = "best", w = 1){
 	qx<-rep(0, n.q)
 	
 	for(i in 1:n.q){
-		x <- seq(from = 0.999*min(qx.individual[i,]), 1.001*max(qx.individual[i,]), length = 100)
+		x <- seq(from = min(qx.individual[i,]) - 
+		           abs(0.001 * min(qx.individual[i,])),
+		         to = max(qx.individual[i,]) +
+		           abs(0.001 * max(qx.individual[i,])), length = 10000)
 		px <- plinearpool(fit, x, d, w)
 		qx[i] <- approx(x = px, y = x, xout = q[i])$y 
 	}
