@@ -34,19 +34,28 @@ elicitMultiple <- function(){
         wellPanel(
           numericInput("nExperts", label = h5("Number of experts"),
                        value = 2, min = 1),
+          radioButtons("entry", "Input method", 
+                       choices = c("Quantiles", "Roulette")),
+          conditionalPanel(
+            condition = "input.entry == 'Quantiles'",
           textInput("probs", label = h5("Cumulative probabilities"), 
-                    value = "0.25, 0.5, 0.75"),
-          selectInput("dist", label = "Distribution", 
-                      choices =  list(Histogram = "hist",
-                                      Normal = "normal", 
-                                      'Student-t' = "t",
-                                      Gamma = "gamma",
-                                      'Log normal' = "lognormal",
-                                      'Log Student-t' = "logt",
-                                      Beta = "beta", 
-                                      'Best fitting' = "best"))
+                    value = "0.25, 0.5, 0.75")),
+          conditionalPanel(
+            condition = "input.entry == 'Roulette'",
+            numericInput("nBins", label = h5("Number of bins"), value = 10),
+            textInput("limits", label = h5("Parameter limits"), value = "0, 100")
+                 )
           ),
           wellPanel(
+            selectInput("dist", label = "Distribution", 
+                        choices =  list(Histogram = "hist",
+                                        Normal = "normal", 
+                                        'Student-t' = "t",
+                                        Gamma = "gamma",
+                                        'Log normal' = "lognormal",
+                                        'Log Student-t' = "logt",
+                                        Beta = "beta", 
+                                        'Best fitting' = "best")),
           checkboxGroupInput("lp", label = h5("Linear pool"), 
                              choices = list("Display linear pool" = 1)),
           conditionalPanel(
@@ -92,11 +101,19 @@ elicitMultiple <- function(){
         
         tabsetPanel(
           tabPanel("Judgements",
-                   helpText("Enter the judgements in the table below,
+                   conditionalPanel(
+                     condition = "input.entry == 'Quantiles'",
+                     helpText("Enter the judgements in the table below,
                             one column per expert. Enter lower plausible limits in the first row,
                             upper plausible limits in the last row, and quantile values in between, 
                             corresponding to the cumulative probabilities."),
-                   uiOutput("EnterJudgements")
+                     uiOutput("EnterQuantiles")
+                   ),
+                   conditionalPanel(
+                     condition = "input.entry == 'Roulette'",
+                     helpText("Enter the number of chips allocated to each bin, one row per expert."),
+                     uiOutput("EnterChips")
+                   )
                  
                    ),
           tabPanel("PDF",
@@ -127,10 +144,19 @@ if they have been provided,
   server <- shinyServer(function(input, output) {
     
    
-    p <- reactive({
+    pQuantile <- reactive({
       tryCatch(eval(parse(text = paste("c(",
                                        input$probs, ")"))),
                error = function(e){c(NaN, NaN, NaN)})
+    })
+    
+    pChip <- reactive({
+      rouletteP <- apply(input$myChips, 1, cumsum) /
+        matrix(apply(input$myChips, 1, sum), 
+               ncol(input$myChips), nExp(), byrow = TRUE)
+      rownames(rouletteP) <- NULL
+      rouletteP
+      
     })
     
     lpweights <- reactive({
@@ -141,25 +167,57 @@ if they have been provided,
       req(input$nExperts)
       max(c(input$nExperts, 1))
     })
+    
+    boundaries <- reactive({
+      limits <- eval(parse(text=paste("c(",input$limits,")")))
+      signif(seq(from = limits[1],
+                 to = limits[2],
+                 length = 1 + input$nBins),
+             3)
+    })
   
     l <- reactive({
-      input$myvals[1, ] 
+      quantileL <- input$myvals[1, ] 
+      rouletteL <- boundaries()[1]
+      ifelse(input$entry == "Quantiles", quantileL, rouletteL)
     })
     
     u <- reactive({
-      as.numeric(utils::tail(input$myvals, 1))
+      quantileU <- as.numeric(utils::tail(input$myvals, 1))
+      rouletteU <- boundaries()[1 + input$nBins]
+      ifelse(input$entry == "Quantiles", quantileU, rouletteU)
     })
     
-    v <- reactive({
+    vQuantile <- reactive({
       n <- nrow(input$myvals)
       as.matrix(input$myvals[2:(n - 1), ])
     })
     
-    myfit <- reactive({
-      myfit <-fitdist(vals = v(),
-                     probs = p(),
+    vChip <- reactive({
+      matrix(boundaries()[2:(input$nBins +1)],
+             input$nBins,
+             input$nExperts)
+    })
+    
+    
+    myfitQuantile <- reactive({
+      fitdist(vals = vQuantile(),
+                     probs = pQuantile(),
                      lower = l(),
                      upper = u())
+    })
+    
+    myfitChip <- reactive({
+      fitdist(vals = vChip(),
+              probs = pChip(),
+              lower = l(),
+              upper = u())
+    })
+    
+    myfit <- reactive({
+      if(input$entry == "Quantiles"){mf <- myfitQuantile()}
+      if(input$entry == "Roulette"){mf <- myfitChip()}
+      mf
     })
     
     output$setLPWeights <- renderUI({
@@ -167,17 +225,38 @@ if they have been provided,
                 paste(rep(1, input$nExperts), collapse = ", "))
     })
     
-    output$EnterJudgements <- renderUI({
-      initialdf <- matrix(rep(1:(2 + length(p())), nExp()),
-                          2 + length(p()),
+    output$EnterQuantiles <- renderUI({
+      initialdf <- matrix(rep(1:(2 + length(pQuantile())), nExp()),
+                          2 + length(pQuantile()),
                           nExp())
       colnames(initialdf) <- LETTERS[1:nExp()]
-      rownames(initialdf) <- c("L", p(), "U")
+      rownames(initialdf) <- c("L", pQuantile(), "U")
       
       shinyMatrix::matrixInput(inputId = "myvals", value =  initialdf,
                                class = "numeric",
                                cols = list(names = TRUE),
-                               rows = list(names = TRUE))
+                               rows = list(names = TRUE),
+                               paste = TRUE,
+                               copy = TRUE)
+    })
+    
+    output$EnterChips <- renderUI({
+      initialdf <- matrix(0, nExp(), input$nBins)
+      
+      rownames(initialdf) <- LETTERS[1:nExp()]
+      
+      colnames(initialdf)<- paste0("(",
+                                   boundaries()[1:input$nBins],
+                                   "-",
+                                   boundaries()[2:(1 + input$nBins)], "]")
+      
+      
+      shinyMatrix::matrixInput(inputId = "myChips", value =  initialdf,
+                               class = "numeric",
+                               cols = list(names = TRUE),
+                               rows = list(names = TRUE),
+                               paste = TRUE,
+                               copy = TRUE)
     })
     
    
@@ -222,9 +301,15 @@ if they have been provided,
       req(myfit())
       tertilevals <- matrix(0, 3, input$nExperts)
       for(i in 1:input$nExperts){
-        tertilevals[, i] <- approx(c(0, p(), 1), 
+        if(input$entry == "Quantiles"){
+        tertilevals[, i] <- approx(c(0, pQuantile(), 1), 
                             input$myvals[,  i],
-                            c(1/3, 0.5, 2/3))$y
+                            c(1/3, 0.5, 2/3))$y}
+        if(input$entry == "Roulette"){
+          tertilevals[, i] <- approx(pChip()[, i], 
+                                     vChip()[, i],
+                                     c(1/3, 0.5, 2/3))$y}
+        
       }
       plotTertiles(tertilevals, l(), u(), fs = input$fs)
       
@@ -234,9 +319,15 @@ if they have been provided,
       req(myfit())
       quartilevals <- matrix(0, 3, input$nExperts)
       for(i in 1:input$nExperts){
-        quartilevals[, i] <- approx(c(0, p(), 1), 
+        if(input$entry == "Quantiles"){
+        quartilevals[, i] <- approx(c(0, pQuantile(), 1), 
                             input$myvals[,  i],
-                            c(0.25, 0.5, 0.75))$y
+                            c(0.25, 0.5, 0.75))$y}
+        if(input$entry == "Roulette"){
+          quartilevals[, i] <- approx(pChip()[, i], 
+                                     vChip()[, i],
+                                     c(0.25, 0.5, 0.75))$y}
+        
       }
       plotQuartiles(quartilevals, l(), u(), fs = input$fs)
       
@@ -261,7 +352,9 @@ if they have been provided,
                   tempReport, overwrite = TRUE)
         
         # Set up parameters to pass to Rmd document
-        params <- list(fit = myfit())
+        params <- list(fit = myfit(), 
+                       entry = input$entry, 
+                       chips = input$myChips)
         
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document

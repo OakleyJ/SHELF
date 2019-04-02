@@ -152,6 +152,8 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 		  m <- (minvals * maxq - maxvals * minq) / (maxq - minq)
 		  v <- ((maxvals - minvals) / (maxq - minq))^2
 		}else{
+		  minq <- qnorm(min(probs[probs[, i] > 0, i]))
+		  maxq <- qnorm(max(probs[probs[, i] < 1, i]))
 		  m <- q.fit[2] # Estimated median on original scale
 		  v<- (u - l)^2 / 0.25 # Estimated variance on original scale
 		} 

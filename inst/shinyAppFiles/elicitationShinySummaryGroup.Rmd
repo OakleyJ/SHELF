@@ -8,6 +8,8 @@ date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
 fontsize: 11pt
 params:
   fit: NA
+  entry: NA
+  chips: NA
 ---
 
 
@@ -17,7 +19,7 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 showplots <- FALSE
 ```
 
-### Elicited cumulative probabilities
+### Elicited judgements
 
 ```{r}
 l <- params$fit$limits[, 1]
@@ -25,10 +27,30 @@ expert <- 1
 sf <- 3
 mydf <- data.frame(params$fit$probs[expert, ],  t(params$fit$vals) )
 colnames(mydf)[1] <- "quantiles"
-knitr::kable(mydf)
+rownames(mydf) <- NULL
+if(params$entry == "Quantiles"){
+  subsection = ""
+  knitr::kable(mydf)}
+if(params$entry == "Roulette"){
+  subsection = "Implied cumulative probabilities:"
+  knitr::kable(params$chips)
+}
+
 n.experts <- nrow(params$fit$probs)
 expertnames <- paste("expert ", LETTERS[1:n.experts], sep="")
 ```
+
+
+`r subsection`
+
+```{r}
+if(params$entry == "Roulette"){
+  mydf <- data.frame(values = params$fit$vals[1, ], 
+                     t(params$fit$probs))
+  knitr::kable(mydf)
+}
+```
+
 
 
 ```{r}
