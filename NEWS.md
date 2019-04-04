@@ -1,3 +1,10 @@
+SHELF v1.5.0.9000 (2019-04-02) 
+==============================
+
+* elicitMultiple() app: can now enter judgements with the roulette method, and save/load judgements 
+as .csv files
+
+
 SHELF v1.5.0 (2019-03-26) 
 ==============================
 
