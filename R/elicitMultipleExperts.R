@@ -197,15 +197,17 @@ if they have been provided,
     })
     
     l <- reactive({
-      quantileL <- input$myvals[1, ] 
-      rouletteL <- boundaries()[1]
-      ifelse(input$entry == "Quantiles", quantileL, rouletteL)
+      if(input$entry == "Quantiles"){
+        return(input$myvals[1, ])}
+      if(input$entry == "Roulette"){
+        return(boundaries()[1])}
     })
     
     u <- reactive({
-      quantileU <- as.numeric(utils::tail(input$myvals, 1))
-      rouletteU <- boundaries()[1 + input$nBins]
-      ifelse(input$entry == "Quantiles", quantileU, rouletteU)
+      if(input$entry == "Quantiles"){
+        return(input$myvals[nrow(input$myvals), ])}
+      if(input$entry == "Roulette"){
+        return(boundaries()[1 + input$nBins])}
     })
     
     vQuantile <- reactive({
