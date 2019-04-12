@@ -67,10 +67,8 @@ elicitMultiple <- function(){
           checkboxInput("showfeedback", label = "Show feedback", value = FALSE),
           conditionalPanel(
             condition = "input.showfeedback == true",
-            numericInput("fq1", label = h5("lower feedback quantile"), 
-                         value = 0.05,min=0,max=1),
-            numericInput("fq2", label = h5("upper feedback quantile"),
-                         value = 0.95,min=0,max=1)
+            textInput("fq", label = h5("Feedback quantiles"), 
+                      value = "0.05, 0.95")
             )
           )
         )
@@ -119,7 +117,8 @@ elicitMultiple <- function(){
                      condition = "input.entry == 'Roulette'",
                      helpText("Enter the number of chips allocated to each bin, one row per expert. 
                             The bins are defined to have equal size, starting and ending at the specified
-                            values in 'Parameter limits'"),
+                            values in 'Parameter limits'. To fit distributions, 
+                              each expert must have at least three non-empty bins."),
                      uiOutput("EnterChips"),
                      fluidRow(
                        column(3, downloadButton("saveChips", "Download judgements") ),
@@ -168,7 +167,7 @@ if they have been provided,
     pQuantile <- reactive({
       tryCatch(eval(parse(text = paste("c(",
                                        input$probs, ")"))),
-               error = function(e){c(NaN, NaN, NaN)})
+               error = function(e){NULL})
     })
     
     pChip <- reactive({
@@ -187,12 +186,30 @@ if they have been provided,
     })
     
     lpweights <- reactive({
-      eval(parse(text=paste("c(",input$weights,")")))
+      tryCatch(eval(parse(text=paste("c(",input$weights,")"))),
+               error = function(e){NULL})
+      
+    })
+    
+    fq <- reactive({
+      feedbackq <- tryCatch(eval(parse(text=paste("c(",input$fq,")"))),
+               error = function(e){NULL})
+      if(!is.null(feedbackq)){
+        if(min(feedbackq)<=0 | max(feedbackq)>=1){
+          return(NULL)
+        }
+      }
+      return(feedbackq)
+      
     })
     
     nExp <- reactive({
       req(input$nExperts)
-      max(c(input$nExperts, 1))
+      if(input$nExperts <=0 | !is.integer(input$nExperts)){
+        return(NULL)}else{
+          return(input$nExperts)
+        }
+      
     })
     
     boundaries <- reactive({
@@ -251,8 +268,9 @@ if they have been provided,
     })
     
     output$setLPWeights <- renderUI({
+      req(nExp())
       textInput("weights", label = h5("Linear pool weights"), 
-                paste(rep(1, input$nExperts), collapse = ", "))
+                paste(rep(1, nExp()), collapse = ", "))
     })
     
     output$EnterQuantiles <- renderUI({
@@ -346,10 +364,12 @@ if they have been provided,
     
     
     quantileValues <- reactive({
-      values <- qlinearpool(myfit(), c(input$fq1, input$fq2), 
+
+      req(lpweights(), myfit(), fq())
+      values <- qlinearpool(myfit(), fq(), 
                             d=input$dist, 
                             w = lpweights())
-      data.frame(quantiles=c(input$fq1, input$fq2), values=values)
+      data.frame(quantiles = fq(), values=values)
       
     }) 
     output$lpquantiles <- renderTable({
@@ -369,11 +389,13 @@ if they have been provided,
     })
     
     xlimPDF <- reactive({
-      eval(parse(text = paste("c(", input$xlimPDF, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$xlimPDF, ")"))),
+               error = function(e){NULL})
+      
     })
     
     output$distPlot <- renderPlot({
-      req(myfit())
+      req(myfit(), lpweights(), fq(), xlimPDF())
       xlimits <- xlimPDF()
       
       if(is.null(input$lp)){
