@@ -82,22 +82,12 @@ elicit<- function(){
           numericInput("tdf", label = h5("Student-t degrees of freedom"),
                      value = 3)
           ),
-        # checkboxInput("showQuantiles", label = "show fitted quantiles"),
-        # conditionalPanel(
-        #   condition = "input.showQuantiles == true",
-          numericInput("fq1", label = h5("lower feedback quantile"),
-                       value = 0.05,min=0,max=1),
-          numericInput("fq2", label = h5("upper feedback quantile"),
-                       value = 0.95,min=0,max=1)
-        #)
+        textInput("fq", label = h5("Feedback quantiles"), 
+                  value = "0.05, 0.95")
+    
           )
         )
-      #  downloadButton("report", "Download report"),
-        
-        # Include in the R package, but not in the web app
-        #actionButton("exit", "Finish"),
-        
-        #actionButton("exit", "Quit")
+     
       ),
             mainPanel(
               tags$style(type="text/css",
@@ -131,11 +121,25 @@ elicit<- function(){
                          plotOutput("distPlot"),
                          conditionalPanel(
                            condition = "input.showFittedPDF == true",
-                         tableOutput("valuesPDF"))),
+                           fluidRow(
+                             column(4,
+                                    tableOutput("valuesPDF")
+                                    ),
+                             column(4, 
+                                    uiOutput("setPDFxaxisLimits"))
+                           )
+                         )),
                 tabPanel("CDF", plotOutput("cdf"),
                          conditionalPanel(
                            condition = "input.showFittedCDF == true",
-                         tableOutput("valuesCDF"))),
+                           fluidRow(
+                             column(4,
+                                    tableOutput("valuesCDF")
+                             ),
+                             column(4, 
+                                    uiOutput("setCDFxaxisLimits"))
+                           )
+                         )),
                 tabPanel("Tertiles", plotOutput("tertiles"),
                          helpText("The coloured bars divide the plausible range into three equally likely regions, as specified by the tertiles. The median
                                   is shown by a dashed line. The tertiles and median displayed will either be the elicited values, if they have been provided,
@@ -176,6 +180,10 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     
     limits <- reactive({
       eval(parse(text = paste("c(", input$limits, ")")))
+    })
+    
+    fq <- reactive({
+      eval(parse(text = paste("c(", input$fq, ")")))
     })
     
     p <- reactive({
@@ -282,14 +290,23 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
        stopApp(myfit())
      }) 
     
+     output$setPDFxaxisLimits <- renderUI({
+       textInput("xlimPDF", label = h5("x-axis limits"), 
+                 paste(limits(), collapse = ", "))
+     }) 
+     
+     xlimPDF <- reactive({
+       eval(parse(text = paste("c(", input$xlimPDF, ")")))
+     })
+     
     output$distPlot <- renderPlot({
       
     if(input$showFittedPDF){
       
       dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
       suppressWarnings(plotfit(myfit(), d = input$dist,
-                               int = F, ql = input$fq1, qu = input$fq2,
-                               xl = limits()[1], xu = limits()[2], 
+                               int = F, ql = fq()[1], qu = fq()[2],
+                               xl = xlimPDF()[1], xu = xlimPDF()[2], 
                                fs = input$fs))
     }
       
@@ -303,6 +320,15 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       makeQuartilePlot(limits()[1], Q1(), m(), Q3(), limits()[2], input$fs)
     })
     
+    output$setCDFxaxisLimits <- renderUI({
+      textInput("xlimCDF", label = h5("x-axis limits"), 
+                paste(limits(), collapse = ", "))
+    }) 
+    
+    xlimCDF <- reactive({
+      eval(parse(text = paste("c(", input$xlimCDF, ")")))
+    })
+    
     output$cdf <- renderPlot({
       
       if(input$dist == "best"){
@@ -310,48 +336,40 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
         best.index <- which(ssq == min(ssq))[1]
         dist <-c("normal", "t", "gamma", "lognormal",
               "logt","beta")
-        makeCDFPlot(limits()[1], v(), p(), limits()[2], input$fs,
-                  myfit(), dist = dist[best.index],
-                  showFittedCDF = input$showFittedCDF,
-                  showQuantiles = TRUE)}else{
-                    makeCDFPlot(limits()[1], v(), p(), limits()[2], input$fs,
-                                myfit(), dist = input$dist,
-                                showFittedCDF = input$showFittedCDF,
-                                showQuantiles = TRUE)
-                    
-                  }
+        mydist <- dist[best.index]}else{
+          mydist <- input$dist
+        }
+      
+      if(is.null(xlimCDF())){
+        xL <- limits()[1]
+        xU <- limits()[2]
+      }else{
+        xL <- xlimCDF()[1]
+        xU <- xlimCDF()[2]
+      }
+     
+  
+        makeCDFPlot(lower = limits()[1],
+                    v = v(),
+                    p = p(), limits()[2],
+                    input$fs,
+                    fit = myfit(),
+                    dist = mydist,
+                    showFittedCDF = input$showFittedCDF,
+                    showQuantiles = TRUE,
+                    ql = fq()[1],
+                    qu = fq()[2],
+                    xaxisLower = xL,
+                    xaxisUpper = xU)
       
     })
     
-
+    
     quantileValues <- reactive({
-      # ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
-      # best.index <- which(ssq == min(ssq))[1]
-      # 
-      # ex <- 1
-      # pl <- limits()[1]
-      # pu <- limits()[2]
-      # #  if(input$dist=="hist"){
-      #   if(pl == -Inf & myfit()$limits[ex,1] > -Inf){pl <- myfit()$limits[ex,1]}
-      #   if(pu == Inf & myfit()$limits[ex,2] < Inf){pu <- myfit()$limits[ex,2] }
-      #   if(pl == -Inf & myfit()$limits[ex,1] == -Inf){
-      #     pl <- qnorm(0.001, myfit()$Normal[ex,1], myfit()$Normal[ex,2])}
-      #   if(pu == Inf & myfit()$limits[ex,2] == Inf){
-      #     pu <- qnorm(0.999, myfit()$Normal[ex,1], myfit()$Normal[ex,2])}
-      #   p <- c(0, myfit()$probs[ex,], 1)
-      #   x <- c(pl, myfit()$vals[ex,], pu)
-      #   values <- qhist(c(input$fq1,input$fq2), x, p)
-      # }
       
       FB <- feedback(myfit(), 
-                                 quantiles = c(input$fq1, input$fq2),
-                                 ex = 1)
-      
-      
-      # 
-      # if(input$dist != "hist" & input$dist!= "best"){
-      #    values=temp$fitted.quantiles[, input$dist]
-      # }
+                     quantiles = fq(),
+                     ex = 1)
       
       if(input$dist == "best"){
         ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
@@ -370,10 +388,8 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
         values <- FB$fitted.quantiles[, index]
         
       }
-     
       
-      
-      data.frame(quantiles=c(input$fq1,input$fq2), values=values)
+      data.frame(quantiles=fq(), values=values)
       
     }) 
     

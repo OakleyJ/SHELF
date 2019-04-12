@@ -6,13 +6,15 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                         ql = 0.05, 
                         qu = 0.95,
                         ex = 1,
-                        sf = 3){
+                        sf = 3,
+                        xaxisLower = lower,
+                        xaxisUpper = upper){
   
   # Hack to avoid CRAN check NOTE
   
   x <- NULL
   
-  p1 <- ggplot(data.frame(x = c(lower, upper)), aes(x = x)) +
+  p1 <- ggplot(data.frame(x = c(xaxisLower, xaxisUpper)), aes(x = x)) +
     annotate("point", x = v, y = p, size = 5) + 
     annotate("point", x = c(lower, upper), y = c(0, 1), size = 5, shape = 1)+
     labs(y = "P(X<=x)", x = "x") +
@@ -28,14 +30,14 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
       p1 <- p1 + annotate("segment", x = c(lower, v),
                             y = c(0, p),
                             xend = c(v, upper),
-                            yend = c(p, 1)) 
+                            yend = c(p, 1)) +
+        xlim(xaxisLower, xaxisUpper)
       if(showQuantiles){
         xl <- qhist(ql, c(lower, v, upper), c(0, p, 1))
         xu <- qhist(qu, c(lower, v, upper), c(0, p, 1))
-        
           p1 <- p1 + 
-          addQuantileCDF(lower, xl, ql, upper) + 
-          addQuantileCDF(lower, xu, qu, upper) 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
                                   
     }
@@ -55,8 +57,8 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
         xl <- qnorm(ql, mean = fit$Normal[1, 1], sd = fit$Normal[1, 2])
         xu <- qnorm(qu, mean = fit$Normal[1, 1], sd = fit$Normal[1, 2])
         p1 <- p1 + 
-          addQuantileCDF(lower, xl, ql, upper) + 
-          addQuantileCDF(lower, xu, qu, upper) 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
         }
       
     }
@@ -79,8 +81,8 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
         xu <- fit$Student.t[1, 1] + 
           fit$Student.t[1, 2] * qt(qu, fit$Student.t[1, 3])
         p1 <- p1 + 
-          addQuantileCDF(lower, xl, ql, upper) + 
-          addQuantileCDF(lower, xu, qu, upper) 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
       
     }
@@ -92,9 +94,12 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                          signif(fit$Log.normal[ex,2], sf), ")",
                          sep="")
       
-      lncdf <- function(x){pnorm(log(x - lower), 
-                                 mean = fit$Log.normal[1, 1],
-                                 sd = fit$Log.normal[1, 2])}
+      lncdf <- function(x){
+        plnorm(x - lower, 
+               meanlog = fit$Log.normal[1, 1],
+               sdlog = fit$Log.normal[1, 2])
+        
+      }
       p1 <- p1 + stat_function(fun = lncdf)
       
       if(showQuantiles){
@@ -103,8 +108,8 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
         xu <- lower + qlnorm(qu, meanlog = fit$Log.normal[1, 1],
                              sdlog = fit$Log.normal[1, 2])
         p1 <- p1 + 
-          addQuantileCDF(lower, xl, ql, upper) + 
-          addQuantileCDF(lower, xu, qu, upper) 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
       
       
@@ -130,8 +135,8 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                              shape = fit$Gamma[1, 1],
                              rate = fit$Gamma[1, 2])
         p1 <- p1 + 
-          addQuantileCDF(lower, xl, ql, upper) + 
-          addQuantileCDF(lower, xu, qu, upper) 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
       
     }
@@ -143,9 +148,15 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                          signif(fit$Log.Student.t[ex,2], sf),
                          ")", sep="")
       
-      lntcdf <- function(x){pt((log(x - lower) - fit$Log.Student.t[1, 1]) /
-                                 fit$Log.Student.t[1, 2], 
-                               fit$Log.Student.t[1, 3])}
+      lntcdf <- function(x){
+        # Need to handle case of x < lower
+        
+        p <- pt((log(abs(x - lower)) - fit$Log.Student.t[1, 1]) /
+                  fit$Log.Student.t[1, 2], 
+                fit$Log.Student.t[1, 3])
+        p[x <= lower] <- 0
+        p
+      }
       p1 <- p1 + stat_function(fun = lntcdf)
       
       if(showQuantiles){
@@ -156,8 +167,8 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                             fit$Log.Student.t[1, 2] * 
                             qt(qu, fit$Log.Student.t[1, 3]))
         p1 <- p1 + 
-          addQuantileCDF(lower, xl, ql, upper) + 
-          addQuantileCDF(lower, xu, qu, upper) 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
       
     }
@@ -182,8 +193,8 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                                               shape1 = fit$Beta[1, 1],
                                               shape2 = fit$Beta[1, 2])
         p1 <- p1 + 
-          addQuantileCDF(lower, xl, ql, upper) + 
-          addQuantileCDF(lower, xu, qu, upper) 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
       
     }
