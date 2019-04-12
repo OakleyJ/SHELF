@@ -247,6 +247,7 @@ if they have been provided,
     
     
     myfitQuantile <- reactive({
+      req(pQuantile(), vQuantile(), l(), u())
       fitdist(vals = vQuantile(),
               probs = pQuantile(),
               lower = l(),
@@ -395,7 +396,7 @@ if they have been provided,
     })
     
     output$distPlot <- renderPlot({
-      req(myfit(), lpweights(), fq(), xlimPDF())
+      req(myfit(), lpweights(), fq(), xlimPDF(), input$fs)
       xlimits <- xlimPDF()
       
       if(is.null(input$lp)){
@@ -421,7 +422,7 @@ if they have been provided,
     })
     
     output$Tertiles <- renderPlot({
-      req(myfit())
+      req(myfit(), input$fs)
       tertilevals <- matrix(0, 3, input$nExperts)
       for(i in 1:input$nExperts){
         if(input$entry == "Quantiles"){
@@ -439,7 +440,7 @@ if they have been provided,
     })
     
     output$Quartiles <- renderPlot({
-      req(myfit())
+      req(myfit(), input$fs)
       quartilevals <- matrix(0, 3, input$nExperts)
       for(i in 1:input$nExperts){
         if(input$entry == "Quantiles"){

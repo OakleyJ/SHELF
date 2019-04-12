@@ -54,9 +54,9 @@ elicit<- function(){
           wellPanel(
             h5("Roulette options"),
             numericInput("nBins", label = h5("Number of bins"),
-                         value = 10),
+                         value = 10, min = 3),
             numericInput("gridHeight", 
-                         label = h5("Grid height"), value = 10)
+                         label = h5("Grid height"), value = 10, min  = 1)
           )
         ),
             
@@ -122,22 +122,23 @@ elicit<- function(){
                          conditionalPanel(
                            condition = "input.showFittedPDF == true",
                            fluidRow(
+                             column(4, 
+                                    uiOutput("setPDFxaxisLimits")),
                              column(4,
                                     tableOutput("valuesPDF")
-                                    ),
-                             column(4, 
-                                    uiOutput("setPDFxaxisLimits"))
+                             )
                            )
                          )),
                 tabPanel("CDF", plotOutput("cdf"),
                          conditionalPanel(
                            condition = "input.showFittedCDF == true",
                            fluidRow(
+                             column(4, 
+                                    uiOutput("setCDFxaxisLimits")),
                              column(4,
                                     tableOutput("valuesCDF")
-                             ),
-                             column(4, 
-                                    uiOutput("setCDFxaxisLimits"))
+                             )
+                             
                            )
                          )),
                 tabPanel("Tertiles", plotOutput("tertiles"),
@@ -179,34 +180,43 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
   server = function(input, output) {
     
     limits <- reactive({
-      eval(parse(text = paste("c(", input$limits, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$limits, ")"))),
+               error = function(e){NULL})
     })
     
     fq <- reactive({
-      eval(parse(text = paste("c(", input$fq, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$fq, ")"))),
+               error = function(e){NULL})
+      
     })
     
     p <- reactive({
-      gp <- eval(parse(text = paste("c(", input$probs, ")")))
+      gp <-  tryCatch(eval(parse(text = paste("c(", input$probs, ")"))),
+                      error = function(e){NULL})
+        
       rp <- rl$allBinsPr[rl$nonEmpty]
       if(input$method ==1){myp <- gp}else{myp <- rp}
       myp
     })
     
     v <- reactive({
-      gv <- eval(parse(text = paste("c(", input$values, ")")))
+      gv <-  tryCatch(eval(parse(text = paste("c(", input$values, ")"))),
+                      error = function(e){NULL})
+        
       rv <- bin.right()[rl$nonEmpty]
       if(input$method ==1){myv <- gv}else{myv <- rv}
       myv
     })
   
     myfit <- reactive({
+      req(limits(), v(), p())
         fitdist(vals = v(), probs = p(), lower = limits()[1],
               upper = limits()[2], 
               tdf = input$tdf)
     })
     
     t1 <- reactive({
+      req(p(), v(), limits())
       if(min(p()) > 1/3){
         xIn <- c(0, p())
         yIn <- c(limits()[1], v())
@@ -218,6 +228,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     })
     
     Q1 <- reactive({
+      req(p(), v(), limits())
       if(min(p()) > 0.25){
         xIn <- c(0, p())
         yIn <- c(limits()[1], v())
@@ -229,6 +240,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     })
     
     Q3 <- reactive({
+      req(p(), v(), limits())
       if(max(p()) < 0.75){
         xIn <- c(p(), 1)
         yIn <- c(v(), limits()[2])
@@ -240,6 +252,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     })
     
     t2 <- reactive({
+      req(p(), v(), limits())
       if(max(p()) < 2/3){
         xIn <- c(p(), 1)
         yIn <- c(v(), limits()[2])
@@ -250,24 +263,44 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       approx(xIn, yIn, 2/3)$y
     })
     
+    nBins <- reactive({
+      req(input$nBins)
+      if(is.integer(input$nBins) & input$nBins > 0){
+        return(input$nBins)}else{
+          return(NULL)}
+        
+    })
+    
+    gridHeight <- reactive({
+      req(input$gridHeight)
+      if(is.integer(input$gridHeight) & input$gridHeight > 0){
+        return(input$gridHeight)}else{
+          return(NULL)}
+      
+    })
+    
     m <- reactive({
+      req(p(), v())
       approx(p(), v(), 0.5)$y
     })
     
     bin.width <- reactive({
-      (limits()[2] - limits()[1]) / input$nBins
+      req(limits(), nBins())
+      (limits()[2] - limits()[1]) / nBins()
     })
     
     bin.left <- reactive({
+      req(limits(), nBins(), bin.width())
       seq(from = limits()[1],
           to = limits()[2] - bin.width(),
-          length=input$nBins)
+          length=nBins())
     })
     
     bin.right <- reactive({
+      req(limits(), nBins(), bin.width())
       seq(from = limits()[1] + bin.width(),
           to = limits()[2],
-          length = input$nBins)
+          length = nBins())
     })
     
     
@@ -278,14 +311,17 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     )
     
     observeEvent(input$nBins,{
-      rl$chips <- rep(0, input$nBins)
+      req(input$nBins)
+      if(is.integer(input$nBins) & input$nBins > 0){
+      rl$chips <- rep(0, input$nBins)}
     })
     
     observeEvent(input$limits,{
-      rl$chips <- rep(0, input$nBins)
+      req(input$nBins)
+      if(is.integer(input$nBins) & input$nBins > 0){
+      rl$chips <- rep(0, input$nBins)}
     })
 
-    # Include in the package, but not in the web app.
      observeEvent(input$exit, {
        stopApp(myfit())
      }) 
@@ -296,11 +332,14 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
      }) 
      
      xlimPDF <- reactive({
-       eval(parse(text = paste("c(", input$xlimPDF, ")")))
+       tryCatch(eval(parse(text = paste("c(", input$xlimPDF, ")"))),
+                error = function(e){NULL})
+       
      })
      
     output$distPlot <- renderPlot({
-      
+      req(myfit(), xlimPDF(), fq(), input$fs, quantileValues())
+    
     if(input$showFittedPDF){
       
       dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
@@ -313,10 +352,12 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     })
     
     output$tertiles <- renderPlot({
+      req(limits(), t1(), m(), t2(), input$fs)
       makeTertilePlot(limits()[1], t1(), m(), t2(), limits()[2], input$fs)
     })
     
     output$quartiles <- renderPlot({
+      req(limits(), Q1(), m(), Q3(), input$fs)
       makeQuartilePlot(limits()[1], Q1(), m(), Q3(), limits()[2], input$fs)
     })
     
@@ -326,10 +367,13 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     }) 
     
     xlimCDF <- reactive({
-      eval(parse(text = paste("c(", input$xlimCDF, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$xlimCDF, ")"))),
+               error = function(e){NULL})
+      
     })
     
     output$cdf <- renderPlot({
+      req(myfit(), xlimCDF(), limits(), fq())
       
       if(input$dist == "best"){
         ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
@@ -366,43 +410,53 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     
     
     quantileValues <- reactive({
+      req(fq(), myfit())
       
-      FB <- feedback(myfit(), 
-                     quantiles = fq(),
-                     ex = 1)
-      
-      if(input$dist == "best"){
-        ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
-        best.index <- which(ssq == min(ssq))[1]
-        values <- FB$fitted.quantiles[, best.index]
+      if(min(fq())<=0 | max(fq())>=1){
+        return(NULL)
       }else{
-        # cleverly, I used different distribution labels in feedback...
-        index <- switch(input$dist,
-                        normal = "Normal",
-                        t = "Student-t",
-                        gamma = "Gamma",
-                        lognormal = "Log normal",
-                        logt = "Log Student-t",
-                        beta = "Beta",
-                        hist = "Histogram")
-        values <- FB$fitted.quantiles[, index]
         
+        FB <- feedback(myfit(), 
+                       quantiles = fq(),
+                       ex = 1)
+        
+        if(input$dist == "best"){
+          ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
+          best.index <- which(ssq == min(ssq))[1]
+          values <- FB$fitted.quantiles[, best.index]
+        }else{
+          # cleverly, I used different distribution labels in feedback...
+          index <- switch(input$dist,
+                          normal = "Normal",
+                          t = "Student-t",
+                          gamma = "Gamma",
+                          lognormal = "Log normal",
+                          logt = "Log Student-t",
+                          beta = "Beta",
+                          hist = "Histogram")
+          values <- FB$fitted.quantiles[, index]
+          
+        }
+        
+        return(data.frame(quantiles=fq(), values=values))
       }
-      
-      data.frame(quantiles=fq(), values=values)
       
     }) 
     
     output$valuesPDF <- renderTable({
+      req(quantileValues())
       quantileValues()
     })
    
     output$valuesCDF <- renderTable({
+      req(quantileValues())
       quantileValues()
     })
     output$roulette <- renderPlot({
+      req(limits(), input$fs, nBins(), gridHeight(), bin.left(),
+          bin.right())
       
-      plotHeight <-  max(input$gridHeight, 
+      plotHeight <-  max(gridHeight(), 
                          max(rl$chips) + 1)
       
       par(ps = input$fs)
@@ -411,14 +465,14 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
            ylim=c(-1, plotHeight),
            type="l",
            ylab="",
-           xaxp=c(limits()[1], limits()[2], input$nBins), 
+           xaxp=c(limits()[1], limits()[2], nBins()), 
            main = paste("Total probs:", sum(rl$chips)),
            xlab="X")
-      for(i in 1:input$nBins){
+      for(i in 1:nBins()){
         lines(c(bin.left()[i],bin.left()[i]),
               c(0, plotHeight),lty=3,col=8)
       }
-      lines(c(bin.right()[input$nBins],bin.right()[input$nBins]),
+      lines(c(bin.right()[nBins()],bin.right()[nBins()]),
             c(0, plotHeight),lty=3,col=8)
 
       for(i in 1:plotHeight){
@@ -426,7 +480,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
               c(i,i), lty=3,col=8)
       }
 
-      for(i in 1:input$nBins){
+      for(i in 1:nBins()){
         if(rl$chips[i]>0){
           rect(rep(bin.left()[i],rl$chips[i]),c(0:(rl$chips[i]-1)),
                rep(bin.right()[i],rl$chips[i]),c(1:rl$chips[i]),col=2)
@@ -439,7 +493,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       rl$x <-input$location$x
       rl$y <-input$location$y
       
-      plotHeight <- max(input$gridHeight, max(rl$chips) + 1)
+      plotHeight <- max(gridHeight(), max(rl$chips) + 1)
 
 
       if(rl$x > limits()[1] & rl$x < limits()[2] & rl$y < plotHeight){
