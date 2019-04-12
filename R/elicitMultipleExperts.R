@@ -202,7 +202,10 @@ if they have been provided,
       feedbackq <- tryCatch(eval(parse(text=paste("c(",input$fq,")"))),
                error = function(e){NULL})
       if(!is.null(feedbackq)){
-        if(min(feedbackq)<=0 | max(feedbackq)>=1){
+        if(min(feedbackq)<=0 | max(feedbackq)>=1 | length(feedbackq) !=2){
+          return(NULL)
+        }
+        if(length(feedbackq) == 2 & feedbackq[1] >= feedbackq[2]){
           return(NULL)
         }
       }

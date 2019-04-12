@@ -173,14 +173,24 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 	
 	if(index==7){
 	  
-    
-	  if(pl == -Inf & fit$limits[ex,1] > -Inf){pl <- fit$limits[ex,1]}
-	  if(pu == Inf & fit$limits[ex,2] < Inf){pu <- fit$limits[ex,2] }
-	  if(pl == -Inf & fit$limits[ex,1] == -Inf){pl <- qnorm(0.001, fit$Normal[ex,1], fit$Normal[ex,2])}
-	  if(pu == Inf & fit$limits[ex,2] == Inf){pu <- qnorm(0.999, fit$Normal[ex,1], fit$Normal[ex,2])}
-    
+	  if(fit$limits[ex, 1] == -Inf){
+	     histl <- qnorm(0.001, fit$Normal[ex,1], fit$Normal[ex,2])
+	  }else{
+	    histl <- fit$limits[ex, 1]
+	  }
+	  
+	  if(fit$limits[ex, 2] == Inf){
+	    histu <- qnorm(0.999, fit$Normal[ex,1], fit$Normal[ex,2])
+	  }else{
+	    histu <- fit$limits[ex, 2]
+	  }
+	  
+	  
+	  if(pl == -Inf){pl <- histl }
+	  if(pu == Inf){pu <- histu }
+	   
     p <- c(0, fit$probs[ex,], 1)
-    x2 <- c(pl, fit$vals[ex,], pu)
+    x2 <- c(histl, fit$vals[ex,], histu)
     
     h <- rep(0, length(x2) -1)
     for(i in 1:length(h)){
