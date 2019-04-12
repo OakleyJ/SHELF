@@ -138,9 +138,16 @@ elicitMultiple <- function(){
           ),
           tabPanel("PDF",
                    plotOutput("distPlot"),
-                   conditionalPanel(
-                     condition = "input.showfeedback == true",
-                     tableOutput('lpquantiles'))),
+                   fluidRow(
+                     column(4,
+                            tableOutput("bestFittingDistributions")
+                     ),
+                     column(4, 
+                            conditionalPanel(
+                              condition = "input.showfeedback == true",
+                              tableOutput('lpquantiles')))
+                   )
+          ),
           tabPanel("Tertiles",
                    plotOutput("Tertiles"),
                    helpText("The coloured bars divide the plausible range for each expert
@@ -212,12 +219,25 @@ if they have been provided,
       
     })
     
+    limits <- reactive({
+      tryCatch(eval(parse(text=paste("c(",input$limits,")"))),
+               error = function(e){NULL})
+    })
+    
     boundaries <- reactive({
-      limits <- eval(parse(text=paste("c(",input$limits,")")))
-      signif(seq(from = limits[1],
-                 to = limits[2],
-                 length = 1 + input$nBins),
-             3)
+      req(limits(), input$nBins)
+      
+      if(length(limits()) == 1){return(NULL)}
+      
+      if(is.integer(input$nBins) & input$nBins > 0 & limits()[1] < limits()[2]){
+        return(signif(seq(from = limits()[1],
+                          to = limits()[2],
+                          length = 1 + input$nBins),
+                      3))
+      }else{
+        return(NULL)
+      }
+      
     })
     
     l <- reactive({
@@ -240,6 +260,7 @@ if they have been provided,
     })
     
     vChip <- reactive({
+      req(boundaries())
       matrix(boundaries()[2:(input$nBins +1)],
              input$nBins,
              input$nExperts)
@@ -298,6 +319,7 @@ if they have been provided,
     )
     
     initialChips <- reactive({
+      req(boundaries(), input$nBins, nExp())
       
       inFile <- input$loadChips
       if (is.null(inFile) | isolate(newFile$chips)){
@@ -374,7 +396,17 @@ if they have been provided,
       
     }) 
     output$lpquantiles <- renderTable({
+      req(quantileValues())
       quantileValues()
+    })
+    
+    output$bestFittingDistributions <- renderTable({
+      req(myfit(), nExp())
+      df <- data.frame(expert = LETTERS[1:nrow(myfit()$best.fitting)],
+                       bf = myfit()$best.fitting[, 1])
+      
+      colnames(df) <- c("expert", "best fit")
+      df
     })
     
     output$setPDFxaxisLimits <- renderUI({
