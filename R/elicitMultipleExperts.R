@@ -56,6 +56,7 @@ elicitMultiple <- function(){
                                         'Log Student-t' = "logt",
                                         Beta = "beta", 
                                         'Best fitting' = "best")),
+            uiOutput("setPDFxaxisLimits"),
           checkboxGroupInput("lp", label = h5("Linear pool"), 
                              choices = list("Display linear pool" = 1)),
           conditionalPanel(
@@ -171,11 +172,17 @@ if they have been provided,
     })
     
     pChip <- reactive({
-      rouletteP <- apply(input$myChips, 1, cumsum) /
-        matrix(apply(input$myChips, 1, sum), 
-               ncol(input$myChips), nExp(), byrow = TRUE)
-      rownames(rouletteP) <- NULL
-      rouletteP
+      # Need at least 3 non-empty bins per expert
+      check <- apply(input$myChips > 0, 1, sum)
+      if(min(check) < 3 | min(input$myChips) < 0){
+        return(NULL)
+      }else{
+        rouletteP <- apply(input$myChips, 1, cumsum) /
+          matrix(apply(input$myChips, 1, sum), 
+                 ncol(input$myChips), nExp(), byrow = TRUE)
+        rownames(rouletteP) <- NULL
+        return(rouletteP)
+      }
       
     })
     
@@ -230,10 +237,11 @@ if they have been provided,
     })
     
     myfitChip <- reactive({
-      fitdist(vals = vChip(),
+      if(is.null(pChip())){return(NULL)}else{
+      return(fitdist(vals = vChip(),
               probs = pChip(),
               lower = l(),
-              upper = u())
+              upper = u()))}
     })
     
     myfit <- reactive({
@@ -348,9 +356,25 @@ if they have been provided,
       quantileValues()
     })
     
+    output$setPDFxaxisLimits <- renderUI({
+      req(input$myvals, boundaries())
+      if(input$entry == "Quantiles"){
+        initialRange <- range(input$myvals)
+      }
+      if(input$entry == "Roulette"){
+        initialRange <- range(boundaries())
+      }
+      textInput("xlimPDF", label = h5("x-axis limits"), 
+                paste(initialRange, collapse = ", "))
+    })
+    
+    xlimPDF <- reactive({
+      eval(parse(text = paste("c(", input$xlimPDF, ")")))
+    })
+    
     output$distPlot <- renderPlot({
-      req(myfit()$ssq)
-      xlimits <- c(min(l()), max(u()))
+      req(myfit())
+      xlimits <- xlimPDF()
       
       if(is.null(input$lp)){
         
