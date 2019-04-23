@@ -10,7 +10,7 @@ test_that("normal distribution fitting and feedback works",{
   best.name <- as.character(unlist(myfit$best.fitting))
   attributes(norm.parameters) <- NULL
   expect_equal(norm.parameters, c(m, s))
-  expect_equal(best.name, "Normal")
+  expect_equal(best.name, "normal")
   expect_equal(fb$fitted.quantiles[, 1], 
                signif(qnorm(c(0.05, 0.95), m, s),3))
   expect_equal(fb$fitted.probabilities[, 1],
@@ -29,10 +29,10 @@ test_that("student-t distribution fitting and feedback works",{
   best.name <- as.character(unlist(myfit$best.fitting))
   attributes(t.parameters) <- NULL
   expect_equal(t.parameters, c(m, s, tdftest), tolerance = 0.001)
-  expect_equal(best.name, "Student-t")
-  expect_equal(fb$fitted.quantiles[, 2], 
+  expect_equal(best.name, "t")
+  expect_equal(fb$fitted.quantiles[, "t"], 
                signif(m + s * qt(c(0.05, 0.95), tdftest),3))
-  expect_equal(fb$fitted.probabilities[, 2],
+  expect_equal(fb$fitted.probabilities[, "t"],
                signif(pt(c( -0.5, 1), tdftest),3))
 })
 
@@ -49,10 +49,10 @@ test_that("log-t distribution fitting and feedback works",{
   best.name <- as.character(unlist(myfit$best.fitting))
   attributes(lt.parameters) <- NULL
   expect_equal(lt.parameters, c(m, s, tdftest), tolerance = 0.001)
-  expect_equal(best.name, "Log Student-t")
-  expect_equal(fb$fitted.quantiles[, 5], 
+  expect_equal(best.name, "logt")
+  expect_equal(fb$fitted.quantiles[, "logt"], 
                signif(exp(m + s * qt(c(0.05, 0.95), tdftest)), 3))
-  expect_equal(fb$fitted.probabilities[, 5],
+  expect_equal(fb$fitted.probabilities[, "logt"],
                signif(pt((log(c(25, 55)) - m )/s, tdftest), 3))
 })
 
@@ -70,10 +70,10 @@ test_that("scaled beta distribution fitting and feedback works",{
   best.name <- as.character(unlist(myfit$best.fitting))
   attributes(beta.parameters) <- NULL
   expect_equal(beta.parameters, c(a, b), tolerance = 0.001)
-  expect_equal(best.name, "Beta")
-  expect_equal(fb$fitted.quantiles[, 6], 
+  expect_equal(best.name, "beta")
+  expect_equal(fb$fitted.quantiles[, "beta"], 
                signif(l + (u-l) * qbeta(c(0.05, 0.95), a, b),3))
-  expect_equal(fb$fitted.probabilities[, 6],
+  expect_equal(fb$fitted.probabilities[, "beta"],
                signif(pbeta((c(19, 29)-l)/(u-l), a, b),3))
 })
 
@@ -89,10 +89,10 @@ test_that("shifted lognormal distribution fitting and feedback works",{
   best.name <- as.character(unlist(myfit$best.fitting))
   attributes(lnorm.parameters) <- NULL
   expect_equal(lnorm.parameters, c(m, s), tolerance = 0.001)
-  expect_equal(best.name, "Log normal")
-  expect_equal(fb$fitted.quantiles[, 4], 
+  expect_equal(best.name, "lognormal")
+  expect_equal(fb$fitted.quantiles[, "lognormal"], 
                signif(l + qlnorm(c(0.05, 0.95), m, s),3))
-  expect_equal(fb$fitted.probabilities[, 4],
+  expect_equal(fb$fitted.probabilities[, "lognormal"],
                signif(plnorm(c(25, 55), m, s),3))
 })
 
@@ -108,10 +108,10 @@ test_that("shifted lognormal distribution fitting and feedback works",{
   best.name <- as.character(unlist(myfit$best.fitting))
   attributes(lnorm.parameters) <- NULL
   expect_equal(lnorm.parameters, c(m, s), tolerance = 0.001)
-  expect_equal(best.name, "Log normal")
-  expect_equal(fb$fitted.quantiles[, 4], 
+  expect_equal(best.name, "lognormal")
+  expect_equal(fb$fitted.quantiles[, "lognormal"], 
                signif(qlnorm(c(0.05, 0.95), m, s)+l, 3) )
-  expect_equal(fb$fitted.probabilities[, 4],
+  expect_equal(fb$fitted.probabilities[, "lognormal"],
                signif(plnorm(c(-4, 4) - l, m, s),3))
 })
 
@@ -129,10 +129,10 @@ test_that("shifted gamma distribution fitting and feedback works",{
   best.name <- as.character(unlist(myfit$best.fitting))
   attributes(gamma.parameters) <- NULL
   expect_equal(gamma.parameters, c(a, b), tolerance = 0.001)
-  expect_equal(best.name, "Gamma")
-  expect_equal(fb$fitted.quantiles[, 3], 
+  expect_equal(best.name, "gamma")
+  expect_equal(fb$fitted.quantiles[, "gamma"], 
                signif(l + qgamma(c(0.05, 0.95), a, b),3))
-  expect_equal(fb$fitted.probabilities[, 3],
+  expect_equal(fb$fitted.probabilities[, "gamma"],
                signif(pgamma(c(33, 40)-l, a, b),3))
 })
 

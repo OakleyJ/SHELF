@@ -261,7 +261,7 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 	row.names(dfb) <- expertnames
 	
 	ssq <- data.frame(ssq)
-	names(ssq) <- c("Normal", "Student-t", "Gamma", "Log normal", "Log Student-t", "Beta")
+	names(ssq) <- c("normal", "t", "gamma", "lognormal", "logt", "beta")
 	row.names(ssq) <- expertnames
 	
 	index <- apply(ssq, 1, which.min)

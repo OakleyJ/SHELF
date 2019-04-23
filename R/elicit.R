@@ -376,11 +376,8 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       req(myfit(), xlimCDF(), limits(), fq())
       
       if(input$dist == "best"){
-        ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
-        best.index <- which(ssq == min(ssq))[1]
-        dist <-c("normal", "t", "gamma", "lognormal",
-              "logt","beta")
-        mydist <- dist[best.index]}else{
+        mydist <- as.character(myfit()$best.fitting[1, 1])
+       }else{
           mydist <- input$dist
         }
       
@@ -421,20 +418,11 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
                        ex = 1)
         
         if(input$dist == "best"){
-          ssq <- myfit()$ssq[1, is.na(myfit()$ssq[1,])==F]
-          best.index <- which(ssq == min(ssq))[1]
-          values <- FB$fitted.quantiles[, best.index]
+          values <- FB$fitted.quantiles[, 
+                                        as.character(myfit()$best.fitting[1,
+                                                                          1])]
         }else{
-          # cleverly, I used different distribution labels in feedback...
-          index <- switch(input$dist,
-                          normal = "Normal",
-                          t = "Student-t",
-                          gamma = "Gamma",
-                          lognormal = "Log normal",
-                          logt = "Log Student-t",
-                          beta = "Beta",
-                          hist = "Histogram")
-          values <- FB$fitted.quantiles[, index]
+          values <- FB$fitted.quantiles[, input$dist]
           
         }
         

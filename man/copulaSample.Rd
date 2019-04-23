@@ -17,7 +17,7 @@ Only the upper triangular elements in the matrix need to be specified; the remai
 \item{n}{The sample size to be generated}
 
 \item{d}{A vector of distributions to be used for each elicited quantity: a string with elements chosen from
-\code{"Normal", "Student-t", "Gamma", "Log normal" "Log Student-t", "Beta"}. The default is to use
+\code{"normal", "t", "gamma", "lognormal", "logt", "beta"}. The default is to use
 the best fitting distribution in each case.}
 }
 \value{

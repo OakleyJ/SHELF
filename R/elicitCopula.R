@@ -13,7 +13,7 @@
 #' Only the upper triangular elements in the matrix need to be specified; the remaining elements can be set at 0.
 #' @param n The sample size to be generated
 #' @param d A vector of distributions to be used for each elicited quantity: a string with elements chosen from
-#' \code{"Normal", "Student-t", "Gamma", "Log normal" "Log Student-t", "Beta"}. The default is to use
+#' \code{"normal", "t", "gamma", "lognormal", "logt", "beta"}. The default is to use
 #' the best fitting distribution in each case.
 #'
 #
@@ -72,26 +72,10 @@ copulaSample <- function(..., cp, n, d = NULL) {
     
     theta <- matrix(0, n, n.vars)
     for (i in 1:n.vars) {
-      
-      # A little messy...
-      # We're going to extract columns from the output of feedback()
-      # Column names aren't in the same format as distribution arguments
-      # used in other functions that may call on copulaSample()
-      # so following will rename distribution argument if necessary
-      
-      if(is.element(d[i], c("normal", "t", "gamma", "lognormal",
-                            "logt", "beta", "hist", "best"))){
-        d[i] <- switch(d[i],
-                       "normal" = "Normal",
-                       "t" = "Student-t",
-                       "gamma" = "Gamma",
-                       "lognormal" = "Log normal",
-                       "logt" = "Log Student-t",
-                       "beta" = "Beta",
-                       "hist" = "Histogram",
-                       "best" = as.character(elicitation.fits[[i]]$best.fitting[1, 1])
-                       )
-        
+   
+        if(d[i] ==  "best"){
+        d[i] <- as.character(elicitation.fits[[i]]$best.fitting[1, 1])
+    
       }
     
       

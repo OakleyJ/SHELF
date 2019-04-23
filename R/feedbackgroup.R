@@ -7,9 +7,9 @@ function(fit, quantiles =  NA, values = NA, dist = "best", sfg = 3){
 	
 	distributions <- data.frame(matrix(0, nrow = 1, ncol = n.experts))
 	names(distributions) <- expertnames
-	distribution.names <- c("Normal", "Student-t", "Gamma", "Log normal",
-	                        "Log Student-t", "Beta",
-	                        "Histogram")
+	distribution.names <- c("normal", "t", "gamma", "lognormal",
+	                        "logt", "beta",
+	                        "hist")
 	
 
 	
