@@ -1,3 +1,5 @@
+#' @export
+
 makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                         fit = NULL, 
                         dist = NULL,
@@ -8,16 +10,25 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                         ex = 1,
                         sf = 3,
                         xaxisLower = lower,
-                        xaxisUpper = upper){
+                        xaxisUpper = upper,
+                        xlab = "x",
+                        ylab = expression(P(X<=x))){
   
   # Hack to avoid CRAN check NOTE
   
   x <- NULL
   
+  
+  
   p1 <- ggplot(data.frame(x = c(xaxisLower, xaxisUpper)), aes(x = x)) +
     annotate("point", x = v, y = p, size = 5) + 
     annotate("point", x = c(lower, upper), y = c(0, 1), size = 5, shape = 1)+
-    labs(y = "P(X<=x)", x = "x") +
+    labs(y = ylab, x = xlab) +
+    scale_x_continuous(breaks = c(xaxisLower, xaxisUpper, v), 
+                       minor_breaks = NULL,
+                       limits = c(xaxisLower, xaxisUpper)) +
+    scale_y_continuous(breaks = c(0, 1, p),
+                       minor_breaks = NULL) +
     theme(plot.title = element_text(hjust = 0.5),
           text = element_text(size = fontsize))
   
@@ -30,8 +41,7 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
       p1 <- p1 + annotate("segment", x = c(lower, v),
                             y = c(0, p),
                             xend = c(v, upper),
-                            yend = c(p, 1)) +
-        xlim(xaxisLower, xaxisUpper)
+                            yend = c(p, 1)) 
       if(showQuantiles){
         xl <- qhist(ql, c(lower, v, upper), c(0, p, 1))
         xu <- qhist(qu, c(lower, v, upper), c(0, p, 1))
