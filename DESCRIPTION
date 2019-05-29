@@ -36,7 +36,9 @@ Imports:
     rmarkdown,
     grDevices,
     shinyMatrix,
-    utils
+    utils,
+    ggridges,
+    Hmisc
 URL: https://github.com/OakleyJ/SHELF
 BugReports: https://github.com/OakleyJ/SHELF/issues
 VignetteBuilder: knitr

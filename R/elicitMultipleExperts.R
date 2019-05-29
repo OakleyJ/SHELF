@@ -328,7 +328,7 @@ if they have been provided,
       if (is.null(inFile) | isolate(newFile$chips)){
         initialdf <- matrix(0, nExp(), input$nBins)
       }else{
-        initialdf <- as.matrix(read.csv(inFile$datapath, row.names = 1))
+        initialdf <- as.matrix(utils::read.csv(inFile$datapath, row.names = 1))
         newFile$chips <- TRUE
         if(nrow(initialdf) != nExp() | ncol(initialdf) != input$nBins){
           showNotification("Make sure selected Number of experts and selected Number of bins
@@ -357,7 +357,7 @@ if they have been provided,
                             2 + length(pQuantile()),
                             nExp())
       }else{
-        initialdf <- as.matrix(read.csv(inFile$datapath, row.names = 1))
+        initialdf <- as.matrix(utils::read.csv(inFile$datapath, row.names = 1))
         newFile$quantiles <- TRUE
         if(nrow(initialdf) != (2 + length(pQuantile())) |
            ncol(initialdf) != nExp()){
@@ -502,7 +502,7 @@ if they have been provided,
         paste('judgements-', Sys.Date(), '.csv', sep='')
       },
       content = function(file) {
-        write.csv(input$myvals, file)
+        utils::write.csv(input$myvals, file)
       }
     )
     
@@ -511,7 +511,7 @@ if they have been provided,
         paste('judgements-', Sys.Date(), '.csv', sep='')
       },
       content = function(file) {
-        write.csv(input$myChips, file)
+        utils::write.csv(input$myChips, file)
       }
     )
     

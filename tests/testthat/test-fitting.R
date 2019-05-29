@@ -246,7 +246,7 @@ test_that("linear pooling works - different lower limits",{
   
   w1 <- 1/6; w2 <- 2/6; w3 <- 3/6
   xtest <- 3
-  qu <- 0.01
+  qu <- 0.03
   
   qlp <- qlinearpool(myfit, qu, w = c(w1, w2, w3))
   qcheck <- w1 * pgamma(qlp - llimits[1], a, b) + 

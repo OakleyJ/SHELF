@@ -1,0 +1,667 @@
+---
+title: "Fitted distributions (extension method)"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
+fontsize: 11pt
+params:
+  fit1: NA
+  fit2: NA
+  cp: NA
+  d: NA
+  m1: NA
+  m2: NA
+  yLimits: NA
+  link: NA
+  yCP: NA
+  xMed: NA
+  df1: NA
+  
+---
+
+# Marginal distribution of $Y$
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+showplots <- FALSE
+```
+
+### Elicited cumulative probabilities
+
+```{r}
+expert <- 1
+sf <- 3
+mydf <- data.frame( params$fit1$vals[expert, ], params$fit1$probs[expert, ])
+colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
+knitr::kable(mydf)
+```
+
+
+```{r}
+if(params$fit1$limits[expert, 1] == 0){
+  x <- paste0("x")
+  lower <- "`"}else{
+    lower <- paste0("`", params$fit1$limits[expert, 1], " + ")}
+
+if(params$fit1$limits[expert, 1] > 0){
+  x <- paste0("(x-", params$fit1$limits[expert, 1],")")}
+if(params$fit1$limits[expert, 1] < 0){
+  x <- paste0("(x+", abs(params$fit1$limits[expert, 1]),")")}
+```
+
+
+```{r}
+lx <- min(params$fit1$vals[expert, ])
+ux <- max(params$fit1$vals[expert, ])
+```
+
+
+### Distributions
+
+All parameter values reported to 3 significant figures.
+
+#### Normal 
+```{r, echo = FALSE}
+mu <- signif(params$fit1$Normal[expert, 1], sf)
+sigsq <- signif(params$fit1$Normal[expert, 2]^2, sf)
+```
+
+
+$$
+f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} 
+\exp\left(-\frac{1}{2 \sigma^2}(x - \mu)^2\right),\quad -\infty<x<\infty,
+$$
+with
+\begin{align*}
+\mu &= `r mu`,\\
+\sigma^2 &= `r sigsq`.
+\end{align*}
+
+
+
+
+Sample `n = 1000` random values with the command
+
+`rnorm(n = 1000, mean = `r mu`, sd = sqrt(`r sigsq`)) `
+
+<hr>
+
+#### Student$-t$ 
+```{r, echo = FALSE}
+m <- signif(params$fit1$Student.t[expert, 1], 3)
+s <- signif(params$fit1$Student.t[expert, 2], 3)
+tdf <- params$fit1$Student.t[expert, 3]
+```
+
+$$
+f_X(x) = \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\sigma\sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{x - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2},\quad -\infty<x<\infty,
+$$
+with
+\begin{align*}
+\nu &= `r tdf`,\\
+\mu &= `r m`,\\
+\sigma &= `r s`.\\
+\end{align*}
+
+
+
+
+Sample `n = 1000` random values with the command
+
+` `r m` + `r s` * rt(n = 1000, df = `r tdf`) `
+<hr>
+#### Log normal 
+
+
+```{r, echo = FALSE}
+if(is.na(params$fit1$ssq[expert, 4])){
+  equationLogNormal <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  samplingLogNormal <- NULL
+  samplingLogNormalText <- NULL
+  shiftLognormal <- NULL
+}else{
+  mu <- signif(params$fit1$Log.normal[expert, 1], 3)
+  sigsq <- signif(params$fit1$Log.normal[expert, 2]^2, 3)  
+  
+  equationLogNormal <- paste0("$$f_X(x) = \\frac{1}{", x, "} \\times \\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
+\\exp\\left(-\\frac{1}{2\\sigma^2}(\\ln ", x,"  - \\mu)^2\\right), \\quad x >", params$fit1$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+with $$\\mu = ", mu,"$$ $$\\sigma^2  = ", sigsq, "$$")
+  
+ 
+  
+  samplingLogNormal <- paste0(lower, " rlnorm(n = 1000, meanlog = ", mu,", sdlog = sqrt(",
+sigsq,"))`" )
+  
+  samplingLogNormalText <- "Sample `n = 1000` random values with the command"
+  
+  if(params$fit1$limits[expert, 1] != 0){
+    shiftLognormal <- paste0("Log normal distribution shifted to have support over the interval $(",
+                               params$fit1$limits[expert, 1],
+                               ",\\, \\infty )$.")
+  }else{
+    shiftLognormal <- NULL
+  }
+  
+} 
+```
+
+
+
+
+`r paste(shiftLognormal)`
+
+`r paste(equationLogNormal)`
+
+
+`r paste(samplingLogNormalText)`
+
+`r paste(samplingLogNormal)`
+
+
+<hr>
+#### Gamma  
+
+```{r}
+if(is.na(params$fit1$ssq[expert, 3])){
+  equationGamma <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  samplingGamma <- NULL
+  samplingGammaText <- NULL
+  shiftGamma <- NULL
+}else{
+  shape <- signif(params$fit1$Gamma[expert, 1], 3)
+  rate <- signif(params$fit1$Gamma[expert, 2], 3)  
+  
+  equationGamma <- paste0("$$f_X(x) =\\frac{\\beta ^ {\\alpha}}{\\Gamma(\\alpha)}",  x,
+"^{\\alpha - 1} \\exp\\left(- \\beta ", x,"\\right), \\quad x >", params$fit1$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+with $$\\alpha = ", shape,"$$ $$\\beta  = ", rate, "$$")
+  
+ 
+  
+  samplingGamma <- paste0(lower, " rgamma(n = 1000, shape = ", shape,", rate = ",
+rate,")`" )
+  
+  samplingGammaText <- "Sample `n = 1000` random values with the command"
+  
+   if(params$fit1$limits[expert, 1] != 0){
+    shiftGamma <- paste0("Gamma distribution shifted to have support over the interval $(",
+                               params$fit1$limits[expert, 1],
+                               ",\\, \\infty )$.")
+  }else{
+    shiftGamma <- NULL
+  }
+  
+} 
+```
+
+`r paste(shiftGamma)`
+
+`r paste(equationGamma)`
+
+`r paste(samplingGammaText)`
+
+`r paste(samplingGamma)`
+
+<hr>
+#### Log Student$-t$ 
+
+```{r}
+if(is.na(params$fit1$ssq[expert, 4])){
+  equationLogStudentT <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  samplingLogStudentT <- NULL
+  samplingLogStudentTText <- NULL
+  shiftLogStudentT <- NULL
+}else{
+  m <- signif(params$fit1$Log.Student.t[expert, 1], 3)
+  s <- signif(params$fit1$Log.Student.t[expert, 2], 3)
+  tdf <- params$fit1$Log.Student.t[expert, 3]
+  
+  equationLogStudentT <- paste0("$$f_X(x) =\\frac{1}{", x, "} \\times \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\times\\sigma\\times \\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{\\ln ", x, " - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2}, \\quad x >", params$fit1$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
+  
+ 
+  
+  samplingLogStudentT <- paste0(lower, " exp(", m, " + ", s, " * rt(n = 1000, df = ", tdf,"))`" )
+  
+  samplingLogStudentTText <- "Sample `n = 1000` random values with the command"
+  
+  if(params$fit1$limits[expert, 1] != 0){
+    shiftLogStudentT <- paste0("Log Student-$t$ distribution shifted to have support over the interval $(",
+                               params$fit1$limits[expert, 1],
+                               ",\\, \\infty )$.")
+  }else{
+    shiftLogStudentT <- NULL
+  }
+} 
+```
+
+`r paste(shiftLogStudentT)`
+
+`r paste(equationLogStudentT)`
+
+
+
+`r paste(samplingLogStudentTText)`
+
+`r paste(samplingLogStudentT)`
+
+
+
+<hr>
+#### Beta 
+```{r, echo = FALSE}
+if(params$fit1$limits[expert, 1] == 0)
+  x <- paste0("x")
+if(params$fit1$limits[expert, 1] > 0)
+  x <- paste0("x-", params$fit1$limits[1, expert])
+if(params$fit1$limits[expert, 1] < 0)
+  x <- paste0("x+", abs(params$fit1$limits[1, expert]))
+if(params$fit1$limits[expert, 2] < Inf & params$fit1$limits[expert, 1] > -Inf){
+  r <- params$fit1$limits[expert, 2] - params$fit1$limits[expert, 1]
+  if(r !=1){
+  mult = paste0(r, " *")}else{
+    mult = ""
+  }
+}
+
+
+shape1 <- signif(params$fit1$Beta[expert, 1], 3)
+shape2 <- signif(params$fit1$Beta[expert, 2], 3)
+
+```
+
+```{r, echo = FALSE}
+if(is.na(params$fit1$ssq[expert, 6])){
+  scalingBeta <- NULL
+  equationBeta <- "Distribution not fitted. Arguments `lower` and `upper` need to be specified in the `fitdist` command."
+  samplingBeta <- NULL
+  samplingBetaText <- NULL
+}else{
+  if(r == 1 & params$fit1$limits[expert, 1] == 0){
+  equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)}x ^{\\alpha - 1} \\left(1 - x\\right)^{\\beta - 1}, \\quad  0 < x < 1, $$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+  scalingBeta <- NULL
+  }
+  if(r == 1 & params$fit1$limits[expert, 1] != 0){
+    equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(", x,"\\right) ^{\\alpha - 1} \\left(1 - \\left(", x,"\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit1$limits[expert, 1]," < x <", params$fit1$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
+                          params$fit1$limits[expert, 1],
+                          ", ",
+                          params$fit1$limits[expert, 2],
+                          "].")
+  }
+  
+  
+  if(r !=1){
+    equationBeta <- paste0("$$f_X(x) = \\frac{1}{", r, "}\\times\\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(\\frac{", x,"}{", r,"}\\right) ^{\\alpha - 1} \\left(1 - \\left(\\frac{", x,"}{", r,"}\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit1$limits[expert, 1]," < x <", params$fit1$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
+                          params$fit1$limits[expert, 1],
+                          ", ",
+                          params$fit1$limits[expert, 2],
+                          "].")
+    
+  }
+  
+  samplingBeta <- paste0(lower, mult, " rbeta(n = 1000, shape1 = ", shape1, ", shape2 = ", shape2, ")`")
+  
+  samplingBetaText <- "Sample `n = 1000` random values with the command"
+} 
+```
+
+`r paste(scalingBeta)`
+
+`r paste(equationBeta)`
+
+
+`r paste(samplingBetaText)`
+
+`r paste(samplingBeta)`
+
+
+
+
+
+
+
+
+# Conditional distribution of $X$, given $Y$ takes its median value
+
+
+
+### Elicited cumulative probabilities
+
+```{r}
+expert <- 1
+sf <- 3
+mydf <- data.frame( params$fit2$vals[expert, ], params$fit2$probs[expert, ])
+colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
+knitr::kable(mydf)
+```
+
+
+```{r}
+if(params$fit2$limits[expert, 1] == 0){
+  x <- paste0("x")
+  lower <- "`"}else{
+    lower <- paste0("`", params$fit2$limits[expert, 1], " + ")}
+
+if(params$fit2$limits[expert, 1] > 0){
+  x <- paste0("(x-", params$fit2$limits[expert, 1],")")}
+if(params$fit2$limits[expert, 1] < 0){
+  x <- paste0("(x+", abs(params$fit2$limits[expert, 1]),")")}
+```
+
+
+```{r}
+lx <- min(params$fit2$vals[expert, ])
+ux <- max(params$fit2$vals[expert, ])
+```
+
+
+### Distributions
+
+All parameter values reported to 3 significant figures.
+
+#### Normal 
+```{r, echo = FALSE}
+mu <- signif(params$fit2$Normal[expert, 1], sf)
+sigsq <- signif(params$fit2$Normal[expert, 2]^2, sf)
+```
+
+
+$$
+f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} 
+\exp\left(-\frac{1}{2 \sigma^2}(x - \mu)^2\right),\quad -\infty<x<\infty,
+$$
+with
+\begin{align*}
+\mu &= `r mu`,\\
+\sigma^2 &= `r sigsq`.
+\end{align*}
+
+
+
+
+Sample `n = 1000` random values with the command
+
+`rnorm(n = 1000, mean = `r mu`, sd = sqrt(`r sigsq`)) `
+
+<hr>
+
+#### Student$-t$ 
+```{r, echo = FALSE}
+m <- signif(params$fit2$Student.t[expert, 1], 3)
+s <- signif(params$fit2$Student.t[expert, 2], 3)
+tdf <- params$fit2$Student.t[expert, 3]
+```
+
+$$
+f_X(x) = \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\sigma\sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{x - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2},\quad -\infty<x<\infty,
+$$
+with
+\begin{align*}
+\nu &= `r tdf`,\\
+\mu &= `r m`,\\
+\sigma &= `r s`.\\
+\end{align*}
+
+
+
+
+Sample `n = 1000` random values with the command
+
+` `r m` + `r s` * rt(n = 1000, df = `r tdf`) `
+<hr>
+#### Log normal 
+
+
+```{r, echo = FALSE}
+if(is.na(params$fit2$ssq[expert, 4])){
+  equationLogNormal <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  samplingLogNormal <- NULL
+  samplingLogNormalText <- NULL
+  shiftLognormal <- NULL
+}else{
+  mu <- signif(params$fit2$Log.normal[expert, 1], 3)
+  sigsq <- signif(params$fit2$Log.normal[expert, 2]^2, 3)  
+  
+  equationLogNormal <- paste0("$$f_X(x) = \\frac{1}{", x, "} \\times \\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
+\\exp\\left(-\\frac{1}{2\\sigma^2}(\\ln ", x,"  - \\mu)^2\\right), \\quad x >", params$fit2$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+with $$\\mu = ", mu,"$$ $$\\sigma^2  = ", sigsq, "$$")
+  
+ 
+  
+  samplingLogNormal <- paste0(lower, " rlnorm(n = 1000, meanlog = ", mu,", sdlog = sqrt(",
+sigsq,"))`" )
+  
+  samplingLogNormalText <- "Sample `n = 1000` random values with the command"
+  
+  if(params$fit2$limits[expert, 1] != 0){
+    shiftLognormal <- paste0("Log normal distribution shifted to have support over the interval $(",
+                               params$fit2$limits[expert, 1],
+                               ",\\, \\infty )$.")
+  }else{
+    shiftLognormal <- NULL
+  }
+  
+} 
+```
+
+
+
+
+`r paste(shiftLognormal)`
+
+`r paste(equationLogNormal)`
+
+
+`r paste(samplingLogNormalText)`
+
+`r paste(samplingLogNormal)`
+
+
+<hr>
+#### Gamma  
+
+```{r}
+if(is.na(params$fit2$ssq[expert, 3])){
+  equationGamma <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  samplingGamma <- NULL
+  samplingGammaText <- NULL
+  shiftGamma <- NULL
+}else{
+  shape <- signif(params$fit2$Gamma[expert, 1], 3)
+  rate <- signif(params$fit2$Gamma[expert, 2], 3)  
+  
+  equationGamma <- paste0("$$f_X(x) =\\frac{\\beta ^ {\\alpha}}{\\Gamma(\\alpha)}",  x,
+"^{\\alpha - 1} \\exp\\left(- \\beta ", x,"\\right), \\quad x >", params$fit2$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+with $$\\alpha = ", shape,"$$ $$\\beta  = ", rate, "$$")
+  
+ 
+  
+  samplingGamma <- paste0(lower, " rgamma(n = 1000, shape = ", shape,", rate = ",
+rate,")`" )
+  
+  samplingGammaText <- "Sample `n = 1000` random values with the command"
+  
+   if(params$fit2$limits[expert, 1] != 0){
+    shiftGamma <- paste0("Gamma distribution shifted to have support over the interval $(",
+                               params$fit2$limits[expert, 1],
+                               ",\\, \\infty )$.")
+  }else{
+    shiftGamma <- NULL
+  }
+  
+} 
+```
+
+`r paste(shiftGamma)`
+
+`r paste(equationGamma)`
+
+`r paste(samplingGammaText)`
+
+`r paste(samplingGamma)`
+
+<hr>
+#### Log Student$-t$ 
+
+```{r}
+if(is.na(params$fit2$ssq[expert, 4])){
+  equationLogStudentT <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  samplingLogStudentT <- NULL
+  samplingLogStudentTText <- NULL
+  shiftLogStudentT <- NULL
+}else{
+  m <- signif(params$fit2$Log.Student.t[expert, 1], 3)
+  s <- signif(params$fit2$Log.Student.t[expert, 2], 3)
+  tdf <- params$fit2$Log.Student.t[expert, 3]
+  
+  equationLogStudentT <- paste0("$$f_X(x) =\\frac{1}{", x, "} \\times \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\times\\sigma\\times \\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{\\ln ", x, " - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2}, \\quad x >", params$fit2$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
+  
+ 
+  
+  samplingLogStudentT <- paste0(lower, " exp(", m, " + ", s, " * rt(n = 1000, df = ", tdf,"))`" )
+  
+  samplingLogStudentTText <- "Sample `n = 1000` random values with the command"
+  
+  if(params$fit2$limits[expert, 1] != 0){
+    shiftLogStudentT <- paste0("Log Student-$t$ distribution shifted to have support over the interval $(",
+                               params$fit2$limits[expert, 1],
+                               ",\\, \\infty )$.")
+  }else{
+    shiftLogStudentT <- NULL
+  }
+} 
+```
+
+`r paste(shiftLogStudentT)`
+
+`r paste(equationLogStudentT)`
+
+
+
+`r paste(samplingLogStudentTText)`
+
+`r paste(samplingLogStudentT)`
+
+
+
+<hr>
+#### Beta 
+```{r, echo = FALSE}
+if(params$fit2$limits[expert, 1] == 0)
+  x <- paste0("x")
+if(params$fit2$limits[expert, 1] > 0)
+  x <- paste0("x-", params$fit2$limits[1, expert])
+if(params$fit2$limits[expert, 1] < 0)
+  x <- paste0("x+", abs(params$fit2$limits[1, expert]))
+if(params$fit2$limits[expert, 2] < Inf & params$fit2$limits[expert, 1] > -Inf){
+  r <- params$fit2$limits[expert, 2] - params$fit2$limits[expert, 1]
+  if(r !=1){
+  mult = paste0(r, " *")}else{
+    mult = ""
+  }
+}
+
+
+shape1 <- signif(params$fit2$Beta[expert, 1], 3)
+shape2 <- signif(params$fit2$Beta[expert, 2], 3)
+
+```
+
+```{r, echo = FALSE}
+if(is.na(params$fit2$ssq[expert, 6])){
+  scalingBeta <- NULL
+  equationBeta <- "Distribution not fitted. Arguments `lower` and `upper` need to be specified in the `fitdist` command."
+  samplingBeta <- NULL
+  samplingBetaText <- NULL
+}else{
+  if(r == 1 & params$fit2$limits[expert, 1] == 0){
+  equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)}x ^{\\alpha - 1} \\left(1 - x\\right)^{\\beta - 1}, \\quad  0 < x < 1, $$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+  scalingBeta <- NULL
+  }
+  if(r == 1 & params$fit2$limits[expert, 1] != 0){
+    equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(", x,"\\right) ^{\\alpha - 1} \\left(1 - \\left(", x,"\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit2$limits[expert, 1]," < x <", params$fit2$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
+                          params$fit2$limits[expert, 1],
+                          ", ",
+                          params$fit2$limits[expert, 2],
+                          "].")
+  }
+  
+  
+  if(r !=1){
+    equationBeta <- paste0("$$f_X(x) = \\frac{1}{", r, "}\\times\\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(\\frac{", x,"}{", r,"}\\right) ^{\\alpha - 1} \\left(1 - \\left(\\frac{", x,"}{", r,"}\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit2$limits[expert, 1]," < x <", params$fit2$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
+                          params$fit2$limits[expert, 1],
+                          ", ",
+                          params$fit2$limits[expert, 2],
+                          "].")
+    
+  }
+  
+  samplingBeta <- paste0(lower, mult, " rbeta(n = 1000, shape1 = ", shape1, ", shape2 = ", shape2, ")`")
+  
+  samplingBetaText <- "Sample `n = 1000` random values with the command"
+} 
+```
+
+`r paste(scalingBeta)`
+
+`r paste(equationBeta)`
+
+
+`r paste(samplingBetaText)`
+
+`r paste(samplingBeta)`
+
+
+
+# Median function
+
+```{r, echo = FALSE, fig.align = "center"}
+plotConditionalMedianFunction(yCP = params$yCP, xMed = params$xMed, 
+                              yLimits = params$yLimits,
+                              link = params$link)
+```
+
+
+# Marginal distribution of X
+
+```{r}
+d1 <- switch(params$d[1],
+                       "normal" = "normal",
+                       "t" = "Student-t",
+                       "gamma" = "gamma",
+                       "lognormal" = "log normal",
+                       "logt" = "log Student-t",
+                       "beta" = "beta",
+                       "hist" = "histogram",
+                       "best" = as.character(params$fit1$best.fitting[1, 1]))
+
+d2 <- switch(params$d[2],
+                       "normal" = "normal",
+                       "t" = "Student-t",
+                       "gamma" = "gamma",
+                       "lognormal" = "log normal",
+                       "logt" = "log Student-t",
+                       "beta" = "beta",
+                       "hist" = "histogram",
+                       "best" = as.character(params$fit2$best.fitting[1, 1]))
+```
+
+
+
+Marginal distribution of $X$, obtained using a `r paste(d1)` distribution for $Y$ and a `r paste(d2)` distribution for $X|Y$:
+
+```{r, echo = FALSE, fig.align = "center", message = FALSE}
+library(ggplot2)
+
+ggplot(params$df1, aes(x = X, y = ..density..))+
+        geom_density(fill = "steelblue")
+
+
+```
+
