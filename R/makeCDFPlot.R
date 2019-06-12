@@ -1,3 +1,47 @@
+#' Plot the elicited cumulative probabilities 
+#' 
+#' Plots the elicited cumulative probabilities and, optionally,
+#' a fitted CDF. Elicited are shown as filled circles, and
+#' limits are shown as clear circles.
+#'
+#' @param lower lower limit for the uncertain quantity
+#' @param v vector of values, for each value x in Pr(X<=x) = p
+#' in the set of elicited probabilities
+#' @param p vector of probabilities, for each value p in Pr(X<=x) = p
+#' in the set of elicited probabilities
+#' @param upper upper limit for the uncertain quantity
+#' @param fontsize font size to be used in the plot
+#' @param fit object of class \code{elicitation}
+#' @param dist the fitted distribution to be plotted. Options are
+#' \code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
+#' \code{"logt"},\code{"beta"}, \code{"hist"} (for a histogram fit)
+#' @param showFittedCDF logical. Should a fitted distribution function
+#' be displayed?
+#' @param showQuantiles logical. Should quantiles from the fitted distribution function
+#' be displayed?
+#' @param ql a lower quantile to be displayed.
+#' @param qu an upper quantile to be displayed.
+#' @param ex if the object \code{fit} contains judgements from multiple experts,
+#' which (single) expert's judgements to show.
+#' @param sf number of significant figures to be displayed.
+#' @param xaxisLower lower limit for the x-axis.
+#' @param xaxisUpper upper limit for the x-axis.
+#' @param xlab x-axis label.
+#' @param ylab y-axis label.
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' vQuartiles <- c(30, 35, 45)
+#' pQuartiles<- c(0.25, 0.5, 0.75)
+#' myfit <- fitdist(vals = vQuartiles, probs = pQuartiles, lower = 0)
+#' makeCDFPlot(lower = 0, v = vQuartiles, p = pQuartiles,
+#'  upper = 100, fit = myfit, dist = "gamma",
+#'  showFittedCDF = TRUE, showQuantiles = TRUE)
+#' 
+#' 
+#' }
+#'
 #' @export
 
 makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,

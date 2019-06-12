@@ -40,6 +40,25 @@ elicitExtension<- function(){
       
               tabsetPanel(
                 tabPanel("Y distribution",
+                         wellPanel(
+                           h4("Elicit judgements about the extension variable: instructions"),
+                           tags$ol(
+                             tags$li("Specify lower and upper parameter limits.
+                             These will be used to set the axes ranges in the
+                             plots. Note that the gamma, log normal and log t
+                             distributions are shifted to have support
+                             (lower limit, Infinity), and the beta distribution is
+                             scaled and shifted to have support (lower limit,
+                             upper limit)."),
+                             tags$li("Elicit at least two probabilities for the 
+                             extension variable Pr( Y < y ) = p. Enter the values
+                             y in the 'Parameter Y values' box, and the
+                             corresponding probabilities p in the 'Cumulative
+                             probabilities box'. The smallest probability must
+                             be less than 0.4, and the largest probability must
+                             be greater than 0.6."),
+                             tags$li("Choose which distribution to fit to the elicited
+                             judgements about the extension variable."))),
                          fluidRow(
                            column(4, 
                                   textInput("limits1", label = h5("Parameter Y limits"), 
@@ -85,6 +104,20 @@ elicitExtension<- function(){
                          ),
                 tabPanel("Median model",
                          fluidRow(
+                           wellPanel(
+                             h4("Elicit the median model: instructions"),
+                             tags$ol(
+                               tags$li("Specify hypothetical values of the extension 
+                                       variable in the Conditioning points box."),
+                               tags$li("For each hypothetical value, specify the 
+                                       corresponding elicited median for the target variable,
+                                       in the Conditional medians box."),
+                               tags$li("Select a transformation. If the target variable
+                                       must be positive, try a log transformation, and
+                                       if the target variable is constrained to be between
+                                       0 and 1, try a logit transformation."))),
+                           
+                           
                            column(4, 
                                   textInput("yCP", label = h5("Conditioning points"), 
                                             value = "-3, 3, 7, 11, 17")
@@ -109,6 +142,16 @@ elicitExtension<- function(){
                         ),
                 tabPanel("c-distribution",
                          fluidRow(
+                           wellPanel(
+                             h4("Elicit the c-distribution: instructions"),
+                             tags$ol(
+                               tags$li("The c-distribution is the distribution of
+                                       the target variable X, conditional on the
+                                       extension variable Y taking its median value."),
+                               tags$li("The median value of Y needs to be specified
+                                       in the appropriate box."),
+                               tags$li("Specify the elicited judgements about X|Y in 
+                                       the same way as that used for the Y distribution. "))),
                            column(4, 
                                   textInput("limits2", label = h5("Parameter X limits"), 
                                             value = "0, 100")
@@ -158,6 +201,13 @@ elicitExtension<- function(){
                 
                 tabPanel("Conditional distributions",
                          fluidRow(
+                           wellPanel(
+                           h4("Display conditional distributions: instructions"),
+                           tags$ol(
+                             tags$li("Specify any set of hypothetical values for the
+                                     extension variable Y."),
+                             tags$li("Density plots will be displayed for the target variable
+                                     X, conditional on each hypothetical value of Y."))),
                            column(4,
                                   textInput("valuesY", label = h5("Parameter Y values"), 
                                             value = "-3, 7, 17")
@@ -167,6 +217,17 @@ elicitExtension<- function(){
                          ),
                 tabPanel("Marginal distribution",
                          fluidRow(
+                           wellPanel(
+                             h4("Marginal distribution: instructions"),
+                             tags$ol(
+                               tags$li("A sample from the marginal distribution
+                                       of the target variable is generated,
+                                       and a kernel density estimate is displayed.
+                                       Tick marks on the x-axis indicate the 5th, 50th
+                                       and 95th percentiles."),
+                               tags$li("Specify the desired sample size."),
+                               tags$li("Click on 'Download sample' to save
+                                       the sampled values in .csv format."))),
                          column(4,
                                 numericInput("n", label = h5("sample size"), 
                                              value = 10000)
@@ -304,17 +365,58 @@ elicitExtension<- function(){
     
     output$medianFunction <- renderPlot({
       
+      validTransform <- TRUE
      
+      if(min(xMed()) <= 0 & input$link == "log"){
+        showNotification("To use the log transformation, all the conditional
+                         medians must be greater than 0", 
+                         type = "error",
+                         duration = 60)
+        validTransform <- FALSE
+      }
+      
+      if((min(xMed()) <= 0 | max(xMed())>=1) & input$link == "logit"){
+        showNotification("To use the logit transformation, all the conditional
+                         medians must be greater than 0 and less than 1", 
+                         type = "error",
+                         duration = 60)
+        validTransform <- FALSE
+      }
+      
+     if(validTransform){
       print(plotConditionalMedianFunction(yCP = yCP(),
                                     xMed = xMed(),
                                     yLimits = limits1(),
                                     link = input$link,
                                     fs = input$fs))
+     }
       
       
     })
     
     output$conditionalPlot <- renderPlot({
+      
+      validTransform <- TRUE
+      
+      if(min(xMed()) <= 0 & input$link == "log"){
+        showNotification("Median model (log transformation) is not valid. 
+        Return to the median model tab, and select the identify transformation,
+        or adjust the conditional medians.", 
+                         type = "error",
+                         duration = 60)
+        validTransform <- FALSE
+      }
+      
+      if((min(xMed()) <= 0 | max(xMed())>=1) & input$link == "logit"){
+        showNotification("Median model (logit transformation) is not valid. 
+        Return to the median model tab, and select the identify transformation,
+        or adjust the conditional medians.", 
+                         type = "error",
+                         duration = 60)
+        validTransform <- FALSE
+      }
+      
+      if(validTransform){
       
       
       plotConditionalDensities(y = yHyp(),
@@ -324,16 +426,47 @@ elicitExtension<- function(){
                                link = input$link,
                                medianY = input$medianY,
                                fs = input$fs)
+      }
       
       
     })
     
     output$marginalPlot <- renderPlot({
       
-      X <- ..density.. <- NULL
+      validTransform <- TRUE
       
+      if(min(xMed()) <= 0 & input$link == "log"){
+        showNotification("Median model (log transformation) is not valid. 
+        Return to the median model tab, and select the identify transformation,
+        or adjust the conditional medians.", 
+                         type = "error",
+                         duration = 60)
+        validTransform <- FALSE
+      }
+      
+      if((min(xMed()) <= 0 | max(xMed())>=1) & input$link == "logit"){
+        showNotification("Median model (logit transformation) is not valid. 
+        Return to the median model tab, and select the identify transformation,
+        or adjust the conditional medians.", 
+                         type = "error",
+                         duration = 60)
+        validTransform <- FALSE
+      }
+      
+      if(validTransform){
+      
+      X <- ..density.. <- NULL
+      xQuantiles <- signif(quantile(df1()$X,
+                                   c(0.05, 0.5, 0.95)),
+                          3)
+      attr(xQuantiles, "names") <- NULL
       ggplot(df1(), aes(x = X, y = ..density..))+
-        geom_density(fill = "steelblue")
+        geom_density(fill = "steelblue") +
+        scale_x_continuous(breaks = xQuantiles,
+                           minor_breaks = NULL) +
+        theme_grey(base_size = input$fs)
+      
+      }
       
     })
     
@@ -349,6 +482,8 @@ elicitExtension<- function(){
       )
       data.frame(X = xSample)
     })
+    
+    
     
    
 

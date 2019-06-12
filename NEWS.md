@@ -1,6 +1,10 @@
 SHELF v1.5.0.9000 (2019-04-02) 
 ==============================
 
+* new app for the extension method: elicitExtension() 
+
+* makeCDFPlot() function is now exported: plots the elicited cumulative probabilities, and fitted cumulative distribution functions.
+
 * elicitMultiple() app: can now enter judgements with the roulette method, and save/load judgements 
 as .csv files
 
