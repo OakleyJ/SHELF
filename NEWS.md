@@ -1,7 +1,9 @@
-SHELF v1.5.0.9000 (2019-04-02) 
+SHELF v1.6.0 (2019-06-12) 
 ==============================
 
-* new app for the extension method: elicitExtension() 
+* new app for the extension method: elicitExtension(). New command line functions
+for the extension method are plotConditionalDensities(), 
+plotConditionalMedianFunction() and sampleMarginalFit().
 
 * makeCDFPlot() function is now exported: plots the elicited cumulative probabilities, and fitted cumulative distribution functions.
 

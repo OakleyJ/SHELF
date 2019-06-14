@@ -1,3 +1,19 @@
+SHELF v1.6.0 (2019-06-12) 
+==============================
+
+* new app for the extension method: elicitExtension(). New command line functions
+for the extension method are plotConditionalDensities(), 
+plotConditionalMedianFunction() and sampleMarginalFit().
+
+* makeCDFPlot() function is now exported: plots the elicited cumulative probabilities, and fitted cumulative distribution functions.
+
+* elicitMultiple() app: can now enter judgements with the roulette method, and save/load judgements 
+as .csv files
+
+* column names changed in output of feedback(), fitdist() and sampleFit() to be consistent:
+"normal", "t", "gamma", "lognormal", "logt", "beta", "hist"
+
+
 SHELF v1.5.0 (2019-03-26) 
 ==============================
 
