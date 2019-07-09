@@ -425,6 +425,7 @@ elicitExtension<- function(){
                                xMed = xMed(),
                                link = input$link,
                                medianY = input$medianY,
+                               dist = input$dist2,
                                fs = input$fs)
       }
       

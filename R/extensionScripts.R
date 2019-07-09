@@ -242,6 +242,7 @@ plotConditionalDensities <- function(y,
     m3 <- rep(medianFunction(medianY), N * length(y))
     oddsRatio <- (1 - m) / m * m3 / (1 - m3)
     x <- x / (oddsRatio - (oddsRatio - 1) * x)
+    xLimits <- c(0, 1)
   }
   
   

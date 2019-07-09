@@ -1,3 +1,8 @@
+SHELF v1.6.0.0009 (2019-07-09) 
+==============================
+
+* bug fixed in elicitExtension(): when plotting conditional densities for the logit link function, x-axis limits now restricted to 0 and 1.
+
 SHELF v1.6.0 (2019-06-12) 
 ==============================
 
