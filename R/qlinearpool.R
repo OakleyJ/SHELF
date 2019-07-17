@@ -4,10 +4,15 @@ qlinearpool <-
 function(fit, q, d = "best", w = 1){
 	
 	n.experts <- nrow(fit$vals)
+	
+	if(length(d) == 1){
+	  d <- rep(d, n.experts)
+	}
+	
 	qx.individual <- matrix(0, length(q), n.experts)
 	
 	for(i in 1:n.experts){
-		qx.individual[,i] <- expertquantiles(fit, q, d, ex = i)
+		qx.individual[,i] <- expertquantiles(fit, q, d[i], ex = i)
 	}
 	
 	n.q <- length(q)

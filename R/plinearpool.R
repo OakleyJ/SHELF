@@ -14,11 +14,10 @@
 #' @param fit The output of a \code{fitdist} command.
 #' @param x A vector of required cumulative probabilities P(X<=x)
 #' @param q A vector of required quantiles
-#' @param d The distribution fitted to each expert's probabilities. This must
-#' either be the same distribution for each expert, or the best fitting
-#' distribution for each expert. Options are \code{"normal"}, \code{"t"},
+#' @param d Scalar or vector of distributions to use for each expert.
+#' Options for each vector element are \code{"hist"}, \code{"normal"}, \code{"t"},
 #' \code{"gamma"}, \code{"lognormal"}, \code{"logt"},\code{"beta"},
-#' \code{"best"}.
+#' \code{"best"}. If given as a scalar, same choice is used for all experts.
 #' @param w A vector of weights to be used in the weighted linear pool.
 #' @return A probability or quantile, calculate from a (weighted) linear pool
 #' (arithmetic mean) of the experts' individual fitted probability.
@@ -49,6 +48,11 @@ function(fit, x, d = "best", w = 1){
   if(min(w)<0 | max(w)<=0){stop("expert weights must be non-negative, and at least one weight must be greater than 0.")}
   
 	n.experts <- nrow(fit$vals)
+	
+	if(length(d) == 1){
+	  d <- rep(d, n.experts)
+	}
+	
   if(length(w)==1){
     w <- rep(w, n.experts)
   }
@@ -56,7 +60,7 @@ function(fit, x, d = "best", w = 1){
 	px <- matrix(0, length(x), n.experts)
 	weight <- matrix(w/sum(w), length(x), n.experts, byrow = T)
 	for(i in 1:n.experts){
-		px[, i] <- expertprobs(fit, x, d, ex = i)
+		px[, i] <- expertprobs(fit, x, d[i], ex = i)
 	}
 	
 	apply(px * weight, 1, sum)

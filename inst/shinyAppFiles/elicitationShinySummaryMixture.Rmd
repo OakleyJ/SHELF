@@ -1,0 +1,473 @@
+---
+title: "Extension method: mixture distribution"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
+fontsize: 11pt
+params:
+  fit: NA
+  entry: NA
+  chips: NA
+  probY: NA
+---
+
+
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+showplots <- FALSE
+library(ggplot2)
+```
+
+
+### Probability distribution for the extension variable
+
+```{r}
+knitr::kable(params$probY)
+```
+
+
+### Conditional probability judgements
+
+```{r}
+l <- params$fit$limits[, 1]
+expert <- 1
+sf <- 3
+n.experts <- nrow(params$fit$probs)
+expertnames <- colnames(params$probY)
+mydf <- data.frame(params$fit$probs[expert, ],  t(params$fit$vals) )
+colnames(mydf)[1] <- "quantiles"
+colnames(mydf)[-1] <- expertnames
+rownames(mydf) <- NULL
+if(params$entry == "Quantiles"){
+  subsection = ""
+  knitr::kable(mydf)}
+if(params$entry == "Roulette"){
+  subsection = "Implied cumulative probabilities:"
+  knitr::kable(params$chips)
+}
+
+
+```
+
+
+`r subsection`
+
+```{r}
+if(params$entry == "Roulette"){
+  mydf <- data.frame(values = params$fit$vals[1, ], 
+                     t(params$fit$probs))
+  rownames(mydf) <- c("bin", expertnames)
+  knitr::kable(mydf)
+}
+```
+
+
+
+```{r}
+if(params$fit$limits[expert, 1] == 0){
+  x <- paste0("x")
+  lower <- "`"}else{
+    lower <- paste0("`", params$fit$limits[expert, 1], " + ")}
+
+if(params$fit$limits[expert, 1] > 0){
+  x <- paste0("(x-", params$fit$limits[expert, 1],")")}
+if(params$fit$limits[expert, 1] < 0){
+  x <- paste0("(x+", abs(params$fit$limits[expert, 1]),")")}
+```
+
+
+```{r}
+lx <- min(params$fit$vals[expert, ])
+ux <- max(params$fit$vals[expert, ])
+```
+
+
+### Conditional distributions for the target variable
+
+All parameter values reported to 3 significant figures.
+
+#### Normal 
+```{r, echo = FALSE}
+mu <- signif(params$fit$Normal[, 1], sf)
+sigsq <- signif(params$fit$Normal[, 2]^2, sf)
+```
+
+
+$$
+f_{X|Y}(x) = \frac{1}{\sqrt{2\pi\sigma^2}} 
+\exp\left(-\frac{1}{2 \sigma^2}(x - \mu)^2\right),\quad -\infty<x<\infty,
+$$
+with
+
+```{r}
+normaldf <- data.frame(mu, sigsq)
+colnames(normaldf) <- c("$\\mu$", "$\\sigma^2$")
+rownames(normaldf) <- expertnames
+knitr::kable(normaldf, escape = FALSE)
+```
+
+Sample `n = 1000` random values (for expert A) with the command
+
+`rnorm(n = 1000, mean = `r mu[1]`, sd = sqrt(`r sigsq[1]`)) `
+
+<hr>
+
+#### Student$-t$ 
+```{r, echo = FALSE}
+m <- signif(params$fit$Student.t[, 1], 3)
+s <- signif(params$fit$Student.t[, 2], 3)
+tdf <- params$fit$Student.t[, 3]
+```
+
+$$
+f_{X|Y}(x) = \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\sigma\sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{x - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2},\quad -\infty<x<\infty,
+$$
+with
+```{r}
+tdataf <- data.frame(m, s, tdf)
+colnames(tdataf) <- c("$\\mu$", "$\\sigma$", "$\\nu$")
+rownames(tdataf) <- expertnames
+knitr::kable(tdataf, escape = FALSE)
+```
+
+
+
+
+Sample `n = 1000` random values (for expert A) with the command
+
+` `r m[1]` + `r s[1]` * rt(n = 1000, df = `r tdf[1]`) `
+<hr>
+#### Log normal 
+
+$$f_{X|Y}(x) = \frac{1}{x-L} \times \frac{1}{\sqrt{2\pi\sigma^2}} 
+\exp\left(-\frac{1}{2\sigma^2}(\ln (x-L) - \mu)^2\right), \quad x >L,$$
+
+and $f_{X|Y}(x)=0$ otherwise, with
+
+```{r}
+mu <- signif(params$fit$Log.normal[, 1], 3)
+sigsq <- signif(params$fit$Log.normal[, 2]^2, 3)  
+lnormdf <- data.frame(mu, sigsq, l)
+colnames(lnormdf) <- c("$\\mu$", "$\\sigma^2$", "$L$")
+rownames(lnormdf) <- expertnames
+knitr::kable(lnormdf, escape = FALSE)
+```
+
+Sample `n = 1000` random values (for expert A) with the command
+
+` `r l[1]` +  rlnorm(n = 1000, meanlog = `r mu[1]`, sdlog = `r signif(sqrt(sigsq[1]), 3)`) `
+<hr>
+#### Gamma  
+
+$$f_{X|Y}(x) =\frac{\beta ^ {\alpha}}{\Gamma(\alpha)}(x-L)^{\alpha - 1} \exp\left(- \beta (x-L)\right), \quad x >L,$$ 
+and $f_{X|Y}(x)=0$ otherwise, with
+
+```{r}
+shape <- signif(params$fit$Gamma[, 1], 3)
+rate <- signif(params$fit$Gamma[, 2], 3)  
+gammadf <- data.frame(shape, rate, l)
+colnames(gammadf) <- c("$\\alpha$", "$\\beta$", "$L$")
+rownames(gammadf) <- expertnames
+knitr::kable(gammadf, escape = FALSE)
+```
+
+Sample `n = 1000` random values (for expert A) with the command
+
+` `r l[1]` +  rgamma(n = 1000, shape = `r shape[1]`, rate = `r rate[1]`) `
+
+<hr>
+#### Log Student$-t$ 
+
+$$f_{X|Y}(x) =\frac{1}{x-L} \times \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\times\sigma\times \sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{\ln (x-L) - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2}, \quad x >L,$$ 
+and $f_{X|Y}(x)=0$ otherwise, with
+
+```{r}
+m <- signif(params$fit$Log.Student.t[, 1], 3)
+s <- signif(params$fit$Log.Student.t[, 2], 3)
+tdf <- params$fit$Log.Student.t[, 3]
+  
+logtdf <- data.frame(m, s, tdf, l)
+colnames(logtdf) <- c("$\\mu$", "$\\sigma$", "$\\nu$", "$L$")
+rownames(logtdf) <- expertnames
+knitr::kable(logtdf, escape = FALSE)
+```
+
+Sample `n = 1000` random values (for expert A) with the command
+
+` `r l[1]` + exp( `r m[1]` + `r s[1]` * rt(n = 1000, df = `r tdf[1]`)) `
+
+<hr>
+#### Beta 
+
+$$f_{X|Y}(x) = \frac{1}{U-L}\times\frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)} \left(\frac{x-L}{U-L}\right) ^{\alpha - 1} \left(1 - \left(\frac{x-L}{U-L}\right)\right)^{\beta - 1}, \quad   L < x <U,$$ 
+and $f_{X|Y}(x) = 0$ otherwise, with
+
+```{r}
+shape1 <- signif(params$fit$Beta[, 1], 3)
+shape2 <- signif(params$fit$Beta[, 2], 3)
+  
+betadf <- data.frame(shape1, shape2, l, params$fit$limits[, 2])
+colnames(betadf) <- c("$\\alpha$", "$\\beta$", "$L$", "$U$")
+rownames(betadf) <- expertnames
+knitr::kable(betadf, escape = FALSE)
+```
+
+Sample `n = 1000` random values (for expert A) with the command
+
+` `r l[1]` + (`r params$fit$limits[1, 2] - l[1] `) * rbeta(n = 1000, shape1 = `r shape1[1]`, shape2 = `r shape2[1]`) `
+
+
+### Best fitting conditional distributions
+
+```{r}
+df <- data.frame(weight = params$probY[1, ],
+                 bf = params$fit$best.fitting[, 1])
+      
+      colnames(df) <- c("weight", "best fit")
+knitr::kable(df)
+```
+
+
+### Marginal distribution for the target variable 
+
+```{r helper functions}
+makeLinearPoolPlot <-
+function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab, 
+         legend_full = TRUE, ql = NULL, qu = NULL, 
+         nx = 200, addquantile = FALSE, fs = 12,
+         expertnames = NULL,
+         lpname = "linear pool"){
+	
+  expert <- ftype <- NULL # hack to avoid R CMD check NOTE
+  
+	n.experts <- nrow(fit$vals)
+	
+	if(length(d) == 1){
+	  d <- rep(d, n.experts)
+	}
+	
+	
+	if(is.null(expertnames)){
+	  
+	  if(n.experts < 27){
+	    expertnames <- LETTERS[1:n.experts]
+	  }
+	  
+	  if(n.experts > 26){
+	    expertnames <- 1:n.experts
+	  }
+	  
+	}
+	  
+	nxTotal <- nx + length(c(ql, qu))
+	
+	x <- matrix(0, nxTotal, n.experts)
+	fx <- x
+  if(min(w)<0 | max(w)<=0){stop("expert weights must be non-negative, and at least one weight must be greater than 0.")}
+  
+	if(length(w)==1){
+	  w <- rep(w, n.experts)
+	}
+  
+	weight <- matrix(w/sum(w), nxTotal, n.experts, byrow = T)
+ 
+	for(i in 1:n.experts){
+		densitydata <- expertdensity(fit, d[i], ex = i, xl, xu, ql, qu, nx)
+		x[, i] <- densitydata$x
+		fx[, i] <-densitydata$fx 
+	}
+	
+	fx.lp <- apply(fx * weight, 1, sum)
+	df1 <- data.frame(x = rep(x[, 1], n.experts + 1),
+	                  fx = c(as.numeric(fx), fx.lp),
+	                  expert = factor(c(rep(expertnames,
+	                                        each = nxTotal),
+	                                    rep(lpname, nxTotal)),
+	                                  levels = c(expertnames,
+	                                             lpname)),
+	                  ftype = factor(c(rep("individual",
+	                                       nxTotal * n.experts),
+	                                   rep(lpname, nxTotal)),
+	                                 levels = c("individual",
+	                                            lpname))
+	)
+	
+	if(legend_full){
+	  
+	  cols <- scales::hue_pal()(n.experts + 1)
+	  linetypes <- c(rep("dashed", n.experts), "solid")
+	  sizes <- lwd * c(rep(0.5, n.experts), 1.5)
+	  names(cols) <- names(linetypes) <-
+	    names(sizes) <- c(expertnames, lpname )
+	  
+	  p1 <- ggplot(df1, aes(x = x, y = fx, 
+	                        colour = expert, 
+	                        linetype = expert, 
+	                        size = expert)) +
+	    scale_colour_manual(values = cols) +
+	    scale_linetype_manual(values = linetypes) +
+	    scale_size_manual(values = sizes)}else{
+	      p1 <- ggplot(df1, aes(x = x, y = fx, 
+	                            colour =  ftype, 
+	                            linetype=ftype, size =ftype)) +
+	        scale_linetype_manual(name = "distribution", values = c("dashed", "solid"))+
+	        scale_size_manual(name = "distribution", values = lwd * c(.5, 1.5)) +
+	        scale_color_manual(name = "distribution", values = c("black", "red"))
+	    }
+	
+	for(i in 1:n.experts){
+	  if(d[i] == "hist"){
+	    p1 <- p1 + geom_step(data = subset(df1, expert == expertnames[i]),
+	                         aes(colour = expert))
+	  }else{
+	    p1 <- p1 + geom_line(data = subset(df1, expert == expertnames[i]),
+	                   aes(colour = expert))
+	  } 
+	}
+	
+	if(length(unique(d)) == 1 & d[1] == "hist"){
+	  p1 <- p1 + geom_step(data = subset(df1, expert == lpname),
+	                       aes(colour = expert))
+	}else{
+	  p1 <- p1 + geom_line(data = subset(df1, expert == lpname),
+	                 aes(colour = expert))
+	} 
+	
+	
+	 p1 <- p1 + labs(x = xlab, y = ylab)
+	
+	if((!is.null(ql)) & (!is.null(qu)) & addquantile){
+	  if(legend_full){
+	    ribbon_col <- scales::hue_pal()(n.experts + 1)[n.experts + 1]}else{
+	      ribbon_col <- "red"
+	    }
+	  p1 <- p1 + geom_ribbon(data = with(df1, subset(df1, x <= ql  &expert == lpname)),
+	                         aes(ymax = fx, ymin = 0),
+	                         alpha = 0.2, show.legend = FALSE, colour = NA, fill =ribbon_col ) +
+	    geom_ribbon(data = with(df1, subset(df1, x >=qu  &expert == lpname)),
+	                aes(ymax = fx, ymin = 0),
+	                alpha = 0.2, show.legend = FALSE, colour = NA, fill =ribbon_col )
+	    
+	  
+	}
+	 
+	if(lpname == "marginal"){
+	  p1 <- p1 + theme(legend.title = element_blank()) 
+	} 
+	 
+	p1 + theme(text = element_text(size = fs))
+}
+
+expertdensity <-
+function(fit, d = "best", ex = 1, pl, pu, ql = NULL, qu = NULL, nx = 200){
+	
+  if(pl == -Inf){pl <- qnorm(0.001, fit$Normal[ex,1], fit$Normal[ex,2])}
+  if(pu == Inf){pu <- qnorm(0.999, fit$Normal[ex,1], fit$Normal[ex,2])}
+  
+	x <- unique(sort(c(seq(from = pl, to = pu, length = nx), ql, qu)))
+	
+	if(d == "best"){
+		best.index <- which.min(fit$ssq[ex, ])
+	}
+	index <- switch(which(d==c("normal",
+	                           "t",
+	                           "gamma",
+	                           "lognormal",
+	                           "logt",
+	                           "beta",
+	                           "hist",
+	                           "best")),
+	                1, 2, 3, 4, 5, 6, 7,
+	                best.index)
+	
+		
+	if(index==1){
+		fx <- dnorm(x, fit$Normal[ex,1], fit$Normal[ex,2]) 
+	}
+	
+	if(index==2){
+		fx <- dt((x - fit$Student.t[ex,1])/fit$Student.t[ex,2], fit$Student.t[ex,3])/fit$Student.t[ex,2]
+	}
+	
+	if(index==3){
+		xl <- fit$limits[ex,1]
+		if(xl == -Inf){xl <- 0}
+		fx <- dgamma(x - xl, fit$Gamma[ex,1], fit$Gamma[ex,2])  
+	}
+	
+	if(index==4){
+		xl <- fit$limits[ex,1]
+		if(xl == -Inf){xl <- 0}
+		fx <- dlnorm(x - xl, fit$Log.normal[ex,1], fit$Log.normal[ex,2]) 
+	}	
+	
+	if(index==5){
+		xl <- fit$limits[ex,1]
+		if(xl == -Inf){xl <- 0}
+		fx <- dt( (log(abs(x - xl)) - fit$Log.Student.t[ex,1]) / fit$Log.Student.t[ex,2], fit$Log.Student.t[ex,3]) / ((x - xl) * fit$Log.Student.t[ex,2])
+    fx[x<= xl] <- 0 # Hack to avoid NaN
+    
+	}
+		
+	if(index==6){
+		xl <- fit$limits[ex,1]
+		xu <- fit$limits[ex,2]
+		if(xl == -Inf){xl <- 0}
+		if(xu == Inf){xu <- 1}
+		fx <-  1/(xu - xl) * dbeta( (x - xl) / (xu - xl), fit$Beta[ex,1], fit$Beta[ex,2])
+	}
+
+	if(index==7){
+	 
+	  fx <- dhist(x, c(fit$limits[ex, 1],
+	                   fit$vals[ex,],
+	                   fit$limits[ex, 2]),
+	              c(0, fit$probs[ex, ],1))
+	  fx[length(fx)] <- 0
+	  }
+
+ 
+list(x = x, fx = fx)	
+	
+}
+
+dhist<-function(x, z, pz){
+  fx<-rep(0,length(x))
+  
+  h <- rep(0, length(z) -1)
+  for(i in 1:length(h)){
+    h[i]<-(pz[i+1] - pz[i]) / (z[i+1]-z[i])
+  }
+  
+  nz<-length(z)
+  
+  for(i in 1:length(x)){
+    index<- (x[i]<=z[2:nz]) & (x[i]>z[1:(nz-1)])
+    if(sum(index)>0){
+      fx[i] <- h[index]
+    }
+  }
+  fx
+}
+
+
+
+```
+
+
+```{r, fig.align="center"}
+print(makeLinearPoolPlot(params$fit, 
+                         xl = min(params$fit$limits[, "lower"]), 
+                         xu = min(params$fit$limits[, "upper"]), 
+                         d="best", 
+                         w = params$probY[1, ], lwd = 1,
+                         xlab = "x",
+                         ylab = expression(f[X](x)),
+                         addquantile = FALSE,
+                         expertnames = expertnames,
+                         lpname = "marginal"))
+```
+

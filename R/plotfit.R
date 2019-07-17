@@ -144,7 +144,7 @@ plotfit <- function(fit,
     if(int == FALSE){suppressWarnings(print(makeSingleExpertPlot(fit, d, 
                                                                  xl, xu, 
                                                                  ql, qu, 
-                                                                 sf, ex = 1, 
+                                                                 sf, ex = ex, 
                                                                  lwd, xlab, 
                                                                  ylab,
                                                                  percentages)

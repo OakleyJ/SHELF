@@ -13,11 +13,10 @@ qlinearpool(fit, q, d = "best", w = 1)
 
 \item{x}{A vector of required cumulative probabilities P(X<=x)}
 
-\item{d}{The distribution fitted to each expert's probabilities. This must
-either be the same distribution for each expert, or the best fitting
-distribution for each expert. Options are \code{"normal"}, \code{"t"},
+\item{d}{Scalar or vector of distributions to use for each expert.
+Options for each vector element are \code{"hist"}, \code{"normal"}, \code{"t"},
 \code{"gamma"}, \code{"lognormal"}, \code{"logt"},\code{"beta"},
-\code{"best"}.}
+\code{"best"}. If given as a scalar, same choice is used for all experts.}
 
 \item{w}{A vector of weights to be used in the weighted linear pool.}
 

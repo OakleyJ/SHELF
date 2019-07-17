@@ -25,6 +25,8 @@
 #' weighted least squares is to be used in the parameter fitting.
 #' @param tdf The number of degrees of freedom to be used when fitting a
 #' t-distribution.
+#' @param expertnames Vector of names to use for each expert.
+#' 
 #' @return An object of class \code{elicitation}. This is a list containing the elements
 #' \item{Normal}{Parameters of the fitted normal distributions.}
 #' \item{Student.t}{Parameters of the fitted t distributions. Note that (X -
@@ -91,7 +93,9 @@
 #' 
 #' 
 fitdist <-
-function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
+function(vals, probs, lower = -Inf,
+         upper = Inf, weights = 1, tdf = 3,
+         expertnames = NULL){
 	
 	if(is.matrix(vals)==F){vals<-matrix(vals, nrow = length(vals), ncol = 1)}
 	if(is.matrix(probs)==F){probs <- matrix(probs, nrow = nrow(vals), ncol = ncol(vals))}
@@ -111,13 +115,13 @@ function(vals, probs, lower = -Inf, upper = Inf, weights = 1, tdf = 3){
 	beta.parameters <- matrix(NA, n.experts, 2)
 	ssq<-matrix(NA, n.experts, 6)
 	
-	expertnames <- NULL
+
 	
-	if(n.experts > 1 & n.experts < 27){
+	if(n.experts > 1 & n.experts < 27 & is.null(expertnames)){
 	  expertnames <- paste("expert.", LETTERS[1:n.experts], sep="")
 	}
 	
-	if(n.experts > 27){
+	if(n.experts > 27 & is.null(expertnames)){
 	  expertnames <- paste("expert.", 1:n.experts, sep="")
 	}
 	

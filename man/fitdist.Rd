@@ -5,7 +5,7 @@
 \title{Fit distributions to elicited probabilities}
 \usage{
 fitdist(vals, probs, lower = -Inf, upper = Inf, weights = 1,
-  tdf = 3)
+  tdf = 3, expertnames = NULL)
 }
 \arguments{
 \item{vals}{A vector of elicited values for one expert, or a matrix of
@@ -32,6 +32,8 @@ weighted least squares is to be used in the parameter fitting.}
 
 \item{tdf}{The number of degrees of freedom to be used when fitting a
 t-distribution.}
+
+\item{expertnames}{Vector of names to use for each expert.}
 }
 \value{
 An object of class \code{elicitation}. This is a list containing the elements
