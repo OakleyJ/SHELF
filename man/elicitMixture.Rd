@@ -8,9 +8,8 @@ elicitMixture()
 }
 \value{
 When the Quit button is clicked, a list, with elements
-\item {fit}{an object of class \code{elicitation}. 
-See \code{\link{fitdist}} for details.}
-\item {extensionProbs}{The probability mass function for the extension variable.}
+\item{fit}{an object of class \code{elicitation}. See \code{\link{fitdist}} for details.}
+\item{extensionProbs}{the probability mass function for the extension variable.}
 }
 \description{
 Opens up a web browser (using the shiny package), from which you can specify

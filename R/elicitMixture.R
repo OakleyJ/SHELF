@@ -8,9 +8,9 @@
 #' of all the fitted distributions.
 #' 
 #' @return When the Quit button is clicked, a list, with elements
-#' \item {fit}{an object of class \code{elicitation}. 
-#' See \code{\link{fitdist}} for details.}
-#' \item {extensionProbs}{The probability mass function for the extension variable.}
+#' \item{fit}{an object of class \code{elicitation}. See \code{\link{fitdist}} for details.}
+#' \item{extensionProbs}{the probability mass function for the extension variable.}
+#' 
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
 #' @examples
 #' 
