@@ -4,8 +4,18 @@
 \alias{plotConditionalDensities}
 \title{Plot density of the target variable, conditional on the extension variable}
 \usage{
-plotConditionalDensities(y, fitX, yCP, xMed, medianY, link = "identity",
-  dist = "best", N = 1e+05, xLimits = NULL, fs = 12)
+plotConditionalDensities(
+  y,
+  fitX,
+  yCP,
+  xMed,
+  medianY,
+  link = "identity",
+  dist = "best",
+  N = 1e+05,
+  xLimits = NULL,
+  fs = 12
+)
 }
 \arguments{
 \item{y}{vector of values for the extension variable

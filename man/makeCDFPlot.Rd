@@ -4,10 +4,25 @@
 \alias{makeCDFPlot}
 \title{Plot the elicited cumulative probabilities}
 \usage{
-makeCDFPlot(lower, v, p, upper, fontsize = 12, fit = NULL,
-  dist = NULL, showFittedCDF = FALSE, showQuantiles = FALSE,
-  ql = 0.05, qu = 0.95, ex = 1, sf = 3, xaxisLower = lower,
-  xaxisUpper = upper, xlab = "x", ylab = expression(P(X <= x)))
+makeCDFPlot(
+  lower,
+  v,
+  p,
+  upper,
+  fontsize = 12,
+  fit = NULL,
+  dist = NULL,
+  showFittedCDF = FALSE,
+  showQuantiles = FALSE,
+  ql = 0.05,
+  qu = 0.95,
+  ex = 1,
+  sf = 3,
+  xaxisLower = lower,
+  xaxisUpper = upper,
+  xlab = "x",
+  ylab = expression(P(X <= x))
+)
 }
 \arguments{
 \item{lower}{lower limit for the uncertain quantity}

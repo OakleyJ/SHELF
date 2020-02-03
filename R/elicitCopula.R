@@ -54,7 +54,7 @@ copulaSample <- function(..., cp, n, d = NULL) {
   r[lower.tri(r)] <- r[upper.tri(r)]
   
   r.check <- try(chol(r), silent = TRUE)
-  if (class(r.check) == "try-error") {
+  if (inherits(r.check, "try-error")) {
     cat("Elicited correlation matrix is not positive definite.")
     if (nrow(r) == 3) {
       cat(

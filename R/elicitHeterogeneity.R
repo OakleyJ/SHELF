@@ -161,7 +161,7 @@ elicitHeterogen <- function(lower = 1, upper = 10,
 
       # Fit distribution, if allocation is sufficent
       vals$myfit <- try(fitdist(vals$v, vals$p, lower, upper), silent = TRUE)
-      if (class(vals$myfit) == "try-error"){
+      if (inherits(vals$myfit, "try-error")){
         vals$myfit <- NULL}
 
       if(!is.null(vals$myfit)){
@@ -200,7 +200,7 @@ elicitHeterogen <- function(lower = 1, upper = 10,
 
       # Fit distribution, if allocation is sufficent
       vals$myfit <- try(fitdist(vals$v, vals$p, lower, upper), silent = TRUE)
-      if (class(vals$myfit) == "try-error"){
+      if (inherits(vals$myfit, "try-error")){
         vals$myfit <- NULL}
 
       if(!is.null(vals$myfit)){

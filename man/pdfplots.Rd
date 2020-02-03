@@ -4,8 +4,17 @@
 \alias{pdfplots}
 \title{Plot fitted population pdfs}
 \usage{
-pdfplots(medianfit, precisionfit, alpha = 0.05, tails = 0.05,
-  lower = NA, upper = NA, n.x = 100, d = "best", fontsize = 18)
+pdfplots(
+  medianfit,
+  precisionfit,
+  alpha = 0.05,
+  tails = 0.05,
+  lower = NA,
+  upper = NA,
+  n.x = 100,
+  d = "best",
+  fontsize = 18
+)
 }
 \arguments{
 \item{medianfit}{The output of a \code{fitdist} command following elicitation

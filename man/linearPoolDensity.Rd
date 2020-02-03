@@ -4,8 +4,7 @@
 \alias{linearPoolDensity}
 \title{Obtain points on the density function of a linear pool}
 \usage{
-linearPoolDensity(fit, xl = -Inf, xu = Inf, d = "best", lpw = 1,
-  nx = 200)
+linearPoolDensity(fit, xl = -Inf, xu = Inf, d = "best", lpw = 1, nx = 200)
 }
 \arguments{
 \item{fit}{An object of class \code{elicitation}.}

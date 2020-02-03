@@ -4,8 +4,14 @@
 \alias{compareIntervals}
 \title{Plot fitted intervals for each expert}
 \usage{
-compareIntervals(fit, interval = 0.95, dist = "best", fs = 12,
-  xlab = "x", ylab = "expert")
+compareIntervals(
+  fit,
+  interval = 0.95,
+  dist = "best",
+  fs = 12,
+  xlab = "x",
+  ylab = "expert"
+)
 }
 \arguments{
 \item{fit}{An object of class \code{elicitation}}

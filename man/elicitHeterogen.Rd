@@ -4,8 +4,14 @@
 \alias{elicitHeterogen}
 \title{Elicit a prior distribution for a random effects variance parameter}
 \usage{
-elicitHeterogen(lower = 1, upper = 10, gridheight = 10, nbins = 9,
-  scale.free = TRUE, sigma = 1)
+elicitHeterogen(
+  lower = 1,
+  upper = 10,
+  gridheight = 10,
+  nbins = 9,
+  scale.free = TRUE,
+  sigma = 1
+)
 }
 \arguments{
 \item{lower}{The lower limit on the x-axis of the roulette grid.}

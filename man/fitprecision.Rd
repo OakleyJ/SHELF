@@ -4,9 +4,16 @@
 \alias{fitprecision}
 \title{Fit a distribution to judgements about a population precision}
 \usage{
-fitprecision(interval, propvals, propprobs = c(0.05, 0.95),
-  med = interval[1], trans = "identity", pplot = TRUE, tdf = 3,
-  fontsize = 12)
+fitprecision(
+  interval,
+  propvals,
+  propprobs = c(0.05, 0.95),
+  med = interval[1],
+  trans = "identity",
+  pplot = TRUE,
+  tdf = 3,
+  fontsize = 12
+)
 }
 \arguments{
 \item{interval}{A vector specifying the endpoints of an interval \eqn{[k_1, k_2]}.}

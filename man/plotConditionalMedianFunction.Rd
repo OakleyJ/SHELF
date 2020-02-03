@@ -4,9 +4,17 @@
 \alias{plotConditionalMedianFunction}
 \title{Plot the conditional median function}
 \usage{
-plotConditionalMedianFunction(yCP, xMed, yLimits = NULL,
-  link = "identity", xlab = "Y", ylab = "median of X given Y",
-  fs = 12, ybreaks = NULL, xbreaks = NULL)
+plotConditionalMedianFunction(
+  yCP,
+  xMed,
+  yLimits = NULL,
+  link = "identity",
+  xlab = "Y",
+  ylab = "median of X given Y",
+  fs = 12,
+  ybreaks = NULL,
+  xbreaks = NULL
+)
 }
 \arguments{
 \item{yCP}{vector of conditioning points for the extension variable.}

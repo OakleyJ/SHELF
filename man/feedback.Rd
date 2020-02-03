@@ -4,8 +4,7 @@
 \alias{feedback}
 \title{Report quantiles and probabilities from the fitted probability distributions}
 \usage{
-feedback(fit, quantiles = NA, values = NA, dist = "best", ex = NA,
-  sf = 3)
+feedback(fit, quantiles = NA, values = NA, dist = "best", ex = NA, sf = 3)
 }
 \arguments{
 \item{fit}{An object of class \code{elicitation}.}

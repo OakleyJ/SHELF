@@ -4,9 +4,19 @@
 \alias{cdfplot}
 \title{Plot distribution of CDF}
 \usage{
-cdfplot(medianfit, precisionfit, lower = NA, upper = NA, ql = 0.025,
-  qu = 0.975, median.dist = "best", precision.dist = "gamma",
-  n.rep = 10000, n.X = 100, fontsize = 18)
+cdfplot(
+  medianfit,
+  precisionfit,
+  lower = NA,
+  upper = NA,
+  ql = 0.025,
+  qu = 0.975,
+  median.dist = "best",
+  precision.dist = "gamma",
+  n.rep = 10000,
+  n.X = 100,
+  fontsize = 18
+)
 }
 \arguments{
 \item{medianfit}{The output of a \code{fitdist} command following elicitation

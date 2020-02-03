@@ -74,10 +74,10 @@ fitDirichlet <- function(...,
   # Coerce the elictation objects into a single list, if necessary
 
   argument <- list(...)
-  if(class(argument[[1]]) == "list"){
+  if(inherits(argument[[1]], "list")){
     beta.fits <- (...)
   }
-  if(class(argument[[1]]) == "elicitation"){
+  if(inherits(argument[[1]], "elicitation")){
     beta.fits <- argument
   }
 

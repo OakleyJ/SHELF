@@ -4,8 +4,14 @@
 \alias{generateReport}
 \title{Generate a report to show the fitted distributions}
 \usage{
-generateReport(fit, output_format = "html_document", sf = 3,
-  expert = 1, view = TRUE)
+generateReport(
+  fit,
+  output_format = "html_document",
+  sf = 3,
+  expert = 1,
+  view = TRUE,
+  clean = TRUE
+)
 }
 \arguments{
 \item{fit}{An object of class \code{'elicitation'}.}

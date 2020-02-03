@@ -18,7 +18,7 @@ Description: Implements various methods for eliciting a probability distribution
     for most of the methods are included. 
 License: GPL-2 | GPL-3
 Depends: R (>= 3.5.0)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests: testthat,
     knitr,
     GGally

@@ -22,6 +22,7 @@ and both limits must be finite for to fit a beta distribution. If a
 histogram is fitted without specifying finite limits, endpoints are chosen
 based on fitting a normal distribution.
 
+
 Click the Finish button to quit the elicitation session.
 }
 \examples{

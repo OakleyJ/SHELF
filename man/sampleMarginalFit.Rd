@@ -4,8 +4,15 @@
 \alias{sampleMarginalFit}
 \title{Sample from the marginal distribution of the target variable}
 \usage{
-sampleMarginalFit(fitX, sampleY, medianY, yCP, xMed, dist = "best",
-  link = "identity")
+sampleMarginalFit(
+  fitX,
+  sampleY,
+  medianY,
+  yCP,
+  xMed,
+  dist = "best",
+  link = "identity"
+)
 }
 \arguments{
 \item{fitX}{an object of class \code{elicitation} specifying the
