@@ -25,7 +25,9 @@ generateReport(
 \item{expert}{if the \code{fit} object contains judgements from multiple experts, the 
 single expert's distributions to be displayed.}
 
-\item{view}{whether to open the document after it has been compiled}
+\item{view}{set to \code{TRUE} to open the document after it has been compiled.}
+
+\item{clean}{set to \code{TRUE} to clean intermediate files that are created during rendering.}
 }
 \description{
 Renders an Rmarkdown document to display the density function of each fitted distribution, 

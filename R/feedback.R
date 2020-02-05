@@ -27,7 +27,7 @@
 #' @return %% ~Describe the value returned %% If it is a LIST, use
 #' 
 #' \item{fitted.quantiles }{Fitted quantiles for each expert}
-#' \item{fitted.probs }{Fitted probabilities for each expert}
+#' \item{fitted.probabilities }{Fitted probabilities for each expert}
 #' \item{distributions}{The distribution used to calculate fitted
 #' probabilities/quantiles for each expert, if feedback is given for multiple
 #' experts.}

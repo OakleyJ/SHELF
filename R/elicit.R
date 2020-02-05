@@ -80,12 +80,18 @@ elicit<- function(){
         conditionalPanel(
           condition = "input.dist == 't' || input.dist == 'logt'",
           numericInput("tdf", label = h5("Student-t degrees of freedom"),
-                     value = 3)
+                     value = 10)
           ),
         textInput("fq", label = h5("Feedback quantiles"), 
-                  value = "0.05, 0.95")
+                  value = "0.1, 0.9"),
+        uiOutput("feedbackProbabilities")
     
           )
+        ),
+        wellPanel(
+          textInput("xLabel", label = h5("Parameter label"), 
+                    value = "x")
+          
         )
      
       ),
@@ -121,24 +127,39 @@ elicit<- function(){
                          plotOutput("distPlot"),
                          conditionalPanel(
                            condition = "input.showFittedPDF == true",
+                           wellPanel(
+                             h5("Fitted quantiles and cumulative probabilities"),
+                             fluidRow(
+                               column(4,
+                                      tableOutput("valuesPDF")
+                               ),
+                               column(4,
+                                      tableOutput("fittedProbsPDF")
+                               )
+                             )),
                            fluidRow(
-                             column(4, 
-                                    uiOutput("setPDFxaxisLimits")),
-                             column(4,
-                                    tableOutput("valuesPDF")
+                             column(3,  
+                             uiOutput("setPDFxaxisLimits")
                              )
                            )
                          )),
                 tabPanel("CDF", plotOutput("cdf"),
                          conditionalPanel(
                            condition = "input.showFittedCDF == true",
+                           wellPanel(
+                             h5("Fitted quantiles and cumulative probabilities"),
+                             fluidRow(
+                               column(4,
+                                      tableOutput("valuesCDF")
+                               ),
+                               column(4,
+                                      tableOutput("fittedProbsCDF")
+                               )
+                             )),
                            fluidRow(
-                             column(4, 
-                                    uiOutput("setCDFxaxisLimits")),
-                             column(4,
-                                    tableOutput("valuesCDF")
+                             column(3,  
+                                    uiOutput("setCDFxaxisLimits")
                              )
-                             
                            )
                          )),
                 tabPanel("Tertiles", plotOutput("tertiles"),
@@ -189,6 +210,12 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
                error = function(e){NULL})
       
     })
+    
+    fp <- reactive({
+      tryCatch(eval(parse(text = paste("c(", input$fp, ")"))),
+               error = function(e){NULL})
+      
+    }) 
     
     p <- reactive({
       gp <-  tryCatch(eval(parse(text = paste("c(", input$probs, ")"))),
@@ -331,6 +358,11 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
                  paste(limits(), collapse = ", "))
      }) 
      
+     output$feedbackProbabilities <- renderUI({
+       textInput("fp", label = h5("Feedback probabilities"), 
+                 paste(limits(), collapse = ", "))
+     }) 
+     
      xlimPDF <- reactive({
        tryCatch(eval(parse(text = paste("c(", input$xlimPDF, ")"))),
                 error = function(e){NULL})
@@ -346,7 +378,8 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       suppressWarnings(plotfit(myfit(), d = input$dist,
                                int = F, ql = fq()[1], qu = fq()[2],
                                xl = xlimPDF()[1], xu = xlimPDF()[2], 
-                               fs = input$fs))
+                               fs = input$fs,
+                               xlab = input$xLabel))
     }
       
     })
@@ -401,7 +434,8 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
                     ql = fq()[1],
                     qu = fq()[2],
                     xaxisLower = xL,
-                    xaxisUpper = xU)
+                    xaxisUpper = xU,
+                    xlab = input$xLabel)
       
     })
     
@@ -431,10 +465,43 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       
     }) 
     
+    probabilityValues <- reactive({
+      req(fp(), myfit())
+       
+        FB <- feedback(myfit(), 
+                       values = fp(),
+                       ex = 1)
+        
+        if(input$dist == "best"){
+          probs <- FB$fitted.probabilities[, 
+                                        as.character(myfit()$best.fitting[1,
+                                                                          1])]
+        }else{
+          probs <- FB$fitted.probabilities[, input$dist]
+          
+        }
+         
+        return(data.frame(values=fp(), probabilities = probs))
+      
+      
+    }) 
+    
+    
     output$valuesPDF <- renderTable({
       req(quantileValues())
       quantileValues()
     })
+    
+    output$fittedProbsPDF <- renderTable({
+      req(probabilityValues())
+      probabilityValues()
+    })
+    
+    output$fittedProbsCDF <- renderTable({
+      req(probabilityValues())
+      probabilityValues()
+    })
+    
    
     output$valuesCDF <- renderTable({
       req(quantileValues())

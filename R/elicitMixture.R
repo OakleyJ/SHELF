@@ -203,6 +203,10 @@ elicitMixture <- function(){
   
   server <- shinyServer(function(input, output) {
     
+    # Hack to avoid CRAN check NOTE
+    
+    probability <- value <- NULL
+    
 
     #### Define reactive values ####
         
@@ -420,7 +424,7 @@ elicitMixture <- function(){
         if(dist == "best"){
           dist <- as.character(myfit()$best.fitting[i, 1])
         }
-        xMatrix[, i] <- sampleFit(myfit(), n = input$sampleSize, ex = i)[, dist]
+        xMatrix[, i] <- sampleFit(myfit(), n = input$sampleSize, expert = i)[, dist]
       }
       
       data.frame(X = apply(xMatrix,

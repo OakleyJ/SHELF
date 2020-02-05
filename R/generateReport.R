@@ -10,7 +10,8 @@
 #' @param sf number of significant figures to be displayed for the fitted parameters.
 #' @param expert if the \code{fit} object contains judgements from multiple experts, the 
 #' single expert's distributions to be displayed.
-#' @param view whether to open the document after it has been compiled
+#' @param view set to \code{TRUE} to open the document after it has been compiled.
+#' @param clean set to \code{TRUE} to clean intermediate files that are created during rendering.
 #' @examples
 #' \dontrun{
 #' # One expert, with elicited probabilities
