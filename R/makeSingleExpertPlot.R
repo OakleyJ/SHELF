@@ -62,7 +62,8 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		                 signif(fit$Student.t[ex,1], sf),
 		                 ", ",
 		                 signif(fit$Student.t[ex,2], sf),
-		                 ")",
+		                 "), df = ",
+		                 fit$Student.t[ex, 3],
 		                 sep="")
 	}
 	
@@ -138,7 +139,8 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		                   signif(fit$Log.Student.t[ex,1], sf),
 		                   ", ",
 		                   signif(fit$Log.Student.t[ex,2], sf),
-		                   ")", sep="")
+		                   "), df = ",
+		                   fit$Log.Student.t[ex,3], sep="")
 
 	}	
 

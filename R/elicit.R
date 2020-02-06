@@ -89,7 +89,7 @@ elicit<- function(){
           )
         ),
         wellPanel(
-          textInput("xLabel", label = h5("Parameter label"), 
+          textInput("xLabel", label = h5("Parameter (x-axis) label"), 
                     value = "x")
           
         )
@@ -110,7 +110,7 @@ elicit<- function(){
                                                        'Word' = "word_document"))
                   ),
                   column(3, offset = 1, 
-                         numericInput("fs", label = "Font size", value = 12)
+                         numericInput("fs", label = "Font size (plots)", value = 12)
                   )),
                 fluidRow(
                   column(3, downloadButton("report", "Download report")
@@ -386,12 +386,14 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     
     output$tertiles <- renderPlot({
       req(limits(), t1(), m(), t2(), input$fs)
-      makeTertilePlot(limits()[1], t1(), m(), t2(), limits()[2], input$fs)
+      makeTertilePlot(limits()[1], t1(), m(), t2(), limits()[2], input$fs,
+                      xlab = input$xLabel)
     })
     
     output$quartiles <- renderPlot({
       req(limits(), Q1(), m(), Q3(), input$fs)
-      makeQuartilePlot(limits()[1], Q1(), m(), Q3(), limits()[2], input$fs)
+      makeQuartilePlot(limits()[1], Q1(), m(), Q3(), limits()[2], input$fs,
+                       xlab = input$xLabel)
     })
     
     output$setCDFxaxisLimits <- renderUI({
@@ -522,7 +524,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
            ylab="",
            xaxp=c(limits()[1], limits()[2], nBins()), 
            main = paste("Total probs:", sum(rl$chips)),
-           xlab="X")
+           xlab = input$xLabel)
       for(i in 1:nBins()){
         lines(c(bin.left()[i],bin.left()[i]),
               c(0, plotHeight),lty=3,col=8)
