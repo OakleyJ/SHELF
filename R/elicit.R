@@ -237,6 +237,8 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
   
     myfit <- reactive({
       req(limits(), v(), p())
+      
+      
         fitdist(vals = v(), probs = p(), lower = limits()[1],
               upper = limits()[2], 
               tdf = input$tdf)

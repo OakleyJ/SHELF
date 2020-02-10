@@ -1,3 +1,25 @@
+SHELF v1.7.0 (2020-02-06) 
+==============================
+
+* new app for the extension method: elicitMixture(), for discrete extension variables.
+
+* bug fixed in elicitExtension(): when plotting conditional densities for the logit link function, x-axis limits now restricted to 0 and 1.
+
+* bug fixed in plotfit(): will now correctly display a single distribution for
+a selected expert when requested, if multiple distributions have been elicited.
+
+* plinearpool() and qlinearpool(): can now directly specify different distribution
+types for each expert to use in the linear pool.
+
+* fitdist(): extra argument expertnames, for specifying row names in the various
+outputs.
+
+* elicit() app: can now report fitted probabilities as well as fitted quantiles,
+and can change x-axis label
+
+* bug fixed: switched from class(x) == "foo" to inherits(x, "foo"), to avoid assumption
+length(class(x)) == 1
+
 SHELF v1.6.0 (2019-06-12) 
 ==============================
 
