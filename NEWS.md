@@ -1,3 +1,8 @@
+SHELF v1.7.0.9000 (2020-05-26) 
+==============================
+
+* bug fixed in copulaSample. Was rounding samples to 3 s.f. Increased to 8.
+
 SHELF v1.7.0 (2020-02-06) 
 ==============================
 

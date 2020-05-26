@@ -80,7 +80,8 @@ copulaSample <- function(..., cp, n, d = NULL) {
     
       
       theta[, i] <- feedback(elicitation.fits[[i]],
-                             quantiles = p[, i])$fitted.quantiles[d[i]][, 1]
+                             quantiles = p[, i],
+                             sf = 8)$fitted.quantiles[d[i]][, 1]
     }
     return(theta)
   }
