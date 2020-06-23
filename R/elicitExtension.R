@@ -39,7 +39,16 @@ elicitExtension<- function(){
                        ),
       
               tabsetPanel(
+                
                 tabPanel("Y distribution",
+                         wellPanel(
+                         radioButtons("yDistEntry",
+                                      label = "Extension variable distribution", 
+                                      choices = c("Elicit distribution" = "elicit",
+                                                  "Upload sample" = "upload"))
+                         ),
+                         conditionalPanel(
+                           condition = "input.yDistEntry == 'elicit'",
                          wellPanel(
                            h4("Elicit judgements about the extension variable: instructions"),
                            tags$ol(
@@ -58,7 +67,25 @@ elicitExtension<- function(){
                              be less than 0.4, and the largest probability must
                              be greater than 0.6."),
                              tags$li("Choose which distribution to fit to the elicited
-                             judgements about the extension variable."))),
+                             judgements about the extension variable.")))
+                         ),
+                         
+                        
+                         conditionalPanel(
+                           condition = "input.yDistEntry == 'upload'",
+                           wellPanel(
+                             h4("Upload a sample from the distribution of the extension variable"),
+                             tags$ol(
+                               tags$li("Upload a single column .txt file with the sample. Remove any column headers."),
+                               tags$li("The size of the generated sample from the marginal distribution of X
+                                       will be the same as the size of your uploaded sample."))),
+                           fileInput("ySample", "Upload file", multiple = FALSE, accept = NULL,
+                                     width = NULL, buttonLabel = "Browse...",
+                                     placeholder = "No file selected"),
+                           plotOutput("yHistogram")
+                         ),
+                         conditionalPanel(
+                           condition = "input.yDistEntry == 'elicit'",
                          fluidRow(
                            column(4, 
                                   textInput("limits1", label = h5("Parameter Y limits"), 
@@ -94,14 +121,14 @@ elicitExtension<- function(){
                            )
                            )
                            
-                           ),
-                         
+                           )
+                         ,
                          
                          
                          
                          plotOutput("distPlot1")
                          #tableOutput("valuesPDF1")
-                         ),
+                         )),
                 tabPanel("Median model",
                          fluidRow(
                            wellPanel(
@@ -225,13 +252,18 @@ elicitExtension<- function(){
                                        and a kernel density estimate is displayed.
                                        Tick marks on the x-axis indicate the 5th, 50th
                                        and 95th percentiles."),
-                               tags$li("Specify the desired sample size."),
+                               tags$li("If the Y-distribution has been elicited, specify the desired sample size. 
+                                       If a sample from the Y-distribution has been uploaded, the
+                                       sample size from the marginal distribution will be the
+                                       sample as the size of the uploaded sample."),
                                tags$li("Click on 'Download sample' to save
                                        the sampled values in .csv format."))),
+                           conditionalPanel(
+                             condition = "input.yDistEntry == 'elicit'",
                          column(4,
                                 numericInput("n", label = h5("sample size"), 
                                              value = 10000)
-                         )),
+                         ))),
                          plotOutput("marginalPlot")
                 )
                 
@@ -251,7 +283,7 @@ elicitExtension<- function(){
                                                      'Word' = "word_document"))
                 ),
                 column(3, offset = 1, 
-                       numericInput("fs", label = "Font size", value = 12)
+                       numericInput("fs", label = "Font size", value = 18)
                 )),
               fluidRow(
                 column(3, downloadButton("report", "Download report")
@@ -336,6 +368,15 @@ elicitExtension<- function(){
     
     
     
+    output$yHistogram <- renderPlot({
+      req(ry())
+      df1 <- data.frame(Y = ry())
+      ggplot(df1, aes(x = Y))+
+        geom_histogram(colour = "blue", fill = "white", bins = 30) +
+        labs(title = "Histogram of sampled extension variable values") +
+        theme_grey(base_size = input$fs)
+    })
+    
     output$distPlot1 <- renderPlot({
       
   
@@ -384,9 +425,17 @@ elicitExtension<- function(){
       }
       
      if(validTransform){
+       if(input$yDistEntry == "elicit"){
+         yL <- limits1()
+       }else{
+         req(ry())
+         yL <- range(ry())  
+         
+       }
+       
       print(plotConditionalMedianFunction(yCP = yCP(),
                                     xMed = xMed(),
-                                    yLimits = limits1(),
+                                    yLimits = yL,
                                     link = input$link,
                                     fs = input$fs))
      }
@@ -471,10 +520,20 @@ elicitExtension<- function(){
       
     })
     
+    ry <- reactive({
+      if(input$yDistEntry == "elicit"){
+        return(sampleFit(myfit1(), n = input$n)[, input$dist1])
+      }else{
+        req(input$ySample$datapath)
+        df1 <- read.table(input$ySample$datapath)
+        return(df1[, 1])
+      }
+    })
+    
     df1 <- reactive({
-      ry <- sampleFit(myfit1(), n = input$n)[, input$dist1]
+      #ry <- sampleFit(myfit1(), n = input$n)[, input$dist1]
       xSample <- sampleMarginalFit(myfit2(), 
-                                   sampleY = ry,
+                                   sampleY = ry(),
                                    medianY = input$medianY,
                                    yCP = yHyp(),
                                    xMed = xMed(),
@@ -510,17 +569,26 @@ elicitExtension<- function(){
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
         # can happen when deployed).
-        tempReport <- file.path(tempdir(), "elicitationShinySummaryExtension.Rmd")
-        file.copy(system.file("shinyAppFiles", "elicitationShinySummaryExtension.Rmd",
-                              package="SHELF"),
-                  tempReport, overwrite = TRUE)
+        if(input$yDistEntry== "elicit"){
+          tempReport <- file.path(tempdir(), "elicitationShinySummaryExtension.Rmd")
+          file.copy(system.file("shinyAppFiles", "elicitationShinySummaryExtension.Rmd",
+                                package="SHELF"),
+                    tempReport, overwrite = TRUE)
+        }else{
+          tempReport <- file.path(tempdir(), "elicitationShinySummaryExtensionUploadedYsample.Rmd")
+          file.copy(system.file("shinyAppFiles", "elicitationShinySummaryExtensionUploadedYsample.Rmd",
+                                package="SHELF"),
+                    tempReport, overwrite = TRUE)
+        }
+        
         
         # Set up parameters to pass to Rmd document
         params <- list(fit1 = myfit1(), fit2 = myfit2(), cp = input$concProb,
                        d = c(input$dist1, input$dist2), m1 = m1(), m2 = m2(),
                        link = input$link, yLimits = limits1(),
                        yCP = yCP(), xMed = xMed(),
-                       df1 = df1())
+                       df1 = df1(),
+                       ry = ry())
         
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
