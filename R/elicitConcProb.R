@@ -13,7 +13,7 @@
 #' @param m1 The elicited (or fitted) median of X_1.
 #' @param m2 The elicited (or fitted) median of X_2.
 #' @param d A vector of distributions to be used for each elicited quantity: a string with elements chosen from
-#' \code{"Normal", "Student-t", "Gamma", "Log normal" "Log Student-t", "Beta"}. The default is to use 
+#' \code{"normal", "t", "gamma", "lognormal", "logt", "beta", "hist"}. The default is to use 
 #' the best fitting distribution in each case.
 #' @param n The number of sampled (X_1, X_2) pairs to be plotted.
 #' @return A matrix of sampled values, one row per sample.
@@ -25,7 +25,7 @@
 #' v2 <- c(0.22, 0.3, 0.35)
 #' myfit1 <- fitdist(v1, p1, 0, 1)
 #' myfit2 <- fitdist(v2, p1, 0, 1)
-#' elicitConcProb(myfit1, myfit2, 0.55, 0.3, d=c("Beta", "Beta"))
+#' elicitConcProb(myfit1, myfit2, 0.55, 0.3, d=c("beta", "beta"))
 #' }
 #' @import shiny
 #' @importFrom ggExtra ggMarginal
