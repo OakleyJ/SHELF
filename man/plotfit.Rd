@@ -22,7 +22,8 @@ plotfit(
   xlab = "x",
   ylab = expression(f[X](x)),
   legend_full = TRUE,
-  percentages = FALSE
+  percentages = FALSE,
+  returnPlot = FALSE
 )
 }
 \arguments{
@@ -82,6 +83,8 @@ to be plotted with a different colour, and \code{ind = FALSE} for each expert to
 plotted with the same colour, reducing the legend size.}
 
 \item{percentages}{Set to \code{TRUE} to use percentages on the x-axis.}
+
+\item{returnPlot}{Set to \code{TRUE} to return the plot as a ggplot object.}
 }
 \description{
 Plots the fitted density function for one or more experts. Can also plot a

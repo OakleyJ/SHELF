@@ -5,6 +5,8 @@ SHELF v1.7.0.9000 (2020-05-26)
 
 * elicitExtension(): can now upload a sample from the distribution of the extension variable, instead of eliciting a distribution.
 
+* plotfit(): additional argument returnPlot (default is FALSE) will also return the plot as a ggplot object.
+
 SHELF v1.7.0 (2020-02-06) 
 ==============================
 

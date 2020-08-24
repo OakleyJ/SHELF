@@ -44,7 +44,8 @@
 #' @param legend_full If plotting a linear pool, set \code{ind = TRUE} for each expert
 #' to be plotted with a different colour, and \code{ind = FALSE} for each expert to be 
 #' plotted with the same colour, reducing the legend size.
-#' @param percentages Set to \code{TRUE} to use percentages on the x-axis. 
+#' @param percentages Set to \code{TRUE} to use percentages on the x-axis.
+#' @param returnPlot Set to \code{TRUE} to return the plot as a ggplot object.
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
 #' @examples
 #' 
@@ -97,7 +98,8 @@ plotfit <- function(fit,
                     xlab = "x",
                     ylab = expression(f[X](x)),
                     legend_full = TRUE,
-                    percentages = FALSE){
+                    percentages = FALSE,
+                    returnPlot = FALSE){
   
 
   if(d=="beta" & (min(fit$limits) == -Inf | max(fit$limits) == Inf )){stop("Parameter limits must be finite to fit a beta distribution")}
@@ -113,7 +115,12 @@ plotfit <- function(fit,
   if(nrow(fit$vals)>1 & is.na(ex)==T & lp==F){
     if(xl == -Inf & min(fit$limits[,1]) > -Inf){xl <- min(fit$limits[,1]) }
     if(xu == Inf & max(fit$limits[,2]) < Inf){xu <- max(fit$limits[,2]) }
-    if(int == FALSE){suppressWarnings(print(makeGroupPlot(fit, xl, xu, d, lwd, xlab, ylab)))}else{
+    if(int == FALSE){
+      p1 <- suppressWarnings(makeGroupPlot(fit, xl, xu, d, lwd, xlab, ylab))
+      print(p1)
+      if(returnPlot){
+        return(p1)
+      }}else{
       shinyplotgroup(fit, xl, xu, lpw, lwd, xlab, ylab)
     }
   }
@@ -131,8 +138,12 @@ plotfit <- function(fit,
       f2 <- feedback(fit, quantiles=0.99, dist=d)
       xu <- max(f2$expert.quantiles)
     }
-    if(int == FALSE){print(makeLinearPoolPlot(fit, xl, xu,  d , lpw,
-                                              lwd, xlab, ylab, legend_full))}else{
+    if(int == FALSE){p1 <- makeLinearPoolPlot(fit, xl, xu,  d , lpw,
+                                              lwd, xlab, ylab, legend_full)
+    print(p1)
+    if(returnPlot){
+      return(p1)
+    }}else{
       shinyplotgroup(fit, xl, xu, lpw, lwd, xlab, ylab, legend_full)
     }
     
@@ -141,15 +152,19 @@ plotfit <- function(fit,
   if(nrow(fit$vals)>1 & is.na(ex)==F){
     if(xl == -Inf & fit$limits[ex,1] > -Inf){xl <- fit$limits[ex,1] }
     if(xu == Inf & fit$limits[ex,2] < Inf){xu <- fit$limits[ex,2] }
-    if(int == FALSE){suppressWarnings(print(makeSingleExpertPlot(fit, d, 
+    if(int == FALSE){p1 <- suppressWarnings(makeSingleExpertPlot(fit, d, 
                                                                  xl, xu, 
                                                                  ql, qu, 
                                                                  sf, ex = ex, 
                                                                  lwd, xlab, 
                                                                  ylab,
                                                                  percentages)
-                                            )
+                                            
                                       )
+    print(p1)
+    if(returnPlot){
+      return(p1)
+    }
       }else{
       shinyplotsingle(fit, xl, xu, ql, qu, ex, xlab, ylab, percentages)
     }
@@ -159,10 +174,17 @@ plotfit <- function(fit,
  
   if(nrow(fit$vals)==1){
     if(int == FALSE){
-      print(suppressWarnings(makeSingleExpertPlot(fit, d, xl, 
+      p1 <- suppressWarnings(makeSingleExpertPlot(fit, d, xl, 
                                                   xu, ql, qu, sf, ex = 1,
                                                   lwd, xlab, ylab,
-                                                  percentages)))}else{
+                                                  percentages))
+      print(p1)
+      
+      if(returnPlot){
+        return(p1)
+      }
+      
+      }else{
       suppressWarnings(shinyplotsingle(fit, xl, xu, ql, qu, ex = 1,
                                        xlab, ylab, percentages))
     }
