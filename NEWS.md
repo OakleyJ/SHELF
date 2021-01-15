@@ -1,6 +1,8 @@
 SHELF v1.7.0.9000 (2020-05-26) 
 ==============================
 
+* new function rlinearpool() for sampling from a weighted linear pool
+
 * bug fixed in copulaSample. Was rounding samples to 3 s.f. Increased to 8. Mistake in help file corrected, regarding syntax for distribution names.
 
 * elicitExtension(): can now upload a sample from the distribution of the extension variable, instead of eliciting a distribution.

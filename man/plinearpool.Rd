@@ -3,10 +3,12 @@
 \name{plinearpool}
 \alias{plinearpool}
 \alias{qlinearpool}
-\title{Calculate fitted probabilities or quantiles from a (weighted) linear pool}
+\alias{rlinearpool}
+\title{Probabilities quantiles and samples from a (weighted) linear pool}
 \usage{
 plinearpool(fit, x, d = "best", w = 1)
 qlinearpool(fit, q, d = "best", w = 1)
+rlinearpool(fit, n, d = "best", w = 1)
 }
 \arguments{
 \item{fit}{The output of a \code{fitdist} command.}
@@ -21,6 +23,8 @@ Options for each vector element are \code{"hist"}, \code{"normal"}, \code{"t"},
 \item{w}{A vector of weights to be used in the weighted linear pool.}
 
 \item{q}{A vector of required quantiles}
+
+\item{n}{Number of random samples from the linear pool}
 }
 \value{
 A probability or quantile, calculate from a (weighted) linear pool
@@ -29,7 +33,7 @@ A probability or quantile, calculate from a (weighted) linear pool
 \description{
 Calculates a linear pool given a set of elicited judgements in a \code{fit}
 object. Then calculates required probabilities or quantiles from the pooled
-cumulative distribution function.
+cumulative distribution function, or generates a random sample.
 }
 \details{
 Quantiles are calculate by first calculating the pooled cumulative

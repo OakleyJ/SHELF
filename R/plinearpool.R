@@ -1,19 +1,21 @@
-#' Calculate fitted probabilities or quantiles from a (weighted) linear pool 
+#' Probabilities quantiles and samples from a (weighted) linear pool 
 #' 
 #' Calculates a linear pool given a set of elicited judgements in a \code{fit}
 #' object. Then calculates required probabilities or quantiles from the pooled
-#' cumulative distribution function.
+#' cumulative distribution function, or generates a random sample.
 #' 
 #' Quantiles are calculate by first calculating the pooled cumulative
 #' distribution function at 100 points, and then using linear interpolation to
-#' invert the CDF.
+#' invert the CDF. 
 #' 
 #' @usage plinearpool(fit, x, d = "best", w = 1)
 #' qlinearpool(fit, q, d = "best", w = 1)
-#' @aliases plinearpool qlinearpool
+#' rlinearpool(fit, n, d = "best", w = 1)
+#' @aliases plinearpool qlinearpool rlinearpool
 #' @param fit The output of a \code{fitdist} command.
 #' @param x A vector of required cumulative probabilities P(X<=x)
 #' @param q A vector of required quantiles
+#' @param n Number of random samples from the linear pool
 #' @param d Scalar or vector of distributions to use for each expert.
 #' Options for each vector element are \code{"hist"}, \code{"normal"}, \code{"t"},
 #' \code{"gamma"}, \code{"lognormal"}, \code{"logt"},\code{"beta"},
