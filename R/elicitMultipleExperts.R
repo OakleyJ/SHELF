@@ -25,6 +25,7 @@ elicitMultiple <- function(){
   
   dist<-c("hist", "normal", "t", "gamma", "lognormal", "logt","beta", "best")
   
+  # UI ----
   
   ui <- shinyUI(fluidPage(
     
@@ -167,7 +168,8 @@ if they have been provided,
       )
     )
   ))
-  
+# Server ----
+    
   server <- shinyServer(function(input, output) {
     
     
@@ -275,7 +277,8 @@ if they have been provided,
       fitdist(vals = vQuantile(),
               probs = pQuantile(),
               lower = l(),
-              upper = u())
+              upper = u(),
+              expertnames = colnames(input$myvals))
     })
     
     myfitChip <- reactive({
@@ -283,7 +286,9 @@ if they have been provided,
       return(fitdist(vals = vChip(),
               probs = pChip(),
               lower = l(),
-              upper = u()))}
+              upper = u(),
+              expertnames = rownames(input$myChips))
+             )}
     })
     
     myfit <- reactive({
@@ -291,6 +296,15 @@ if they have been provided,
       if(input$entry == "Roulette"){mf <- myfitChip()}
       mf
     })
+    
+    expertNames <- reactive({
+      if(input$entry == "Quantiles"){
+        en <- colnames(input$myvals)}
+      if(input$entry == "Roulette"){
+        en <- rownames(input$myChips)}
+      en
+    })
+    
     
     output$setLPWeights <- renderUI({
       req(nExp())
@@ -302,7 +316,8 @@ if they have been provided,
       
       shinyMatrix::matrixInput(inputId = "myvals", value =  initialVals(),
                                class = "numeric",
-                               cols = list(names = TRUE),
+                               cols = list(names = TRUE,
+                                           editableNames = TRUE),
                                rows = list(names = TRUE),
                                paste = TRUE,
                                copy = TRUE)
@@ -383,7 +398,8 @@ if they have been provided,
       shinyMatrix::matrixInput(inputId = "myChips", value =  initialChips(),
                                class = "numeric",
                                cols = list(names = TRUE),
-                               rows = list(names = TRUE),
+                               rows = list(names = TRUE,
+                                           editableNames = TRUE),
                                paste = TRUE,
                                copy = TRUE)
     })
@@ -405,7 +421,7 @@ if they have been provided,
     
     output$bestFittingDistributions <- renderTable({
       req(myfit(), nExp())
-      df <- data.frame(expert = LETTERS[1:nrow(myfit()$best.fitting)],
+      df <- data.frame(expert = expertNames(),
                        bf = myfit()$best.fitting[, 1])
       
       colnames(df) <- c("expert", "best fit")
@@ -442,7 +458,8 @@ if they have been provided,
                             lwd = 1,
                             xlab = "x",
                             ylab = expression(f[X](x)),
-                            fs = input$fs))}else{
+                            fs = input$fs,
+                            expertnames = expertNames()))}else{
                               print(makeLinearPoolPlot(myfit(), xl = xlimits[1], 
                                                        xu = xlimits[2], 
                                                        d=input$dist, w = lpweights(), lwd = 1,
@@ -451,7 +468,8 @@ if they have been provided,
                                                        ql = quantileValues()[1, 2], 
                                                        qu = quantileValues()[2, 2],
                                                        addquantile = input$showfeedback,
-                                                       fs = input$fs))
+                                                       fs = input$fs,
+                                                       expertnames = expertNames()))
                             }
       
     })
@@ -465,12 +483,14 @@ if they have been provided,
                                      input$myvals[,  i],
                                      c(1/3, 0.5, 2/3))$y}
         if(input$entry == "Roulette"){
+          browser()
           tertilevals[, i] <- approx(pChip()[, i], 
                                      vChip()[, i],
                                      c(1/3, 0.5, 2/3))$y}
         
       }
-      plotTertiles(tertilevals, l(), u(), fs = input$fs)
+      plotTertiles(tertilevals, l(), u(), fs = input$fs,
+                   expertnames = expertNames())
       
     })
     
@@ -488,7 +508,8 @@ if they have been provided,
                                       c(0.25, 0.5, 0.75))$y}
         
       }
-      plotQuartiles(quartilevals, l(), u(), fs = input$fs)
+      plotQuartiles(quartilevals, l(), u(), fs = input$fs,
+                    expertnames = expertNames())
       
     })
     

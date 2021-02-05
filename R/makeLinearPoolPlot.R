@@ -58,7 +58,9 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab,
 	                                 levels = c("individual",
 	                                            lpname))
 	)
-	
+	df1$expert <- factor(df1$expert, 
+	                     levels = c(expertnames, lpname))
+
 	if(legend_full){
 	  
 	  cols <- scales::hue_pal()(n.experts + 1)
@@ -71,9 +73,12 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab,
 	                        colour = expert, 
 	                        linetype = expert, 
 	                        size = expert)) +
-	    scale_colour_manual(values = cols) +
-	    scale_linetype_manual(values = linetypes) +
-	    scale_size_manual(values = sizes)}else{
+	    scale_colour_manual(values = cols,
+	                        breaks = c(expertnames, lpname )) +
+	    scale_linetype_manual(values = linetypes,
+	                          breaks = c(expertnames, lpname )) +
+	    scale_size_manual(values = sizes,
+	                      breaks = c(expertnames, lpname ))}else{
 	      p1 <- ggplot(df1, aes(x = x, y = fx, 
 	                            colour =  ftype, 
 	                            linetype=ftype, size =ftype)) +

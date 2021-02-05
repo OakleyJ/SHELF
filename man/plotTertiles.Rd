@@ -4,7 +4,14 @@
 \alias{plotTertiles}
 \title{Plot elicted tertiles, median and plausible range for each expert}
 \usage{
-plotTertiles(vals, lower, upper, fs = 12, percentages = FALSE)
+plotTertiles(
+  vals,
+  lower,
+  upper,
+  fs = 12,
+  percentages = FALSE,
+  expertnames = NULL
+)
 }
 \arguments{
 \item{vals}{a matrix of elicited tertiles and medians: one column per expert, first 

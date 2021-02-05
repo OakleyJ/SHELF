@@ -27,13 +27,16 @@
 #' }
 #' @export
 
-plotQuartiles <- function(vals, lower, upper, fs = 12){
+plotQuartiles <- function(vals, lower, upper, fs = 12, expertnames = NULL){
   
   low <- L <- Q1 <- M <- Q2 <- U <- enumber <- NULL # hack to pass CRAN check
   
   n.experts <- ncol(vals)
-  expert <-factor(LETTERS[1 : n.experts], levels = LETTERS[n.experts : 1])
-  
+  if(is.null(expertnames)){
+    expert <-factor(LETTERS[1 : n.experts], levels = LETTERS[n.experts : 1])
+  }else{
+    expert <- factor(expertnames, levels = expertnames)
+  }
   cols <- gg_color_hue(4)
   
   df1 <- data.frame(cbind(lower, t(vals), upper))

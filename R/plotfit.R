@@ -116,7 +116,8 @@ plotfit <- function(fit,
     if(xl == -Inf & min(fit$limits[,1]) > -Inf){xl <- min(fit$limits[,1]) }
     if(xu == Inf & max(fit$limits[,2]) < Inf){xu <- max(fit$limits[,2]) }
     if(int == FALSE){
-      p1 <- suppressWarnings(makeGroupPlot(fit, xl, xu, d, lwd, xlab, ylab))
+      p1 <- suppressWarnings(makeGroupPlot(fit, xl, xu, d, lwd, xlab, ylab,
+                                           expertnames = rownames(fit$Normal)))
       print(p1)
       if(returnPlot){
         return(p1)
@@ -139,7 +140,9 @@ plotfit <- function(fit,
       xu <- max(f2$expert.quantiles)
     }
     if(int == FALSE){p1 <- makeLinearPoolPlot(fit, xl, xu,  d , lpw,
-                                              lwd, xlab, ylab, legend_full)
+                                              lwd, xlab, ylab, legend_full,
+                                              expertnames = rownames(fit$Normal)
+                                              )
     print(p1)
     if(returnPlot){
       return(p1)

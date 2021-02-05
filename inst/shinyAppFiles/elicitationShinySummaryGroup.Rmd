@@ -36,8 +36,7 @@ if(params$entry == "Roulette"){
   knitr::kable(params$chips)
 }
 
-n.experts <- nrow(params$fit$probs)
-expertnames <- paste("expert ", LETTERS[1:n.experts], sep="")
+expertnames <- rownames(params$fit$probs)
 ```
 
 
