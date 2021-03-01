@@ -10,7 +10,8 @@ plotTertiles(
   upper,
   fs = 12,
   percentages = FALSE,
-  expertnames = NULL
+  expertnames = NULL,
+  xl = NULL
 )
 }
 \arguments{
@@ -24,6 +25,10 @@ row is the 33rd percentile, 2nd row is the median, last row is the 66th percenti
 \item{fs}{font size to be used in the plot}
 
 \item{percentages}{set to \code{TRUE} to use percentages on the x-axis}
+
+\item{expertnames}{vector of experts' names}
+
+\item{xl}{vector of limits for x-axis}
 }
 \description{
 Displays a horizontal bar for each expert, to represent the expert's plausible range.

@@ -387,7 +387,7 @@ if they have been provided,
         }
       }
       
-      colnames(initialdf) <- LETTERS[1:nExp()]
+      #colnames(initialdf) <- LETTERS[1:nExp()]
       rownames(initialdf) <- c("L", pQuantile(), "U")
       initialdf
       
@@ -479,18 +479,20 @@ if they have been provided,
       tertilevals <- matrix(0, 3, input$nExperts)
       for(i in 1:input$nExperts){
         if(input$entry == "Quantiles"){
+         
           tertilevals[, i] <- approx(c(0, pQuantile(), 1), 
                                      input$myvals[,  i],
                                      c(1/3, 0.5, 2/3))$y}
         if(input$entry == "Roulette"){
-          browser()
+        
           tertilevals[, i] <- approx(pChip()[, i], 
                                      vChip()[, i],
                                      c(1/3, 0.5, 2/3))$y}
         
       }
       plotTertiles(tertilevals, l(), u(), fs = input$fs,
-                   expertnames = expertNames())
+                   expertnames = expertNames(),
+                   xl = xlimPDF())
       
     })
     
@@ -509,7 +511,8 @@ if they have been provided,
         
       }
       plotQuartiles(quartilevals, l(), u(), fs = input$fs,
-                    expertnames = expertNames())
+                    expertnames = expertNames(),
+                    xl = xlimPDF())
       
     })
     

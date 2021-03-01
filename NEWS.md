@@ -1,9 +1,7 @@
 SHELF v1.7.0.9000 (2020-05-26) 
 ==============================
 
-* plotfit() will now use the expert names, if provided in fitdist()
-
-* elicitMultiple(): can now click on and edit expert names.
+* Better handling of expert names: elicitMultiple(): can now click on and edit expert names; names are displayed in all plots. plotfit() will now use the expert names, if provided in fitdist(). Can also specify names in plotTertiles() and plotQuartiles(). 
 
 * new function rlinearpool() for sampling from a weighted linear pool
 

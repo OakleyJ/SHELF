@@ -10,7 +10,8 @@
 #' @param lower a vector of lower plausible limits: one per expert
 #' @param upper a vector of upper plausible limits: one per expert
 #' @param fs font size to be used in the plot
-#'
+#' @param expertnames vector of experts' names
+#' @param xl vector of limits for x-axis
 #
 
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
@@ -27,7 +28,9 @@
 #' }
 #' @export
 
-plotQuartiles <- function(vals, lower, upper, fs = 12, expertnames = NULL){
+plotQuartiles <- function(vals, lower, upper, fs = 12,
+                          expertnames = NULL,
+                          xl = NULL){
   
   low <- L <- Q1 <- M <- Q2 <- U <- enumber <- NULL # hack to pass CRAN check
   
@@ -43,13 +46,17 @@ plotQuartiles <- function(vals, lower, upper, fs = 12, expertnames = NULL){
   colnames(df1) <- c("L", "Q1", "M", "Q2", "U")
   df1$expert <- expert
   df1$enumber <- n.experts:1
-  ggplot(df1, aes(x = low, y = expert)) +
+  p1 <- ggplot(df1, aes(x = low, y = expert)) +
     geom_segment(aes(yend = expert, x=L, xend = Q1), lwd = 10, col = cols[1])+
     geom_segment(aes(yend = expert, x=Q1, xend = M), lwd = 10, col = cols[2])+
     geom_segment(aes(yend = expert, x=M, xend = Q2), lwd = 10, col = cols[3])+
     geom_segment(aes(yend = expert, x=Q2, xend = U), lwd = 10, col = cols[4])+
     labs(x = "X") +
     theme(text = element_text(size = fs))
+  if(!is.null(xl)){
+    p1 <- p1 + xlim(xl)
+  }
+  p1
 }
 
 

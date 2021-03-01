@@ -11,7 +11,8 @@
 #' @param upper a vector of upper plausible limits: one per expert
 #' @param fs font size to be used in the plot
 #' @param percentages set to \code{TRUE} to use percentages on the x-axis
-#'
+#' @param expertnames vector of experts' names
+#' @param xl vector of limits for x-axis
 #
 
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
@@ -30,7 +31,8 @@
 
 plotTertiles <- function(vals, lower, upper, fs = 12,
                          percentages = FALSE,
-                         expertnames = NULL){
+                         expertnames = NULL,
+                         xl = NULL){
   
   low <- L <- T1 <- M <- T2 <- U <- enumber <- NULL # hack to pass CRAN check
   
@@ -47,7 +49,7 @@ plotTertiles <- function(vals, lower, upper, fs = 12,
   df1 <- data.frame(cbind(lower, t(vals), upper))
   colnames(df1) <- c("L", "T1", "M", "T2", "U")
   df1$expert <- expert
-  df1$enumber <- n.experts:1
+  df1$enumber <- as.numeric(df1$expert)
   p1 <- ggplot(df1, aes(x = low, y = expert)) +
     geom_segment(aes(yend = expert, x=L, xend = T1), lwd = 10, col = cols[1])+
     geom_segment(aes(yend = expert, x=T1, xend = T2), lwd = 10, col = cols[2])+
@@ -58,6 +60,9 @@ plotTertiles <- function(vals, lower, upper, fs = 12,
     theme(text = element_text(size = fs)) 
   if(percentages){
     p1 <- p1 + scale_x_continuous(labels = scales::percent)
+  }
+  if(!is.null(xl)){
+    p1 <- p1 + xlim(xl)
   }
   p1  
 }
