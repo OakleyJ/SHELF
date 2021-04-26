@@ -3,6 +3,8 @@ SHELF v1.7.0.9000 (2020-05-26)
 
 * Better handling of expert names: elicitMultiple(): can now click on and edit expert names; names are displayed in all plots. plotfit() will now use the expert names, if provided in fitdist(). Can also specify names in plotTertiles() and plotQuartiles(). 
 
+* elicitMultiple(): can now control axes limits in quartile and tertile plot.
+
 * new function rlinearpool() for sampling from a weighted linear pool
 
 * bug fixed in copulaSample. Was rounding samples to 3 s.f. Increased to 8. Mistake in help file corrected, regarding syntax for distribution names.
