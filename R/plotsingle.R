@@ -2,15 +2,14 @@ plotsingle <-
 function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1){
 	
 	if(d == "best"){
-		ssq <- fit$ssq[ex, is.na(fit$ssq[ex,])==F]
-		best.index <- which(ssq == min(ssq))[1]
+		d <- fit$best.fitting[ex, 1]
 	}
 	index<-switch(which(d==c("normal", "t", "gamma", "lognormal", "logt","beta", "hist", "best")), 1, 2, 3, 4, 5, 6, 7, best.index)
 	
 	par(ps=15)
 	par(mar = c(5.1, 5.1, 4.1, 2.1))
 	
-	if(index==1){
+	if(d == "normal"){
 		
 		if(pl == -Inf){pl <- qnorm(0.001, fit$Normal[ex,1], fit$Normal[ex,2])}
 		if(pu == Inf){pu <- qnorm(0.999, fit$Normal[ex,1], fit$Normal[ex,2])}
@@ -35,7 +34,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1)
 		}
 	}
 	
-	if(index==2){
+	if(d == "t"){
 		
 		if(pl == -Inf){pl <- fit$Student.t[ex,1] + fit$Student.t[ex,2] * qt(0.001, fit$Student.t[ex,3])}
 		if(pu == Inf){pu <- fit$Student.t[ex,1] + fit$Student.t[ex,2] * qt(0.999, fit$Student.t[ex,3])}
@@ -62,7 +61,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1)
 		}
 	}
 	
-	if(index==3){
+	if(d == "gamma"){
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}
 		
@@ -91,7 +90,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1)
 		}
 	}
 	
-	if(index==4){
+	if(d == "lognormal"){
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}
 		
@@ -119,7 +118,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1)
 		}
 	}	
 	
-	if(index==5){ # log student t
+	if(d == "logt"){ # log student t
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}
 		
@@ -153,7 +152,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1)
 
 	
 	
-	if(index==6){
+	if(d == "beta"){
 		xl <- fit$limits[ex,1]
 		xu <- fit$limits[ex,2]
 		if(xl == -Inf){xl <- 0}
@@ -182,7 +181,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1)
 		}
 	}
 	
-	if(index==7){
+	if(d == "hist"){
 	  
     
 	  if(pl == -Inf & fit$limits[ex,1] > -Inf){pl <- fit$limits[ex,1]}

@@ -6,20 +6,11 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
   
   
 	if(d == "best"){
-		ssq <- fit$ssq[ex, is.na(fit$ssq[ex,])==F]
-		best.index <- which(ssq == min(ssq))[1]
+	  d <- fit$best.fitting[ex, 1]
 	}
-	index <- switch(which(d==c("normal",
-	                           "t",
-	                           "gamma",
-	                           "lognormal",
-	                           "logt",
-	                           "beta",
-	                           "hist",
-	                           "best")),
-	                1, 2, 3, 4, 5, 6, 7, best.index)
+
 	
-	if(index==1){
+	if(d == "normal"){
 		
 		if(pl == -Inf){pl <- qnorm(0.001, fit$Normal[ex,1], fit$Normal[ex,2])}
 		if(pu == Inf){pu <- qnorm(0.999, fit$Normal[ex,1], fit$Normal[ex,2])}
@@ -40,7 +31,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		                         sep="")
 	}
 	
-	if(index==2){
+	if(d == "t"){
 		
 		if(pl == -Inf){pl <- fit$Student.t[ex,1] + fit$Student.t[ex,2] * qt(0.001, fit$Student.t[ex,3])}
 		if(pu == Inf){pu <- fit$Student.t[ex,1] + fit$Student.t[ex,2] * qt(0.999, fit$Student.t[ex,3])}
@@ -67,7 +58,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		                 sep="")
 	}
 	
-	if(index==3){
+	if(d == "gamma"){
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}
 		
@@ -94,7 +85,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		                   ")", sep="")
 	}
 	
-	if(index==4){
+	if(d == "lognormal"){
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}
 		
@@ -117,7 +108,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		                   sep="")
 	}	
 	
-	if(index==5){ # log student t
+	if(d == "logt"){ # log student t
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}
 		
@@ -143,10 +134,8 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		                   fit$Log.Student.t[ex,3], sep="")
 
 	}	
-
 	
-	
-	if(index==6){
+	if(d == "beta"){
 		xl <- fit$limits[ex,1]
 		xu <- fit$limits[ex,2]
 		#if(xl == -Inf){xl <- 0}
@@ -173,7 +162,7 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		                        ")", sep="")
 	}
 	
-	if(index==7){
+	if(d == "hist"){
 	  
 	  if(fit$limits[ex, 1] == -Inf){
 	     histl <- qnorm(0.001, fit$Normal[ex,1], fit$Normal[ex,2])
@@ -231,9 +220,102 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
     
     dist.title = "histogram fit"
    
-    }
+	}
+	
+	if(d == "mirrorgamma"){
+	  xu <- fit$limits[ex, 2]
+	  if(pl == -Inf){pl <- xu - qgamma(0.999, fit$mirrorgamma[ex,1],
+	                                   fit$mirrorgamma[ex,2])}
+	  if(pu == Inf){pu <- xu}
+	  
+	  x <- seq(from = pl, to = pu, length = 200)
+	  
+	  if(is.na(ql) == F){
+	    x.q1 <- xu - qgamma(1 - ql, fit$mirrorgamma[ex,1],
+	                        fit$mirrorgamma[ex,2])
+	    x <- sort(c(x, x.q1))
+	  }
+	  
+	  if(is.na(qu) == F){
+	    x.q2 <- xu - qgamma(1 - qu, fit$mirrorgamma[ex,1],
+	                        fit$mirrorgamma[ex,2])
+	    x <- sort(c(x, x.q2))
+	  }
+	  
+	  fx <- dgamma(xu - x, fit$mirrorgamma[ex,1],
+	               fit$mirrorgamma[ex,2])  
+	  
+	  dist.title = paste("Mirror gamma(",
+	                     signif(fit$mirrorgamma[ex,1], sf),
+	                     ", ",
+	                     signif(fit$mirrorgamma[ex,2], sf),
+	                     ")", sep="")
+	} 
+	
+  if(d == "mirrorlognormal"){
+    xu <- fit$limits[ex, 2]
+    if(pl == -Inf){pl <- xu - qlnorm(0.999, fit$mirrorlognormal[ex,1],
+                                     fit$mirrorlognormal[ex,2])}
+    if(pu == Inf){pu <- xu}
+    x <- seq(from = pl, to = pu, length = 200)
+    if(is.na(ql) == F){
+      x.q1 <- xu - qlnorm(1 - ql,
+                          fit$mirrorlognormal[ex,1],
+                          fit$mirrorlognormal[ex,2])
+      x <- sort(c(x, x.q1))}
+    if(is.na(qu) == F){
+      x.q2 <- xu - qlnorm(1 - qu,
+                          fit$mirrorlognormal[ex,1],
+                          fit$mirrorlognormal[ex,2])
+      x <- sort(c(x, x.q2))}
+    
+    fx <- dlnorm(xu - x, fit$mirrorlognormal[ex,1],
+                 fit$mirrorlognormal[ex,2])
+    
+    dist.title = paste("Mirror log normal(",
+                       signif(fit$mirrorlognormal[ex,1], sf),
+                       ", ",
+                       signif(fit$mirrorlognormal[ex,2], sf), ")",
+                       sep="")
+  }
+  
+  if(d == "mirrorlogt"){ # mirror log student t
+    xu <- fit$limits[ex, 2]
    
-	 
+    # Calculate axes limits using the  mirror lognormal; log-t limits may be too extreme
+    if(pl == -Inf){pl <- xu - qlnorm(0.999, 
+                                     fit$mirrorlognormal[ex,1],
+                                     fit$mirrorlognormal[ex,2])}
+    if(pu == Inf){pu <- xu}
+    
+    x <- seq(from = pl, to = 0.99*xu, length = 200)
+    if(is.na(ql) == F){
+      x.q1 <- xu - exp(fit$mirrorlogt[ex,1] + 
+                         fit$mirrorlogt[ex,2] * qt(1 - ql, fit$mirrorlogt[ex,3]))
+      x <- sort(c(x, x.q1))}
+    
+    if(is.na(qu) == F){
+      x.q2 <- 
+        xu - exp(fit$mirrorlogt[ex,1] + 
+                   fit$mirrorlogt[ex,2] * qt(1 - qu, fit$mirrorlogt[ex,3]))
+      
+      x <- sort(c(x, x.q2))}
+    
+    fx <- dt( (log(xu - x) - fit$mirrorlogt[ex,1]) /
+                fit$mirrorlogt[ex,2], 
+              fit$mirrorlogt[ex,3]) / ((xu - x) *
+                                         fit$mirrorlogt[ex,2])
+    dist.title = paste("Mirror log T(",
+                       signif(fit$mirrorlogt[ex,1], sf),
+                       ", ",
+                       signif(fit$mirrorlogt[ex,2], sf),
+                       "), df = ",
+                       fit$mirrorlogt[ex,3], sep="")
+    
+  }	
+  
+  
+   
 	df1 <- data.frame(x = x, fx = fx)
 	p1 <- ggplot(df1, aes(x = x, y = fx)) +
 	  geom_line(size = lwd) +

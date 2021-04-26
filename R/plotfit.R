@@ -9,7 +9,8 @@
 #' @param fit An object of class \code{elicitation}.
 #' @param d The distribution fitted to each expert's probabilities. Options are
 #' \code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
-#' \code{"logt"},\code{"beta"}, \code{"hist"} (for a histogram fit), and
+#' \code{"logt"},\code{"beta"}, \code{"mirrorgamma"},
+#' \code{"mirrorlognormal"}, \code{"mirrorlogt"} \code{"hist"} (for a histogram fit), and
 #' \code{"best"} (for best fitting)
 #' @param int Set \code{int = TRUE} to use interactive plotting (using the
 #' shiny package). If plotting for a single expert, the argument \code{d} is

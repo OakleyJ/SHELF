@@ -9,7 +9,8 @@ function(fit, quantiles =  NA, values = NA, dist = "best", sfg = 3){
 	names(distributions) <- expertnames
 	distribution.names <- c("normal", "t", "gamma", "lognormal",
 	                        "logt", "beta",
-	                        "hist")
+	                        "hist", "mirrorgamma", "mirrorlognormal",
+	                        "mirrorlogt")
 	
 
 	
@@ -39,17 +40,17 @@ function(fit, quantiles =  NA, values = NA, dist = "best", sfg = 3){
 		}
 		
 		if(dist == "best"){
-			d.select <- which(fit$ssq[i,] == min(fit$ssq[i, d.index]))[1]
+		  expertDist <- fit$best.fitting[i, 1]
 		}else{
-			d.select <- which(dist == c("normal", "t", "gamma", "lognormal",
-			                            "logt","beta", "hist"))
+		  expertDist <- dist
 		}
 		
-		distributions[1, i] <- distribution.names[d.select]
+		
+		distributions[1, i] <- expertDist
 		
 		temp <- feedbacksingle(fit, quantiles, values, ex = i)
-		expert.quantiles[, i] <- temp$fitted.quantiles[, d.select]
-		expert.probs[, i] <- temp$fitted.probabilities[, d.select]
+		expert.quantiles[, i] <- temp$fitted.quantiles[, expertDist]
+		expert.probs[, i] <- temp$fitted.probabilities[, expertDist]
 	}
 	
 	

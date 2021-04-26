@@ -1,10 +1,11 @@
 feedbacksingle <-
 function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 	
-	n.distributions <- 7
+	n.distributions <- 10
 	distribution.names <- c("normal", "t", "gamma", "lognormal",
-	                        "logt", "beta", "hist")
-	d.index<-c(1:2)
+	                        "logt", "beta", "hist",
+	                        "mirrorgamma", "mirrorlognormal",
+	                        "mirrorlogt")
 	
 	if(is.na(quantiles[1]) == F ){
 		report.elicited.q <- F
@@ -21,7 +22,7 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 	Mq[, "t"] <- qt(quantiles, fit$Student.t[ex,3]) * fit$Student.t[ex,2] +
 	  fit$Student.t[ex,1] 
 	if(fit$limits[ex,1] > - Inf){
-		d.index<-c(1:5)
+
 		Mq[, "gamma"] <- fit$limits[ex,1] + 
 		  qgamma(quantiles, fit$Gamma[ex,1], fit$Gamma[ex,2])
 		Mq[, "lognormal"] <- fit$limits[ex,1] + 
@@ -30,7 +31,7 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 		  exp( qt(quantiles, fit$Log.Student.t[ex,3]) * fit$Log.Student.t[ex,2] +
 		         fit$Log.Student.t[ex, 1])
 		if(fit$limits[ex,2] < Inf){
-			d.index<-c(1:7)
+
 			Mq[, "beta"] <- fit$limits[ex,1] + 
 			  (fit$limits[ex,2] - fit$limits[ex,1]) * 
 			  qbeta(quantiles, fit$Beta[ex,1], fit$Beta[ex,2] )
@@ -40,6 +41,16 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 			                 c(0, fit$probs[ex, ], 1 )
 			                 )
 		}
+	}
+	if(fit$limits[ex, 2] < Inf){
+	  Mq[, "mirrorgamma"] <- fit$limits[ex,2] - 
+	    qgamma(1 - quantiles, fit$mirrorgamma[ex,1], fit$mirrorgamma[ex,2])
+	  Mq[, "mirrorlognormal"] <- fit$limits[ex,2] - 
+	    qlnorm(1 - quantiles, fit$mirrorlognormal[ex,1],
+	           fit$mirrorlognormal[ex,2])
+	  Mq[, "mirrorlogt"] <- fit$limits[ex,2] -
+	    exp( qt(1 - quantiles, fit$mirrorlogt[ex,3]) * fit$mirrorlogt[ex,2] +
+	           fit$mirrorlogt[ex, 1])
 	}
 		
 	if(is.na(values[1]) == F ){
@@ -66,6 +77,14 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 		valuesMatrix[, "logt"] <- (log(abs(valuesMatrix[, "logt"] - fit$limits[ex,1])) - 
 		                 fit$Log.Student.t[ex,1]) / fit$Log.Student.t[ex,2]
 		# avoid log of negative values. Set probability to 0 in line 91
+	}
+	
+	if(fit$limits[ex,2] < Inf){
+	  valuesMatrix[, c("mirrorgamma", "mirrorlognormal")] <- fit$limits[ex,2] -
+	    valuesMatrix[, c("mirrorgamma", "mirrorlognormal")]  
+	  valuesMatrix[, "mirrorlogt"] <- (log(abs(fit$limits[ex,2] - valuesMatrix[, "logt"])) - 
+	                               fit$mirrorlogt[ex,1]) / fit$mirrorlogt[ex,2]
+	  # avoid log of negative values. Set probability to 0 in line 91
 	}
 		
 	if((fit$limits[ex,1] > - Inf) & (fit$limits[ex,2] < Inf)){
@@ -96,28 +115,51 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 			                 c(fit$limits[ex, "lower"], fit$vals[ex, ], fit$limits[ex, "upper"]),
 			                 c(0, fit$probs[ex, ], 1 ))
 		}
-	}	
+	}
+	
+	if(fit$limits[ex,2] < Inf){
+	  Mp[, "mirrorgamma"] <- 1 - pgamma(valuesMatrix[, "mirrorgamma"],
+	                          fit$mirrorgamma[ex,1], fit$mirrorgamma[ex,2])
+	  Mp[, "mirrorlognormal"] <- 1 - plnorm(valuesMatrix[, "mirrorlognormal"], 
+	                              fit$mirrorlognormal[ex,1], fit$mirrorlognormal[ex,2])
+	  Mp[, "mirrorlogt"] <- 1 - pt(valuesMatrix[, "mirrorlogt"],
+	                               fit$mirrorlogt[ex,3])
+	  
+	  # set to 0 for log-T, if x is below lower limit
+	  Mp[values >= fit$limits[ex, 2],  "mirrorlogt"] <- 0  }
+	  
+	
 		
 	if(report.elicited.p == F){
-		Mp <- data.frame(Mp, row.names = values)
-    dp.index<-d.index }else{
+		Mp <- data.frame(Mp, row.names = values)}else{
 		Mp <- data.frame(matrix(fit$probs[ex,], ncol=1), Mp, row.names = values)
 		names(Mp) <- c("elicited", distribution.names)
-    dp.index<-c(1,d.index+1)
 	}
 	
 	if(report.elicited.q == F){
 		Mq <- data.frame(Mq, row.names = quantiles)
-		dq.index<-d.index }else{
+		}else{
 		Mq <- data.frame(fit$vals[ex,], Mq, row.names = quantiles)
 		names(Mq) <- c("elicited", distribution.names)
-		dq.index<-c(1,d.index+1)
 	}
 	
+	Mp <- signif(Mp, sf)
+	Mq <- signif(Mq, sf)
+	
+	if(fit$limits[ex, 1] == -Inf){
+	  Mp[, c("gamma", "lognormal", "logt", "beta")] <- NA
+	  Mq[, c("gamma", "lognormal", "logt", "beta")] <- NA
+	}
+	
+	if(fit$limits[ex, 2] == Inf){
+	  Mp[, c("mirrorgamma", "mirrorlognormal",
+	         "mirrorlogt", "beta")] <- NA
+	  Mq[, c("mirrorgamma", "mirrorlognormal", "mirrorlogt", "beta")] <- NA
+	  
+	}
+	
+	
 
-
-	list(fitted.quantiles = signif(Mq[, dq.index],
-	                               sf), 
-	     fitted.probabilities = signif(Mp[, dp.index],
-	                                   sf))
+	list(fitted.quantiles = Mq, 
+	     fitted.probabilities = Mp)
 }
