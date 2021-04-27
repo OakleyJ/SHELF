@@ -145,6 +145,10 @@ elicitMultiple <- function(){
                    plotOutput("distPlot"),
                    fluidRow(
                      column(4,
+                            downloadButton('downloadDensities',
+                                           "Download plot")),
+                     
+                     column(4,
                             tableOutput("bestFittingDistributions")
                      ),
                      column(4, 
@@ -159,14 +163,24 @@ elicitMultiple <- function(){
 into three equally likely regions, as specified by each expert's tertiles. Each expert's median
 is shown by a dashed line. The tertiles displayed will either be the elicited tertiles, if they have been provided,
 or estimates obtained by linear interpolation of the elicited probabilities, with zero probability assumed
-outside the plausible range.")),
+outside the plausible range."),
+                   fluidRow(
+                     column(4,
+                            downloadButton('downloadTertiles',
+                                           "Download plot")))
+                   ),
           tabPanel("Quartiles",
                    plotOutput("Quartiles"),
                    helpText("The coloured bars divide the plausible range for each expert
 into four equally likely regions, as specified by each expert's quartiles. The quartiles displayed will either be the elicited quartiles,
 if they have been provided,
                             or estimates obtained by linear interpolation of the elicited probabilities, with zero probability assumed
-                            outside the plausible range."))
+                            outside the plausible range."),
+                   fluidRow(
+                     column(4,
+                            downloadButton('downloadQuartiles',
+                                           "Download plot")))
+          )
         )
         
       )
@@ -451,7 +465,7 @@ if they have been provided,
       
     })
     
-    output$distPlot <- renderPlot({
+    densityPlot <- function(){
       req(myfit(), lpweights(), fq(), xlimPDF(), input$fs)
       xlimits <- xlimPDF()
       
@@ -477,19 +491,23 @@ if they have been provided,
                                                        expertnames = expertNames()))
                             }
       
+    }
+    
+    output$distPlot <- renderPlot({
+     densityPlot()
     })
     
-    output$Tertiles <- renderPlot({
+    tertilePlot <- function(){
       req(myfit(), input$fs)
       tertilevals <- matrix(0, 3, input$nExperts)
       for(i in 1:input$nExperts){
         if(input$entry == "Quantiles"){
-         
+          
           tertilevals[, i] <- approx(c(0, pQuantile(), 1), 
                                      input$myvals[,  i],
                                      c(1/3, 0.5, 2/3))$y}
         if(input$entry == "Roulette"){
-        
+          
           tertilevals[, i] <- approx(pChip()[, i], 
                                      vChip()[, i],
                                      c(1/3, 0.5, 2/3))$y}
@@ -499,9 +517,13 @@ if they have been provided,
                    expertnames = expertNames(),
                    xl = xlimPDF())
       
+    }
+    
+    output$Tertiles <- renderPlot({
+      tertilePlot()
     })
     
-    output$Quartiles <- renderPlot({
+    quartilePlot <- function(){
       req(myfit(), input$fs)
       quartilevals <- matrix(0, 3, input$nExperts)
       for(i in 1:input$nExperts){
@@ -518,7 +540,12 @@ if they have been provided,
       plotQuartiles(quartilevals, l(), u(), fs = input$fs,
                     expertnames = expertNames(),
                     xl = xlimPDF())
-      
+    
+    }
+    
+    output$Quartiles <- renderPlot({
+      quartilePlot()
+     
     })
     
     observeEvent(input$exit, {
@@ -543,6 +570,43 @@ if they have been provided,
         utils::write.csv(input$myChips, file)
       }
     )
+    
+    
+    output$downloadDensities = downloadHandler(
+      filename = 'expertDensities.png',
+      content = function(file) {
+        device <- function(..., width, height) {
+          grDevices::png(..., width = 5, height = 3,
+                         res = 300, units = "in")
+        }
+        ggsave(file, plot = densityPlot(),
+               device = device, width = 5,
+               height = 3, units = "in")
+      })
+    
+    output$downloadTertiles = downloadHandler(
+      filename = 'expertTertiles.png',
+      content = function(file) {
+        device <- function(..., width, height) {
+          grDevices::png(..., width = 5, height = 3,
+                         res = 300, units = "in")
+        }
+        ggsave(file, plot = tertilePlot(),
+               device = device, width = 5,
+               height = 3, units = "in")
+      })
+    
+    output$downloadQuartiles = downloadHandler(
+      filename = 'expertQuartiles.png',
+      content = function(file) {
+        device <- function(..., width, height) {
+          grDevices::png(..., width = 5, height = 3,
+                         res = 300, units = "in")
+        }
+        ggsave(file, plot = quartilePlot(),
+               device = device, width = 5,
+               height = 3, units = "in")
+      })
     
     output$report <- downloadHandler(
       filename = function(){switch(input$outFormat,
