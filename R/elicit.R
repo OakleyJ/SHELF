@@ -74,11 +74,14 @@ elicit<- function(){
                                       Gamma = "gamma",
                                       'Log normal' = "lognormal",
                                       'Log Student-t' = "logt",
-                                      Beta = "beta", 
+                                      Beta = "beta",
+                                      'Mirror gamma' = "mirrorgamma",
+                                      'Mirror log normal' = "mirrorlognormal",
+                                      'Mirror log Student-t' = "mirrorlogt",
                                       'Best fitting' = "best")
                      ),
         conditionalPanel(
-          condition = "input.dist == 't' || input.dist == 'logt'",
+          condition = "input.dist == 't' || input.dist == 'logt' || input.dist == 'mirrorlogt'",
           numericInput("tdf", label = h5("Student-t degrees of freedom"),
                      value = 10)
           ),
@@ -110,7 +113,7 @@ elicit<- function(){
                                                        'Word' = "word_document"))
                   ),
                   column(3, offset = 1, 
-                         numericInput("fs", label = "Font size (plots)", value = 12)
+                         numericInput("fs", label = "Font size (plots)", value = 16)
                   )),
                 fluidRow(
                   column(3, downloadButton("report", "Download report")

@@ -41,7 +41,8 @@ in the set of elicited probabilities}
 
 \item{dist}{the fitted distribution to be plotted. Options are
 \code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
-\code{"logt"},\code{"beta"}, \code{"hist"} (for a histogram fit)}
+\code{"logt"},\code{"beta"}, \code{"mirrorgamma"},
+\code{"mirrorlognormal"}, \code{"mirrorlogt"} \code{"hist"} (for a histogram fit)}
 
 \item{showFittedCDF}{logical. Should a fitted distribution function
 be displayed?}

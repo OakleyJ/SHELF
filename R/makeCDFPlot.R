@@ -14,7 +14,8 @@
 #' @param fit object of class \code{elicitation}
 #' @param dist the fitted distribution to be plotted. Options are
 #' \code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
-#' \code{"logt"},\code{"beta"}, \code{"hist"} (for a histogram fit)
+#' \code{"logt"},\code{"beta"}, \code{"mirrorgamma"},
+#' \code{"mirrorlognormal"}, \code{"mirrorlogt"} \code{"hist"} (for a histogram fit)
 #' @param showFittedCDF logical. Should a fitted distribution function
 #' be displayed?
 #' @param showQuantiles logical. Should quantiles from the fitted distribution function
@@ -168,6 +169,36 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
       
       
     }
+    
+    if(dist == "mirrorlognormal"){
+      
+      dist.title = paste("Mirror log normal(",
+                         signif(fit$mirrorlognormal[ex,1], sf),
+                         ", ",
+                         signif(fit$mirrorlognormal[ex,2], sf), ")",
+                         sep="")
+      
+      mirrorlncdf <- function(x){
+        1- plnorm(upper - x, 
+               meanlog = fit$mirrorlognormal[1, 1],
+               sdlog = fit$mirrorlognormal[1, 2])
+        
+      }
+      p1 <- p1 + stat_function(fun = mirrorlncdf)
+      
+      if(showQuantiles){
+        xl <- upper - qlnorm(1 - ql, meanlog = fit$mirrorlognormal[1, 1],
+                             sdlog = fit$mirrorlognormal[1, 2])
+        xu <- upper -  qlnorm(1 - qu, meanlog = fit$mirrorlognormal[1, 1],
+                             sdlog = fit$mirrorlognormal[1, 2])
+        p1 <- p1 + 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+      }
+      
+      
+    }
+    
     if(dist == "gamma"){
       
       dist.title = paste("Gamma(",
@@ -194,6 +225,34 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
       }
       
     }
+    
+    if(dist == "mirrorgamma"){
+      
+      dist.title = paste("Mirror gamma(",
+                         signif(fit$mirrorgamma[ex,1], sf),
+                         ", ",
+                         signif(fit$mirrorgamma[ex,2], sf),
+                         ")", sep="")
+      
+      mirrorgcdf <- function(x){1 - pgamma(upper - x, 
+                                 shape = fit$mirrorgamma[1, 1],
+                                 rate = fit$mirrorgamma[1, 2])}
+      p1 <- p1 + stat_function(fun = mirrorgcdf)
+      
+      if(showQuantiles){
+        xl <- upper - qgamma(1 - ql,  
+                             shape = fit$mirrorgamma[1, 1],
+                             rate = fit$mirrorgamma[1, 2])
+        xu <- upper - qgamma(1 - qu,  
+                             shape = fit$mirrorgamma[1, 1],
+                             rate = fit$mirrorgamma[1, 2])
+        p1 <- p1 + 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+      }
+      
+    }
+    
     if(dist == "logt"){
       
       dist.title = paste("Log T(",
@@ -226,6 +285,40 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
       }
       
     }
+    
+    if(dist == "mirrorlogt"){
+      
+      dist.title = paste("Mirror log T(",
+                         signif(fit$mirrorlogt[ex,1], sf),
+                         ", ",
+                         signif(fit$mirrorlogt[ex,2], sf),
+                         ")", sep="")
+      
+      mirrorlntcdf <- function(x){
+        # Need to handle case of x > upper
+        
+        p <- 1 - pt((log(abs(upper - x)) - fit$mirrorlogt[1, 1]) /
+                  fit$mirrorlogt[1, 2], 
+                fit$mirrorlogt[1, 3])
+        p[x >= upper] <- 1
+        p
+      }
+      p1 <- p1 + stat_function(fun = mirrorlntcdf)
+      
+      if(showQuantiles){
+        xl <- upper -  exp(fit$mirrorlogt[1, 1] + 
+                            fit$mirrorlogt[1, 2] * 
+                            qt(1-ql, fit$mirrorlogt[1, 3]))
+        xu <- upper -  exp(fit$mirrorlogt[1, 1] + 
+                            fit$mirrorlogt[1, 2] * 
+                            qt(1 - qu, fit$mirrorlogt[1, 3]))
+        p1 <- p1 + 
+          addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+          addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+      }
+      
+    }
+    
     if(dist == "beta"){
       
       dist.title =paste("Beta(",
