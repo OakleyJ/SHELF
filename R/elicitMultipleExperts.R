@@ -55,8 +55,12 @@ elicitMultiple <- function(){
                                         Gamma = "gamma",
                                         'Log normal' = "lognormal",
                                         'Log Student-t' = "logt",
-                                        Beta = "beta", 
-                                        'Best fitting' = "best")),
+                                        Beta = "beta",
+                                        'Mirror gamma' = "mirrorgamma",
+                                        'Mirror log normal' = "mirrorlognormal",
+                                        'Mirror log Student-t' = "mirrorlogt",
+                                        'Best fitting' = "best")
+            ),
             uiOutput("setPDFxaxisLimits"),
           checkboxGroupInput("lp", label = h5("Linear pool"), 
                              choices = list("Display linear pool" = 1)),
@@ -371,6 +375,7 @@ if they have been provided,
         initialdf <- matrix(rep(1:(2 + length(pQuantile())), nExp()),
                             2 + length(pQuantile()),
                             nExp())
+        colnames(initialdf) <- LETTERS[1:nExp()]
       }else{
         initialdf <- as.matrix(utils::read.csv(inFile$datapath, row.names = 1))
         newFile$quantiles <- TRUE
@@ -387,7 +392,7 @@ if they have been provided,
         }
       }
       
-      #colnames(initialdf) <- LETTERS[1:nExp()]
+      
       rownames(initialdf) <- c("L", pQuantile(), "U")
       initialdf
       

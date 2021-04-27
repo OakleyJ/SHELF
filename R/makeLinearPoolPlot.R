@@ -79,6 +79,7 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab,
 	                          breaks = c(expertnames, lpname )) +
 	    scale_size_manual(values = sizes,
 	                      breaks = c(expertnames, lpname ))}else{
+	                       
 	      p1 <- ggplot(df1, aes(x = x, y = fx, 
 	                            colour =  ftype, 
 	                            linetype=ftype, size =ftype)) +
@@ -86,7 +87,9 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab,
 	        scale_size_manual(name = "distribution", values = lwd * c(.5, 1.5)) +
 	        scale_color_manual(name = "distribution", values = c("black", "red"))
 	    }
-	
+
+	if(legend_full){
+		
 	for(i in 1:n.experts){
 	  if(d[i] == "hist"){
 	    p1 <- p1 + geom_step(data = subset(df1, expert == expertnames[i]),
@@ -94,7 +97,18 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab,
 	  }else{
 	    p1 <- p1 + geom_line(data = subset(df1, expert == expertnames[i]),
 	                   aes(colour = expert))
-	  } 
+	  }
+	}
+	}else{
+	  for(i in 1:n.experts){
+	    if(d[i] == "hist"){
+	      p1 <- p1 + geom_step(data = subset(df1, expert == expertnames[i]),
+	                           aes(colour = ftype))
+	    }else{
+	      p1 <- p1 + geom_line(data = subset(df1, expert == expertnames[i]),
+	                           aes(colour = ftype))
+	    }
+	  }
 	}
 	
 	if(length(unique(d)) == 1 & d[1] == "hist"){
