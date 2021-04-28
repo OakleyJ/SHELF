@@ -39,43 +39,48 @@ elicitMultiple <- function(){
                        choices = c("Quantiles", "Roulette")),
           conditionalPanel(
             condition = "input.entry == 'Quantiles'",
-          textInput("probs", label = h5("Cumulative probabilities"), 
-                    value = "0.25, 0.5, 0.75")),
+            textInput("probs", label = h5("Cumulative probabilities"), 
+                      value = "0.25, 0.5, 0.75")),
           conditionalPanel(
             condition = "input.entry == 'Roulette'",
             numericInput("nBins", label = h5("Number of bins"), value = 10),
             textInput("limits", label = h5("Parameter limits"), value = "0, 100")
-                 )
+          )
+        ),
+        wellPanel(
+          selectInput("dist", label = "Distribution", 
+                      choices =  list(Histogram = "hist",
+                                      Normal = "normal", 
+                                      'Student-t' = "t",
+                                      Gamma = "gamma",
+                                      'Log normal' = "lognormal",
+                                      'Log Student-t' = "logt",
+                                      Beta = "beta",
+                                      'Mirror gamma' = "mirrorgamma",
+                                      'Mirror log normal' = "mirrorlognormal",
+                                      'Mirror log Student-t' = "mirrorlogt",
+                                      'Best fitting' = "best")
           ),
-          wellPanel(
-            selectInput("dist", label = "Distribution", 
-                        choices =  list(Histogram = "hist",
-                                        Normal = "normal", 
-                                        'Student-t' = "t",
-                                        Gamma = "gamma",
-                                        'Log normal' = "lognormal",
-                                        'Log Student-t' = "logt",
-                                        Beta = "beta",
-                                        'Mirror gamma' = "mirrorgamma",
-                                        'Mirror log normal' = "mirrorlognormal",
-                                        'Mirror log Student-t' = "mirrorlogt",
-                                        'Best fitting' = "best")
-            ),
-            uiOutput("setPDFxaxisLimits"),
+          uiOutput("setPDFxaxisLimits"),
           checkboxGroupInput("lp", label = h5("Linear pool"), 
                              choices = list("Display linear pool" = 1)),
           conditionalPanel(
             condition = "input.lp == true",
             uiOutput("setLPWeights"),
-          radioButtons("leg", label = h5("Linear pool legend"),
-                       choices = list("full" = 1, "reduced" = 2), selected = 1 ),
-          checkboxInput("showfeedback", label = "Show feedback", value = FALSE),
-          conditionalPanel(
-            condition = "input.showfeedback == true",
-            textInput("fq", label = h5("Feedback quantiles"), 
-                      value = "0.05, 0.95")
+            radioButtons("leg", label = h5("Linear pool legend"),
+                         choices = list("full" = 1, "reduced" = 2), selected = 1 ),
+            checkboxInput("showfeedback", label = "Show feedback", value = FALSE),
+            conditionalPanel(
+              condition = "input.showfeedback == true",
+              textInput("fq", label = h5("Feedback quantiles"), 
+                        value = "0.05, 0.95")
             )
-          )
+          ),
+          
+          textInput("xLabel", label = h5("Parameter (x-axis) label"), 
+                    value = "x")
+          
+          
         )
         
       ),
@@ -168,7 +173,7 @@ outside the plausible range."),
                      column(4,
                             downloadButton('downloadTertiles',
                                            "Download plot")))
-                   ),
+          ),
           tabPanel("Quartiles",
                    plotOutput("Quartiles"),
                    helpText("The coloured bars divide the plausible range for each expert
@@ -186,8 +191,8 @@ if they have been provided,
       )
     )
   ))
-# Server ----
-    
+  # Server ----
+  
   server <- shinyServer(function(input, output) {
     
     
@@ -220,7 +225,7 @@ if they have been provided,
     
     fq <- reactive({
       feedbackq <- tryCatch(eval(parse(text=paste("c(",input$fq,")"))),
-               error = function(e){NULL})
+                            error = function(e){NULL})
       if(!is.null(feedbackq)){
         if(min(feedbackq)<=0 | max(feedbackq)>=1 | length(feedbackq) !=2){
           return(NULL)
@@ -301,12 +306,12 @@ if they have been provided,
     
     myfitChip <- reactive({
       if(is.null(pChip())){return(NULL)}else{
-      return(fitdist(vals = vChip(),
-              probs = pChip(),
-              lower = l(),
-              upper = u(),
-              expertnames = rownames(input$myChips))
-             )}
+        return(fitdist(vals = vChip(),
+                       probs = pChip(),
+                       lower = l(),
+                       upper = u(),
+                       expertnames = rownames(input$myChips))
+        )}
     })
     
     myfit <- reactive({
@@ -425,7 +430,7 @@ if they have been provided,
     
     
     quantileValues <- reactive({
-
+      
       req(lpweights(), myfit(), fq())
       values <- qlinearpool(myfit(), fq(), 
                             d=input$dist, 
@@ -475,7 +480,7 @@ if they have been provided,
                             pu = xlimits[2], 
                             d=input$dist,
                             lwd = 1,
-                            xlab = "x",
+                            xlab = input$xLabel,
                             ylab = expression(f[X](x)),
                             fs = input$fs,
                             expertnames = expertNames()))}else{
@@ -494,7 +499,7 @@ if they have been provided,
     }
     
     output$distPlot <- renderPlot({
-     densityPlot()
+      densityPlot()
     })
     
     tertilePlot <- function(){
@@ -515,7 +520,8 @@ if they have been provided,
       }
       plotTertiles(tertilevals, l(), u(), fs = input$fs,
                    expertnames = expertNames(),
-                   xl = xlimPDF())
+                   xl = xlimPDF(),
+                   xlabel = input$xLabel)
       
     }
     
@@ -539,13 +545,14 @@ if they have been provided,
       }
       plotQuartiles(quartilevals, l(), u(), fs = input$fs,
                     expertnames = expertNames(),
-                    xl = xlimPDF())
-    
+                    xl = xlimPDF(),
+                    xlabel = input$xLabel)
+      
     }
     
     output$Quartiles <- renderPlot({
       quartilePlot()
-     
+      
     })
     
     observeEvent(input$exit, {

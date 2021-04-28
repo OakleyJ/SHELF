@@ -11,7 +11,8 @@ plotTertiles(
   fs = 12,
   percentages = FALSE,
   expertnames = NULL,
-  xl = NULL
+  xl = NULL,
+  xlabel = "X"
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ row is the 33rd percentile, 2nd row is the median, last row is the 66th percenti
 \item{expertnames}{vector of experts' names}
 
 \item{xl}{vector of limits for x-axis}
+
+\item{xlabel}{x-axis label}
 }
 \description{
 Displays a horizontal bar for each expert, to represent the expert's plausible range.
