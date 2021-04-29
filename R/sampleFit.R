@@ -24,9 +24,10 @@
 #' @export
 
 sampleFit <- function(fit, n, expert = 1){
-  x <- matrix(NA, nrow = n, ncol = 7)
+  x <- matrix(NA, nrow = n, ncol = 10)
   colnames(x) <- c("normal", "t",
-                   "gamma", "lognormal", "logt", "beta", "hist")
+                   "gamma", "lognormal", "logt", "beta", "hist",
+                   "mirrorgamma", "mirrorlognormal", "mirrorlogt")
   
   if(all(is.finite(unlist(fit$limits[expert, ])))){
     u <- runif(n)
@@ -61,6 +62,23 @@ sampleFit <- function(fit, n, expert = 1){
       
         
   }
+  
+  if(is.finite(fit$limits[expert, 2])){
+    x[, "mirrorlognormal"] <- fit$limits[expert, 2] - 
+      rlnorm(n, fit$mirrorlognormal[expert, 1],
+             fit$mirrorlognormal[expert, 2])
+    
+    x[, "mirrorgamma"] <- fit$limits[expert, 2] -
+      rgamma(n, fit$mirrorgamma[expert, 1], fit$mirrorgamma[expert, 2])
+    
+    x[, "mirrorlogt"] <- fit$limits[expert, 2] - 
+      exp(fit$mirrorlogt[expert, 1] +
+            fit$mirrorlogt[expert, 2] * rt(n, fit$mirrorlogt[expert, 3]))
+    
+    
+  }
+  
+  
   x
   
 }
