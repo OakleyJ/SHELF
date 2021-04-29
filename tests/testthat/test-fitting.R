@@ -56,6 +56,28 @@ test_that("log-t distribution fitting and feedback works",{
                signif(pt((log(c(25, 55)) - m )/s, tdftest), 3))
 })
 
+test_that("mirror log-t distribution fitting and feedback works",{
+  skip_on_cran()
+  m <- log(30)
+  s <- 0.5
+  tdftest <- 5
+  vals <- c(22, 30, 42)
+  u <- 60
+  myfit <- fitdist(vals, 1 - pt((log(u - vals) - m) / s, tdftest ), lower = 0, tdf = tdftest,
+                   upper = u)
+  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(25, 55))
+  mirrorlogtparameters <- unlist(myfit$mirrorlogt)
+  best.name <- as.character(unlist(myfit$best.fitting))
+  attributes(mirrorlogtparameters) <- NULL
+  expect_equal(mirrorlogtparameters, c(m, s, tdftest), tolerance = 0.001)
+  expect_equal(best.name, "mirrorlogt")
+  expect_equal(fb$fitted.quantiles[, "mirrorlogt"], 
+               signif(u - exp(m + s * qt(1 - c(0.05, 0.95), tdftest)), 3))
+  expect_equal(fb$fitted.probabilities[, "mirrorlogt"],
+               signif(1 - pt((log(u - c(25, 55)) - m )/s, tdftest), 3))
+})
+
+
 
 test_that("scaled beta distribution fitting and feedback works",{
   skip_on_cran()
@@ -115,6 +137,26 @@ test_that("shifted lognormal distribution fitting and feedback works",{
                signif(plnorm(c(-4, 4) - l, m, s),3))
 })
 
+test_that("mirror lognormal distribution fitting and feedback works",{
+  skip_on_cran()
+  m <- 2
+  s <- 0.5
+  u <- 10
+  vals <- c(-6, -2, 2, 6)
+  myfit <- fitdist(vals, 1 - plnorm(u - vals, m, s ), lower = -20,
+                   upper = u)
+  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(-4, 4))
+  mirrorlognormalparameters <- unlist(myfit$mirrorlognormal)
+  best.name <- as.character(unlist(myfit$best.fitting))
+  attributes(mirrorlognormalparameters) <- NULL
+  expect_equal(mirrorlognormalparameters, c(m, s),
+               tolerance = 0.001)
+  expect_equal(best.name, "mirrorlognormal")
+  expect_equal(fb$fitted.quantiles[, "mirrorlognormal"], 
+               signif(u - qlnorm(1 - c(0.05, 0.95), m, s), 3) )
+  expect_equal(fb$fitted.probabilities[, "mirrorlognormal"],
+               signif(1 - plnorm(u - c(-4, 4), m, s),3))
+})
 
 
 test_that("shifted gamma distribution fitting and feedback works",{
@@ -135,6 +177,29 @@ test_that("shifted gamma distribution fitting and feedback works",{
   expect_equal(fb$fitted.probabilities[, "gamma"],
                signif(pgamma(c(33, 40)-l, a, b),3))
 })
+
+test_that("mirror gamma distribution fitting and feedback works",{
+  skip_on_cran()
+  a <- 50
+  b <- 2
+  u <- 25
+  p <- c(0.25, 0.5 , 0.75)
+  v <- u - qgamma(1 - p, a, b)
+  myfit <- fitdist(vals = v, probs = p, lower = -10,
+                   upper = u)
+  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(-3, 3))
+  mirrorgammaparameters <- unlist(myfit$mirrorgamma)
+  best.name <- as.character(unlist(myfit$best.fitting))
+  attributes(mirrorgammaparameters) <- NULL
+  expect_equal(mirrorgammaparameters, c(a, b), tolerance = 0.001)
+  expect_equal(best.name, "mirrorgamma")
+  expect_equal(fb$fitted.quantiles[, "mirrorgamma"], 
+               signif(u - qgamma(1 - c(0.05, 0.95), a, b),3))
+  expect_equal(fb$fitted.probabilities[, "mirrorgamma"],
+               signif(1 - pgamma(u - c(-3, 3), a, b),3))
+})
+
+
 
 test_that("precision fitting works - normal",{
   skip_on_cran()

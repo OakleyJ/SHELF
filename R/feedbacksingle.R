@@ -82,7 +82,7 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 	if(fit$limits[ex,2] < Inf){
 	  valuesMatrix[, c("mirrorgamma", "mirrorlognormal")] <- fit$limits[ex,2] -
 	    valuesMatrix[, c("mirrorgamma", "mirrorlognormal")]  
-	  valuesMatrix[, "mirrorlogt"] <- (log(abs(fit$limits[ex,2] - valuesMatrix[, "logt"])) - 
+	  valuesMatrix[, "mirrorlogt"] <- (log(abs(fit$limits[ex,2] - valuesMatrix[, "mirrorlogt"])) - 
 	                               fit$mirrorlogt[ex,1]) / fit$mirrorlogt[ex,2]
 	  # avoid log of negative values. Set probability to 0 in line 91
 	}
