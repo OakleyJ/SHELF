@@ -11,7 +11,8 @@ fitdist(
   upper = Inf,
   weights = 1,
   tdf = 3,
-  expertnames = NULL
+  expertnames = NULL,
+  excludelogt = FALSE
 )
 }
 \arguments{
@@ -41,6 +42,9 @@ weighted least squares is to be used in the parameter fitting.}
 t-distribution.}
 
 \item{expertnames}{Vector of names to use for each expert.}
+
+\item{excludelogt}{Set to TRUE to exclude log-t and mirror log-t when identifying
+best fitting distribution.}
 }
 \value{
 An object of class \code{elicitation}. This is a list containing the elements

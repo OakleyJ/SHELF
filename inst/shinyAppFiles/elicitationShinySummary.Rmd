@@ -348,7 +348,7 @@ if(is.na(params$fit$ssq[expert, 6])){
 
 ```{r}
 if(!is.na(params$fit$ssq[expert, "beta"])){
-plotfit(params$fit, d = "logt")
+plotfit(params$fit, d = "beta")
 }
 ```
 
@@ -453,7 +453,7 @@ sigsq,"))`" )
 `r paste(shiftMirrorLognormal)`
 
 ```{r}
-if(!is.na(params$fit$ssq[expert, 4])){
+if(!is.na(params$fit$ssq[expert, "mirrorlognormal"])){
 plotfit(params$fit, d = "mirrorlognormal")
 }
 ```

@@ -1,6 +1,10 @@
 SHELF v1.7.0.9000 (2020-05-26) 
 ==============================
 
+* Plots can be downloaded from shiny apps as .png files.
+
+* New (negatively skewed) distributions: mirror gamma, mirror lognormal, and mirror log t. These all fit distributions to (upper - X). 
+
 * Better handling of expert names: elicitMultiple(): can now click on and edit expert names; names are displayed in all plots. plotfit() will now use the expert names, if provided in fitdist(). Can also specify names in plotTertiles() and plotQuartiles(). 
 
 * elicitMultiple(): can now control axes limits in quartile and tertile plot.

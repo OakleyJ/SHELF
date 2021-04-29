@@ -61,6 +61,7 @@ elicitMultiple <- function(){
                                       'Mirror log Student-t' = "mirrorlogt",
                                       'Best fitting' = "best")
           ),
+          checkboxInput("excludeLogT", "Exclude log-t and mirror log-t from best fit", TRUE),
           uiOutput("setPDFxaxisLimits"),
           checkboxGroupInput("lp", label = h5("Linear pool"), 
                              choices = list("Display linear pool" = 1)),
@@ -94,7 +95,8 @@ elicitMultiple <- function(){
                                                  'Word' = "word_document"))
             ),
             column(3, offset = 1, 
-                   numericInput("fs", label = "Font size", value = 12)
+                   numericInput("fs", label = "Font size",
+                                value = 16)
             )),
           fluidRow(
             column(3, downloadButton("report", "Download report")
@@ -301,7 +303,8 @@ if they have been provided,
               probs = pQuantile(),
               lower = l(),
               upper = u(),
-              expertnames = colnames(input$myvals))
+              expertnames = colnames(input$myvals),
+              excludelogt = input$excludeLogT)
     })
     
     myfitChip <- reactive({
@@ -310,7 +313,8 @@ if they have been provided,
                        probs = pChip(),
                        lower = l(),
                        upper = u(),
-                       expertnames = rownames(input$myChips))
+                       expertnames = rownames(input$myChips),
+                       excludelogt = input$excludeLogT)
         )}
     })
     

@@ -26,6 +26,8 @@
 #' @param tdf The number of degrees of freedom to be used when fitting a
 #' t-distribution.
 #' @param expertnames Vector of names to use for each expert.
+#' @param excludelogt Set to TRUE to exclude log-t and mirror log-t when identifying
+#' best fitting distribution.
 #' 
 #' @return An object of class \code{elicitation}. This is a list containing the elements
 #' \item{Normal}{Parameters of the fitted normal distributions.}
@@ -103,7 +105,8 @@
 fitdist <-
   function(vals, probs, lower = -Inf,
            upper = Inf, weights = 1, tdf = 3,
-           expertnames = NULL){
+           expertnames = NULL,
+           excludelogt = FALSE){
     
     if(is.matrix(vals)==F){vals<-matrix(vals, nrow = length(vals), ncol = 1)}
     if(is.matrix(probs)==F){probs <- matrix(probs, nrow = nrow(vals), ncol = ncol(vals))}
@@ -372,8 +375,20 @@ fitdist <-
     ssq <- data.frame(ssq)
     row.names(ssq) <- expertnames
     
-    index <- apply(ssq, 1, which.min)
-    best.fitting <- data.frame(best.fit=names(ssq)[index])
+    if(excludelogt){
+      reducedssq <- ssq[, c("normal", "t", "gamma",
+                              "lognormal", "beta",
+                              "mirrorgamma",
+                              "mirrorlognormal")]
+      index <- apply(reducedssq, 1, which.min)
+      best.fitting <- data.frame(best.fit=
+                                   names(reducedssq)[index])}else{
+      index <- apply(ssq, 1, which.min)
+      best.fitting <- data.frame(best.fit=names(ssq)[index])
+      }
+      
+  
+    
     row.names(best.fitting) <- expertnames
     
     vals <- data.frame(vals)
