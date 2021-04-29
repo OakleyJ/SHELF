@@ -45,7 +45,7 @@ function(fit, q, d = "best", ex = 1){
 	
 	if(d == "mirrorlogt"){
 	  xu <- fit$limits[ex, 2]
-	  qx <- xu - exp(fit$mirrorlogt[ex,1] + fit$mirrorlogt[ex,2] * qt( q , fit$mirrorlogt[ex,3])) 
+	  qx <- xu - exp(fit$mirrorlogt[ex,1] + fit$mirrorlogt[ex,2] * qt(1- q , fit$mirrorlogt[ex,3])) 
 	}
 		
 	if(d == "beta"){

@@ -38,6 +38,7 @@ function(fit, xl, xu, d = "best", w = 1, lwd, xlab, ylab,
   
 	weight <- matrix(w/sum(w), nxTotal, n.experts, byrow = T)
  
+	
 	for(i in 1:n.experts){
 		densitydata <- expertdensity(fit, d[i], ex = i, xl, xu, ql, qu, nx)
 		x[, i] <- densitydata$x
