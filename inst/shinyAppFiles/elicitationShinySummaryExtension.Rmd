@@ -25,8 +25,11 @@ params:
 # Marginal distribution of $Y$
 
 ```{r global_options, include=FALSE}
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
-showplots <- FALSE
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE,
+                      fig.pos = 'h',
+                      fig.align = 'center',
+                      fig.height = 3,
+                      fig.width = 4)
 ```
 
 ### Elicited cumulative probabilities
@@ -35,21 +38,25 @@ showplots <- FALSE
 expert <- 1
 sf <- 3
 mydf <- data.frame( params$fit1$vals[expert, ], params$fit1$probs[expert, ])
-colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
+colnames(mydf) <- c( "$y$", "$P(Y\\le y)$")
 knitr::kable(mydf)
 ```
 
 
 ```{r}
 if(params$fit1$limits[expert, 1] == 0){
-  x <- paste0("x")
+  x <- paste0("y")
   lower <- "`"}else{
     lower <- paste0("`", params$fit1$limits[expert, 1], " + ")}
 
 if(params$fit1$limits[expert, 1] > 0){
-  x <- paste0("(x-", params$fit1$limits[expert, 1],")")}
+  x <- paste0("(y-", params$fit1$limits[expert, 1],")")}
 if(params$fit1$limits[expert, 1] < 0){
-  x <- paste0("(x+", abs(params$fit1$limits[expert, 1]),")")}
+  x <- paste0("(y+", abs(params$fit1$limits[expert, 1]),")")}
+
+xMirror <- paste0("(", params$fit$limits[expert, 2],"-y)")
+upper <- paste0("`", params$fit$limits[expert, 2], " - ")
+
 ```
 
 
@@ -64,6 +71,12 @@ ux <- max(params$fit1$vals[expert, ])
 All parameter values reported to 3 significant figures.
 
 #### Normal 
+
+```{r}
+plotfit(params$fit1, d = "normal", xlab = "Y", ylab = expression(f[Y](y)))
+```
+
+
 ```{r, echo = FALSE}
 mu <- signif(params$fit1$Normal[expert, 1], sf)
 sigsq <- signif(params$fit1$Normal[expert, 2]^2, sf)
@@ -71,8 +84,8 @@ sigsq <- signif(params$fit1$Normal[expert, 2]^2, sf)
 
 
 $$
-f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} 
-\exp\left(-\frac{1}{2 \sigma^2}(x - \mu)^2\right),\quad -\infty<x<\infty,
+f_Y(y) = \frac{1}{\sqrt{2\pi\sigma^2}} 
+\exp\left(-\frac{1}{2 \sigma^2}(y - \mu)^2\right),\quad -\infty<y<\infty,
 $$
 with
 \begin{align*}
@@ -90,6 +103,12 @@ Sample `n = 1000` random values with the command
 <hr>
 
 #### Student$-t$ 
+
+
+```{r}
+plotfit(params$fit1, d = "t", xlab = "Y", ylab = expression(f[Y](y)))
+```
+
 ```{r, echo = FALSE}
 m <- signif(params$fit1$Student.t[expert, 1], 3)
 s <- signif(params$fit1$Student.t[expert, 2], 3)
@@ -97,7 +116,7 @@ tdf <- params$fit1$Student.t[expert, 3]
 ```
 
 $$
-f_X(x) = \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\sigma\sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{x - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2},\quad -\infty<x<\infty,
+f_Y(y) = \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\sigma\sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{y - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2},\quad -\infty<y<\infty,
 $$
 with
 \begin{align*}
@@ -116,6 +135,7 @@ Sample `n = 1000` random values with the command
 #### Log normal 
 
 
+
 ```{r, echo = FALSE}
 if(is.na(params$fit1$ssq[expert, 4])){
   equationLogNormal <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
@@ -126,8 +146,8 @@ if(is.na(params$fit1$ssq[expert, 4])){
   mu <- signif(params$fit1$Log.normal[expert, 1], 3)
   sigsq <- signif(params$fit1$Log.normal[expert, 2]^2, 3)  
   
-  equationLogNormal <- paste0("$$f_X(x) = \\frac{1}{", x, "} \\times \\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
-\\exp\\left(-\\frac{1}{2\\sigma^2}(\\ln ", x,"  - \\mu)^2\\right), \\quad x >", params$fit1$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+  equationLogNormal <- paste0("$$f_Y(y) = \\frac{1}{", x, "} \\times \\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
+\\exp\\left(-\\frac{1}{2\\sigma^2}(\\ln ", x,"  - \\mu)^2\\right), \\quad y >", params$fit1$limits[expert, 1],"$$ and $f_Y(y)=0$ otherwise, 
 with $$\\mu = ", mu,"$$ $$\\sigma^2  = ", sigsq, "$$")
   
  
@@ -153,6 +173,12 @@ sigsq,"))`" )
 
 `r paste(shiftLognormal)`
 
+```{r}
+if(!is.na(params$fit1$ssq[expert, 4])){
+plotfit(params$fit1, d = "lognormal", xlab = "Y", ylab = expression(f[Y](y)))
+}
+```
+
 `r paste(equationLogNormal)`
 
 
@@ -164,6 +190,8 @@ sigsq,"))`" )
 <hr>
 #### Gamma  
 
+
+
 ```{r}
 if(is.na(params$fit1$ssq[expert, 3])){
   equationGamma <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
@@ -174,8 +202,8 @@ if(is.na(params$fit1$ssq[expert, 3])){
   shape <- signif(params$fit1$Gamma[expert, 1], 3)
   rate <- signif(params$fit1$Gamma[expert, 2], 3)  
   
-  equationGamma <- paste0("$$f_X(x) =\\frac{\\beta ^ {\\alpha}}{\\Gamma(\\alpha)}",  x,
-"^{\\alpha - 1} \\exp\\left(- \\beta ", x,"\\right), \\quad x >", params$fit1$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+  equationGamma <- paste0("$$f_Y(y) =\\frac{\\beta ^ {\\alpha}}{\\Gamma(\\alpha)}",  x,
+"^{\\alpha - 1} \\exp\\left(- \\beta ", x,"\\right), \\quad y >", params$fit1$limits[expert, 1],"$$ and $f_Y(y)=0$ otherwise, 
 with $$\\alpha = ", shape,"$$ $$\\beta  = ", rate, "$$")
   
  
@@ -198,6 +226,12 @@ rate,")`" )
 
 `r paste(shiftGamma)`
 
+```{r}
+if(!is.na(params$fit1$ssq[expert, 3])){
+plotfit(params$fit1, d = "gamma", xlab = "Y", ylab = expression(f[Y](y)))
+}
+```
+
 `r paste(equationGamma)`
 
 `r paste(samplingGammaText)`
@@ -205,7 +239,12 @@ rate,")`" )
 `r paste(samplingGamma)`
 
 <hr>
+
+
+
 #### Log Student$-t$ 
+
+
 
 ```{r}
 if(is.na(params$fit1$ssq[expert, 4])){
@@ -218,7 +257,7 @@ if(is.na(params$fit1$ssq[expert, 4])){
   s <- signif(params$fit1$Log.Student.t[expert, 2], 3)
   tdf <- params$fit1$Log.Student.t[expert, 3]
   
-  equationLogStudentT <- paste0("$$f_X(x) =\\frac{1}{", x, "} \\times \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\times\\sigma\\times \\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{\\ln ", x, " - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2}, \\quad x >", params$fit1$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+  equationLogStudentT <- paste0("$$f_Y(y) =\\frac{1}{", x, "} \\times \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\times\\sigma\\times \\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{\\ln ", x, " - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2}, \\quad y >", params$fit1$limits[expert, 1],"$$ and $f_Y(y)=0$ otherwise, 
 with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
   
  
@@ -239,6 +278,12 @@ with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
 
 `r paste(shiftLogStudentT)`
 
+```{r}
+if(!is.na(params$fit1$ssq[expert, "logt"])){
+plotfit(params$fit1, d = "logt", xlab = "Y", ylab = expression(f[Y](y)))
+}
+```
+
 `r paste(equationLogStudentT)`
 
 
@@ -251,13 +296,16 @@ with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
 
 <hr>
 #### Beta 
+
+
+
 ```{r, echo = FALSE}
 if(params$fit1$limits[expert, 1] == 0)
-  x <- paste0("x")
+  x <- paste0("y")
 if(params$fit1$limits[expert, 1] > 0)
-  x <- paste0("x-", params$fit1$limits[1, expert])
+  x <- paste0("y-", params$fit1$limits[1, expert])
 if(params$fit1$limits[expert, 1] < 0)
-  x <- paste0("x+", abs(params$fit1$limits[1, expert]))
+  x <- paste0("y+", abs(params$fit1$limits[1, expert]))
 if(params$fit1$limits[expert, 2] < Inf & params$fit1$limits[expert, 1] > -Inf){
   r <- params$fit1$limits[expert, 2] - params$fit1$limits[expert, 1]
   if(r !=1){
@@ -280,11 +328,11 @@ if(is.na(params$fit1$ssq[expert, 6])){
   samplingBetaText <- NULL
 }else{
   if(r == 1 & params$fit1$limits[expert, 1] == 0){
-  equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)}x ^{\\alpha - 1} \\left(1 - x\\right)^{\\beta - 1}, \\quad  0 < x < 1, $$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+  equationBeta <- paste0("$$f_Y(y) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)}y ^{\\alpha - 1} \\left(1 - y\\right)^{\\beta - 1}, \\quad  0 < y < 1, $$ and $f_Y(y) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
   scalingBeta <- NULL
   }
   if(r == 1 & params$fit1$limits[expert, 1] != 0){
-    equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(", x,"\\right) ^{\\alpha - 1} \\left(1 - \\left(", x,"\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit1$limits[expert, 1]," < x <", params$fit1$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    equationBeta <- paste0("$$f_Y(y) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(", x,"\\right) ^{\\alpha - 1} \\left(1 - \\left(", x,"\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit1$limits[expert, 1]," < y <", params$fit1$limits[expert, 2],",$$ and $f_Y(y) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
     scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
                           params$fit1$limits[expert, 1],
                           ", ",
@@ -294,7 +342,7 @@ if(is.na(params$fit1$ssq[expert, 6])){
   
   
   if(r !=1){
-    equationBeta <- paste0("$$f_X(x) = \\frac{1}{", r, "}\\times\\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(\\frac{", x,"}{", r,"}\\right) ^{\\alpha - 1} \\left(1 - \\left(\\frac{", x,"}{", r,"}\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit1$limits[expert, 1]," < x <", params$fit1$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    equationBeta <- paste0("$$f_Y(y) = \\frac{1}{", r, "}\\times\\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(\\frac{", x,"}{", r,"}\\right) ^{\\alpha - 1} \\left(1 - \\left(\\frac{", x,"}{", r,"}\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit1$limits[expert, 1]," < y <", params$fit1$limits[expert, 2],",$$ and $f_Y(y) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
     scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
                           params$fit1$limits[expert, 1],
                           ", ",
@@ -311,6 +359,12 @@ if(is.na(params$fit1$ssq[expert, 6])){
 
 `r paste(scalingBeta)`
 
+```{r}
+if(!is.na(params$fit1$ssq[expert, "beta"])){
+plotfit(params$fit1, d = "beta", xlab = "Y", ylab = expression(f[Y](y)))
+}
+```
+
 `r paste(equationBeta)`
 
 
@@ -324,9 +378,160 @@ if(is.na(params$fit1$ssq[expert, 6])){
 
 
 
+<hr>
+#### Mirror gamma  
+
+
+```{r}
+if(is.na(params$fit1$ssq[expert, "mirrorgamma"])){
+  equationMirrorGamma <- "Distribution not fitted. Argument `upper` needs to be specified in the `fitdist` command."
+  samplingMirrorGamma <- NULL
+  samplingMirrorGammaText <- NULL
+  shiftMirrorGamma <- NULL
+}else{
+  shape <- signif(params$fit1$mirrorgamma[expert, 1], 3)
+  rate <- signif(params$fit1$mirrorgamma[expert, 2], 3)  
+  
+  equationMirrorGamma <- paste0("$$f_Y(y) =\\frac{\\beta ^ {\\alpha}}{\\Gamma(\\alpha)}",  xMirror,
+"^{\\alpha - 1} \\exp\\left(- \\beta ", xMirror,"\\right), \\quad y <", params$fit1$limits[expert, 2],"$$ and $f_Y(y)=0$ otherwise, 
+with $$\\alpha = ", shape,"$$ $$\\beta  = ", rate, "$$")
+  
+ 
+  
+  samplingMirrorGamma <- paste0(upper, " rgamma(n = 1000, shape = ", shape,", rate = ",
+rate,")`" )
+  
+  samplingMirrorGammaText <- "Sample `n = 1000` random values with the command"
+  
+
+    shiftMirrorGamma <- paste0("Gamma distribution fitted to ", params$fit1$limits[expert, 2]," - $Y$.")
+ 
+  
+} 
+```
+
+
+`r paste(shiftMirrorGamma)`
+
+```{r}
+if(!is.na(params$fit1$ssq[expert, "mirrorgamma"])){
+plotfit(params$fit1, d = "mirrorgamma", xlab = "Y", ylab = expression(f[Y](y)))
+}
+```
+
+`r paste(equationMirrorGamma)`
+
+`r paste(samplingMirrorGammaText)`
+
+`r paste(samplingMirrorGamma)`
+
+<hr>
+
+
+<hr>
+
+#### Mirror Log normal 
+
+
+
+```{r, echo = FALSE}
+if(is.na(params$fit1$ssq[expert, "mirrorlognormal"])){
+  equationMirrorLogNormal <- "Distribution not fitted. Argument `upper` needs to be specified in the `fitdist` command."
+  samplingMirrorLogNormal <- NULL
+  samplingMirrorLogNormalText <- NULL
+  shiftMirrorLognormal <- NULL
+}else{
+  mu <- signif(params$fit1$mirrorlognormal[expert, 1], 3)
+  sigsq <- signif(params$fit1$mirrorlognormal[expert, 2]^2, 3)  
+  
+  equationMirrorLogNormal <- paste0("$$f_Y(y) = \\frac{1}{", xMirror, "} \\times \\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
+\\exp\\left(-\\frac{1}{2\\sigma^2}(\\ln ", xMirror,"  - \\mu)^2\\right), \\quad y <", params$fit1$limits[expert, 2],"$$ and $f_Y(y)=0$ otherwise, 
+with $$\\mu = ", mu,"$$ $$\\sigma^2  = ", sigsq, "$$")
+  
+ 
+  
+  samplingMirrorLogNormal <- paste0(upper, " rlnorm(n = 1000, meanlog = ", mu,", sdlog = sqrt(",
+sigsq,"))`" )
+  
+  samplingMirrorLogNormalText <- "Sample `n = 1000` random values with the command"
+  
+   shiftMirrorLognormal <- paste0("Normal distribution fitted to $\\log$ (  ", params$fit1$limits[expert, 2]," - $Y$).")
+  
+} 
+```
+
+
+
+
+`r paste(shiftMirrorLognormal)`
+
+```{r}
+if(!is.na(params$fit1$ssq[expert, "mirrorlognormal"])){
+plotfit(params$fit1, d = "mirrorlognormal", xlab = "Y", ylab = expression(f[Y](y)))
+}
+```
+
+`r paste(equationMirrorLogNormal)`
+
+
+`r paste(samplingMirrorLogNormalText)`
+
+`r paste(samplingMirrorLogNormal)`
+
+
+<hr>
+
+#### Mirror log Student$-t$ 
+
+
+
+```{r}
+if(is.na(params$fit1$ssq[expert, "mirrorlogt"])){
+  equationMirrorLogStudentT <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  samplingMirrorLogStudentT <- NULL
+  samplingMirrorLogStudentTText <- NULL
+  shiftMirrorLogStudentT <- NULL
+}else{
+  m <- signif(params$fit1$mirrorlogt[expert, 1], 3)
+  s <- signif(params$fit1$mirrorlogt[expert, 2], 3)
+  tdf <- params$fit1$mirrorlogt[expert, 3]
+  
+  equationMirrorLogStudentT <- paste0("$$f_Y(y) =\\frac{1}{", xMirror, "} \\times \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\times\\sigma\\times \\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{\\ln ", xMirror, " - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2}, \\quad y <", params$fit1$limits[expert, 2],"$$ and $f_Y(y)=0$ otherwise, 
+with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
+  
+ 
+  
+  samplingMirrorLogStudentT <- paste0(upper, " exp(", m, " + ", s, " * rt(n = 1000, df = ", tdf,"))`" )
+  
+  samplingMirrorLogStudentTText <- "Sample `n = 1000` random values with the command"
+
+   shiftMirrorLogStudentT <- paste0("Student-$t$ distribution fitted to $\\log$ (  ", params$fit1$limits[expert, 2]," - $Y$).")
+
+} 
+```
+
+`r paste(shiftMirrorLogStudentT)`
+
+```{r}
+if(!is.na(params$fit1$ssq[expert, "mirrorlogt"])){
+plotfit(params$fit1, d = "mirrorlogt", xlab = "Y", ylab = expression(f[Y](y)))
+}
+```
+
+`r paste(equationMirrorLogStudentT)`
+
+
+
+`r paste(samplingMirrorLogStudentTText)`
+
+`r paste(samplingMirrorLogStudentT)`
+
+
+
+<hr>
 
 # Conditional distribution of $X$, given $Y$ takes its median value
-
+$y_{0.5}$
 
 
 ### Elicited cumulative probabilities
@@ -335,7 +540,7 @@ if(is.na(params$fit1$ssq[expert, 6])){
 expert <- 1
 sf <- 3
 mydf <- data.frame( params$fit2$vals[expert, ], params$fit2$probs[expert, ])
-colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
+colnames(mydf) <- c( "$x$", "$P(X\\le x | Y = y_{0.5})$")
 knitr::kable(mydf)
 ```
 
@@ -350,6 +555,9 @@ if(params$fit2$limits[expert, 1] > 0){
   x <- paste0("(x-", params$fit2$limits[expert, 1],")")}
 if(params$fit2$limits[expert, 1] < 0){
   x <- paste0("(x+", abs(params$fit2$limits[expert, 1]),")")}
+
+xMirror <- paste0("(", params$fit2$limits[expert, 2],"-x)")
+upper <- paste0("`", params$fit2$limits[expert, 2], " - ")
 ```
 
 
@@ -364,6 +572,12 @@ ux <- max(params$fit2$vals[expert, ])
 All parameter values reported to 3 significant figures.
 
 #### Normal 
+
+```{r}
+plotfit(params$fit2, d = "normal")
+```
+
+
 ```{r, echo = FALSE}
 mu <- signif(params$fit2$Normal[expert, 1], sf)
 sigsq <- signif(params$fit2$Normal[expert, 2]^2, sf)
@@ -371,7 +585,7 @@ sigsq <- signif(params$fit2$Normal[expert, 2]^2, sf)
 
 
 $$
-f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} 
+f_{X|Y = y_{0.5}}(x) = \frac{1}{\sqrt{2\pi\sigma^2}} 
 \exp\left(-\frac{1}{2 \sigma^2}(x - \mu)^2\right),\quad -\infty<x<\infty,
 $$
 with
@@ -390,6 +604,12 @@ Sample `n = 1000` random values with the command
 <hr>
 
 #### Student$-t$ 
+
+
+```{r}
+plotfit(params$fit2, d = "t")
+```
+
 ```{r, echo = FALSE}
 m <- signif(params$fit2$Student.t[expert, 1], 3)
 s <- signif(params$fit2$Student.t[expert, 2], 3)
@@ -397,7 +617,7 @@ tdf <- params$fit2$Student.t[expert, 3]
 ```
 
 $$
-f_X(x) = \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\sigma\sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{x - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2},\quad -\infty<x<\infty,
+f_{X|Y = y_{0.5}}(x) = \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\sigma\sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{x - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2},\quad -\infty<x<\infty,
 $$
 with
 \begin{align*}
@@ -416,6 +636,7 @@ Sample `n = 1000` random values with the command
 #### Log normal 
 
 
+
 ```{r, echo = FALSE}
 if(is.na(params$fit2$ssq[expert, 4])){
   equationLogNormal <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
@@ -426,8 +647,8 @@ if(is.na(params$fit2$ssq[expert, 4])){
   mu <- signif(params$fit2$Log.normal[expert, 1], 3)
   sigsq <- signif(params$fit2$Log.normal[expert, 2]^2, 3)  
   
-  equationLogNormal <- paste0("$$f_X(x) = \\frac{1}{", x, "} \\times \\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
-\\exp\\left(-\\frac{1}{2\\sigma^2}(\\ln ", x,"  - \\mu)^2\\right), \\quad x >", params$fit2$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+  equationLogNormal <- paste0("$$f_{X|Y = y_{0.5}}(x) = \\frac{1}{", x, "} \\times \\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
+\\exp\\left(-\\frac{1}{2\\sigma^2}(\\ln ", x,"  - \\mu)^2\\right), \\quad x >", params$fit2$limits[expert, 1],"$$ and $f_{X|Y = y_{0.5}}(x)=0$ otherwise, 
 with $$\\mu = ", mu,"$$ $$\\sigma^2  = ", sigsq, "$$")
   
  
@@ -453,6 +674,12 @@ sigsq,"))`" )
 
 `r paste(shiftLognormal)`
 
+```{r}
+if(!is.na(params$fit2$ssq[expert, 4])){
+plotfit(params$fit2, d = "lognormal")
+}
+```
+
 `r paste(equationLogNormal)`
 
 
@@ -464,6 +691,8 @@ sigsq,"))`" )
 <hr>
 #### Gamma  
 
+
+
 ```{r}
 if(is.na(params$fit2$ssq[expert, 3])){
   equationGamma <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
@@ -474,8 +703,8 @@ if(is.na(params$fit2$ssq[expert, 3])){
   shape <- signif(params$fit2$Gamma[expert, 1], 3)
   rate <- signif(params$fit2$Gamma[expert, 2], 3)  
   
-  equationGamma <- paste0("$$f_X(x) =\\frac{\\beta ^ {\\alpha}}{\\Gamma(\\alpha)}",  x,
-"^{\\alpha - 1} \\exp\\left(- \\beta ", x,"\\right), \\quad x >", params$fit2$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+  equationGamma <- paste0("$$f_{X|Y = y_{0.5}}(x) =\\frac{\\beta ^ {\\alpha}}{\\Gamma(\\alpha)}",  x,
+"^{\\alpha - 1} \\exp\\left(- \\beta ", x,"\\right), \\quad x >", params$fit2$limits[expert, 1],"$$ and $f_{X|Y = y_{0.5}}(x)=0$ otherwise, 
 with $$\\alpha = ", shape,"$$ $$\\beta  = ", rate, "$$")
   
  
@@ -498,6 +727,12 @@ rate,")`" )
 
 `r paste(shiftGamma)`
 
+```{r}
+if(!is.na(params$fit2$ssq[expert, 3])){
+plotfit(params$fit2, d = "gamma")
+}
+```
+
 `r paste(equationGamma)`
 
 `r paste(samplingGammaText)`
@@ -505,7 +740,12 @@ rate,")`" )
 `r paste(samplingGamma)`
 
 <hr>
+
+
+
 #### Log Student$-t$ 
+
+
 
 ```{r}
 if(is.na(params$fit2$ssq[expert, 4])){
@@ -518,7 +758,7 @@ if(is.na(params$fit2$ssq[expert, 4])){
   s <- signif(params$fit2$Log.Student.t[expert, 2], 3)
   tdf <- params$fit2$Log.Student.t[expert, 3]
   
-  equationLogStudentT <- paste0("$$f_X(x) =\\frac{1}{", x, "} \\times \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\times\\sigma\\times \\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{\\ln ", x, " - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2}, \\quad x >", params$fit2$limits[expert, 1],"$$ and $f_X(x)=0$ otherwise, 
+  equationLogStudentT <- paste0("$$f_{X|Y = y_{0.5}}(x) =\\frac{1}{", x, "} \\times \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\times\\sigma\\times \\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{\\ln ", x, " - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2}, \\quad x >", params$fit2$limits[expert, 1],"$$ and $f_{X|Y = y_{0.5}}(x)=0$ otherwise, 
 with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
   
  
@@ -539,6 +779,12 @@ with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
 
 `r paste(shiftLogStudentT)`
 
+```{r}
+if(!is.na(params$fit2$ssq[expert, "logt"])){
+plotfit(params$fit2, d = "logt")
+}
+```
+
 `r paste(equationLogStudentT)`
 
 
@@ -551,6 +797,9 @@ with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
 
 <hr>
 #### Beta 
+
+
+
 ```{r, echo = FALSE}
 if(params$fit2$limits[expert, 1] == 0)
   x <- paste0("x")
@@ -580,11 +829,11 @@ if(is.na(params$fit2$ssq[expert, 6])){
   samplingBetaText <- NULL
 }else{
   if(r == 1 & params$fit2$limits[expert, 1] == 0){
-  equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)}x ^{\\alpha - 1} \\left(1 - x\\right)^{\\beta - 1}, \\quad  0 < x < 1, $$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+  equationBeta <- paste0("$$f_{X|Y = y_{0.5}}(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)}x ^{\\alpha - 1} \\left(1 - x\\right)^{\\beta - 1}, \\quad  0 < x < 1, $$ and $f_{X|Y = y_{0.5}}(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
   scalingBeta <- NULL
   }
   if(r == 1 & params$fit2$limits[expert, 1] != 0){
-    equationBeta <- paste0("$$f_X(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(", x,"\\right) ^{\\alpha - 1} \\left(1 - \\left(", x,"\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit2$limits[expert, 1]," < x <", params$fit2$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    equationBeta <- paste0("$$f_{X|Y = y_{0.5}}(x) = \\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(", x,"\\right) ^{\\alpha - 1} \\left(1 - \\left(", x,"\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit2$limits[expert, 1]," < x <", params$fit2$limits[expert, 2],",$$ and $f_{X|Y = y_{0.5}}(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
     scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
                           params$fit2$limits[expert, 1],
                           ", ",
@@ -594,7 +843,7 @@ if(is.na(params$fit2$ssq[expert, 6])){
   
   
   if(r !=1){
-    equationBeta <- paste0("$$f_X(x) = \\frac{1}{", r, "}\\times\\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(\\frac{", x,"}{", r,"}\\right) ^{\\alpha - 1} \\left(1 - \\left(\\frac{", x,"}{", r,"}\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit2$limits[expert, 1]," < x <", params$fit2$limits[expert, 2],",$$ and $f_X(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
+    equationBeta <- paste0("$$f_{X|Y = y_{0.5}}(x) = \\frac{1}{", r, "}\\times\\frac{\\Gamma(\\alpha + \\beta)}{\\Gamma(\\alpha)\\Gamma(\\beta)} \\left(\\frac{", x,"}{", r,"}\\right) ^{\\alpha - 1} \\left(1 - \\left(\\frac{", x,"}{", r,"}\\right)\\right)^{\\beta - 1}, \\quad  ", params$fit2$limits[expert, 1]," < x <", params$fit2$limits[expert, 2],",$$ and $f_{X|Y = y_{0.5}}(x) = 0$ otherwise, with $$\\alpha = ", shape1, ",$$ $$ \\beta = ", shape2, ".$$")
     scalingBeta <- paste0("Fitted beta distribution is scaled to the interval [",
                           params$fit2$limits[expert, 1],
                           ", ",
@@ -611,6 +860,12 @@ if(is.na(params$fit2$ssq[expert, 6])){
 
 `r paste(scalingBeta)`
 
+```{r}
+if(!is.na(params$fit2$ssq[expert, "beta"])){
+plotfit(params$fit2, d = "beta")
+}
+```
+
 `r paste(equationBeta)`
 
 
@@ -620,6 +875,161 @@ if(is.na(params$fit2$ssq[expert, 6])){
 
 
 
+
+
+
+
+<hr>
+#### Mirror gamma  
+
+
+```{r}
+if(is.na(params$fit2$ssq[expert, "mirrorgamma"])){
+  equationMirrorGamma <- "Distribution not fitted. Argument `upper` needs to be specified in the `fitdist` command."
+  samplingMirrorGamma <- NULL
+  samplingMirrorGammaText <- NULL
+  shiftMirrorGamma <- NULL
+}else{
+  shape <- signif(params$fit2$mirrorgamma[expert, 1], 3)
+  rate <- signif(params$fit2$mirrorgamma[expert, 2], 3)  
+  
+  equationMirrorGamma <- paste0("$$f_{X|Y = y_{0.5}}(x) =\\frac{\\beta ^ {\\alpha}}{\\Gamma(\\alpha)}",  xMirror,
+"^{\\alpha - 1} \\exp\\left(- \\beta ", xMirror,"\\right), \\quad x <", params$fit2$limits[expert, 2],"$$ and $f_{X|Y = y_{0.5}}(x)=0$ otherwise, 
+with $$\\alpha = ", shape,"$$ $$\\beta  = ", rate, "$$")
+  
+ 
+  
+  samplingMirrorGamma <- paste0(upper, " rgamma(n = 1000, shape = ", shape,", rate = ",
+rate,")`" )
+  
+  samplingMirrorGammaText <- "Sample `n = 1000` random values with the command"
+  
+
+    shiftMirrorGamma <- paste0("Gamma distribution fitted to ", params$fit2$limits[expert, 2]," - $X$.")
+ 
+  
+} 
+```
+
+
+`r paste(shiftMirrorGamma)`
+
+```{r}
+if(!is.na(params$fit2$ssq[expert, "mirrorgamma"])){
+plotfit(params$fit2, d = "mirrorgamma")
+}
+```
+
+`r paste(equationMirrorGamma)`
+
+`r paste(samplingMirrorGammaText)`
+
+`r paste(samplingMirrorGamma)`
+
+<hr>
+
+
+<hr>
+
+#### Mirror Log normal 
+
+
+
+```{r, echo = FALSE}
+if(is.na(params$fit2$ssq[expert, "mirrorlognormal"])){
+  equationMirrorLogNormal <- "Distribution not fitted. Argument `upper` needs to be specified in the `fitdist` command."
+  samplingMirrorLogNormal <- NULL
+  samplingMirrorLogNormalText <- NULL
+  shiftMirrorLognormal <- NULL
+}else{
+  mu <- signif(params$fit2$mirrorlognormal[expert, 1], 3)
+  sigsq <- signif(params$fit2$mirrorlognormal[expert, 2]^2, 3)  
+  
+  equationMirrorLogNormal <- paste0("$$f_{X|Y = y_{0.5}}(x) = \\frac{1}{", xMirror, "} \\times \\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
+\\exp\\left(-\\frac{1}{2\\sigma^2}(\\ln ", xMirror,"  - \\mu)^2\\right), \\quad x <", params$fit2$limits[expert, 2],"$$ and $f_{X|Y = y_{0.5}}(x)=0$ otherwise, 
+with $$\\mu = ", mu,"$$ $$\\sigma^2  = ", sigsq, "$$")
+  
+ 
+  
+  samplingMirrorLogNormal <- paste0(upper, " rlnorm(n = 1000, meanlog = ", mu,", sdlog = sqrt(",
+sigsq,"))`" )
+  
+  samplingMirrorLogNormalText <- "Sample `n = 1000` random values with the command"
+  
+   shiftMirrorLognormal <- paste0("Normal distribution fitted to $\\log$ (  ", params$fit2$limits[expert, 2]," - $X$).")
+  
+} 
+```
+
+
+
+
+`r paste(shiftMirrorLognormal)`
+
+```{r}
+if(!is.na(params$fit2$ssq[expert, "mirrorlognormal"])){
+plotfit(params$fit2, d = "mirrorlognormal")
+}
+```
+
+`r paste(equationMirrorLogNormal)`
+
+
+`r paste(samplingMirrorLogNormalText)`
+
+`r paste(samplingMirrorLogNormal)`
+
+
+<hr>
+
+#### Mirror log Student$-t$ 
+
+
+
+```{r}
+if(is.na(params$fit2$ssq[expert, "mirrorlogt"])){
+  equationMirrorLogStudentT <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  samplingMirrorLogStudentT <- NULL
+  samplingMirrorLogStudentTText <- NULL
+  shiftMirrorLogStudentT <- NULL
+}else{
+  m <- signif(params$fit2$mirrorlogt[expert, 1], 3)
+  s <- signif(params$fit2$mirrorlogt[expert, 2], 3)
+  tdf <- params$fit2$mirrorlogt[expert, 3]
+  
+  equationMirrorLogStudentT <- paste0("$$f_{X|Y = y_{0.5}}(x) =\\frac{1}{", xMirror, "} \\times \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\times\\sigma\\times \\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{\\ln ", xMirror, " - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2}, \\quad x <", params$fit2$limits[expert, 2],"$$ and $f_{X|Y = y_{0.5}}(x)=0$ otherwise, 
+with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
+  
+ 
+  
+  samplingMirrorLogStudentT <- paste0(upper, " exp(", m, " + ", s, " * rt(n = 1000, df = ", tdf,"))`" )
+  
+  samplingMirrorLogStudentTText <- "Sample `n = 1000` random values with the command"
+
+   shiftMirrorLogStudentT <- paste0("Student-$t$ distribution fitted to $\\log$ (  ", params$fit2$limits[expert, 2]," - $X$).")
+
+} 
+```
+
+`r paste(shiftMirrorLogStudentT)`
+
+```{r}
+if(!is.na(params$fit2$ssq[expert, "mirrorlogt"])){
+plotfit(params$fit2, d = "mirrorlogt")
+}
+```
+
+`r paste(equationMirrorLogStudentT)`
+
+
+
+`r paste(samplingMirrorLogStudentTText)`
+
+`r paste(samplingMirrorLogStudentT)`
+
+
+
+<hr>
 # Median function
 
 ```{r, echo = FALSE, fig.align = "center"}
@@ -637,10 +1047,13 @@ d1 <- switch(params$d[1],
                        "t" = "Student-t",
                        "gamma" = "gamma",
                        "lognormal" = "log normal",
-                       "logt" = "log Student-t",
                        "beta" = "beta",
                        "hist" = "histogram",
-                       "best" = as.character(params$fit1$best.fitting[1, 1]))
+                       "logt" = "log Student-t",
+                       "best" = as.character(params$fit1$best.fitting[1, 1]),
+             "mirrorgamma" = "mirror gamma",
+             "mirrorlognormal" = "mirror log normal",
+             "mirrorlogt" = "mirror log Student-t")
 
 d2 <- switch(params$d[2],
                        "normal" = "normal",
@@ -650,7 +1063,10 @@ d2 <- switch(params$d[2],
                        "logt" = "log Student-t",
                        "beta" = "beta",
                        "hist" = "histogram",
-                       "best" = as.character(params$fit2$best.fitting[1, 1]))
+                       "best" = as.character(params$fit2$best.fitting[1, 1]),
+             "mirrorgamma" = "mirror gamma",
+             "mirrorlognormal" = "mirror log normal",
+             "mirrorlogt" = "mirror log Student-t")
 ```
 
 
@@ -658,6 +1074,7 @@ d2 <- switch(params$d[2],
 Marginal distribution of $X$, obtained using a `r paste(d1)` distribution for $Y$ and a `r paste(d2)` distribution for $X|Y$:
 
 ```{r, echo = FALSE, fig.align = "center", message = FALSE}
+library(ggplot2)
 ggplot(params$df1, aes(x = X, y = ..density..))+
         geom_density(fill = "steelblue") +
   theme_grey(base_size = 12)

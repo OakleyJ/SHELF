@@ -109,13 +109,16 @@ elicitExtension<- function(){
                                                               Gamma = "gamma",
                                                               'Log normal' = "lognormal",
                                                               'Log Student-t' = "logt",
-                                                              Beta = "beta", 
+                                                              Beta = "beta",
+                                                              'Mirror gamma' = "mirrorgamma",
+                                                              'Mirror log normal' = "mirrorlognormal",
+                                                              'Mirror log Student-t' = "mirrorlogt",
                                                               'Best fitting' = "best"),
                                               #choiceValues = 1:8,
                                               selected = "normal"
                                   )),
                            column(4,conditionalPanel(
-                             condition = "input.dist1 == 't' || input.dist1 == 'logt'",
+                             condition = "input.dist1 == 't' || input.dist1 == 'logt' || input.dist1 == 'mirrorlogt'",
                              numericInput("tdf1", label = h5("Student-t degrees of freedom"),
                                           value = 3)
                            )
@@ -201,13 +204,16 @@ elicitExtension<- function(){
                                                               Gamma = "gamma",
                                                               'Log normal' = "lognormal",
                                                               'Log Student-t' = "logt",
-                                                              Beta = "beta", 
+                                                              Beta = "beta",
+                                                              'Mirror gamma' = "mirrorgamma",
+                                                              'Mirror log normal' = "mirrorlognormal",
+                                                              'Mirror log Student-t' = "mirrorlogt",
                                                               'Best fitting' = "best"),
                                               #choiceValues = 1:8,
                                               selected = "gamma"
                                   )),
                            column(4,conditionalPanel(
-                             condition = "input.dist1 == 't' || input.dist1 == 'logt'",
+                             condition = "input.dist2 == 't' || input.dist2 == 'logt' || input.dist2 == 'mirrorlogt' ",
                              numericInput("tdf2", label = h5("Student-t degrees of freedom"),
                                           value = 3)
                            )
@@ -522,7 +528,12 @@ elicitExtension<- function(){
     
     ry <- reactive({
       if(input$yDistEntry == "elicit"){
-        return(sampleFit(myfit1(), n = input$n)[, input$dist1])
+        if(input$dist1 == "best"){
+          ydist <- myfit1()$best.fitting[1, 1]
+        }else{
+          ydist <- input$dist1
+        }
+        return(sampleFit(myfit1(), n = input$n)[, ydist])
       }else{
         req(input$ySample$datapath)
         df1 <- read.table(input$ySample$datapath)
