@@ -158,16 +158,24 @@ fitdist <-
       if (min(probs[-1,i] - probs[-nrow(probs),i]) < 0 ){stop("probabilities must be specified in ascending order")}
       if (min(vals[-1,i] - vals[-nrow(vals),i]) <= 0 ){stop("parameter values must be specified in ascending order")}
       
-      minprob <- min(probs[, i])
-      maxprob <- max(probs[, i])
-      minvals <- min(vals[, i])
-      maxvals <- max(vals[, i])
       
-      q.fit <- approx(x = probs[,i], y = vals[,i], xout = c(0.4, 0.5, 0.6))$y
+      # Need to exclude any probability judgements
+      # P(X<=x) = 0 or P(X<=x) = 1
+      # Should enforce these probabilities via the parameter limits
+      
+      inc <- (probs[, i] > 0) & (probs[, i] < 1)
+      
+      minprob <- min(probs[inc, i])
+      maxprob <- max(probs[inc, i])
+      minvals <- min(vals[inc, i])
+      maxvals <- max(vals[inc, i])
+      
+      q.fit <- approx(x = probs[inc,i], y = vals[inc,i],
+                      xout = c(0.4, 0.5, 0.6))$y
       l <- q.fit[1] # estimated 40th percentile on original scale
       u <- q.fit[3] # estimated 60th percentile on original scale
       
-      if(minprob > 0 & maxprob < 1){
+     # if(minprob > 0 & maxprob < 1){
         
         minq <- qnorm(minprob)
         maxq <- qnorm(maxprob)
@@ -179,28 +187,28 @@ fitdist <-
         # where Z_a is a-th quantile from N(0, 1), X_a is a-th quantile of X
         m <- (minvals * maxq - maxvals * minq) / (maxq - minq)
         v <- ((maxvals - minvals) / (maxq - minq))^2
-      }else{
-        minq <- qnorm(min(probs[probs[, i] > 0, i]))
-        maxq <- qnorm(max(probs[probs[, i] < 1, i]))
-        m <- q.fit[2] # Estimated median on original scale
-        v<- (u - l)^2 / 0.25 # Estimated variance on original scale
-      } 
+     # }else{
+      #  minq <- qnorm(min(probs[probs[, i] > 0, i]))
+      #  maxq <- qnorm(max(probs[probs[, i] < 1, i]))
+      #  m <- q.fit[2] # Estimated median on original scale
+      #  v<- (u - l)^2 / 0.25 # Estimated variance on original scale
+     # } 
       
       # Symmetric distribution fits ----
       
       normal.fit <- optim(c(m, 0.5*log(v)), 
-                          normal.error, values = vals[,i], 
-                          probabilities = probs[,i], 
-                          weights = weights[,i])   
+                          normal.error, values = vals[inc,i], 
+                          probabilities = probs[inc,i], 
+                          weights = weights[inc,i])   
       normal.parameters[i,] <- c(normal.fit$par[1], exp(normal.fit$par[2]))
       ssq[i, "normal"] <- normal.fit$value
       
       # starting values: c(m, log((u - m)/ qt(0.6, tdf[i])))
       
       t.fit <- optim(c(m, 0.5*log(v)), t.error, 
-                     values = vals[,i], 
-                     probabilities = probs[,i], 
-                     weights = weights[,i], 
+                     values = vals[inc,i], 
+                     probabilities = probs[inc,i], 
+                     weights = weights[inc,i], 
                      degreesfreedom = tdf[i])
       t.parameters[i, 1:2] <- c(t.fit$par[1], exp(t.fit$par[2]))
       t.parameters[i, 3] <- tdf[i]
@@ -210,13 +218,13 @@ fitdist <-
       
       
       if(lower[i] > -Inf){
-        vals.scaled1 <- vals[,i] - lower[i]
+        vals.scaled1 <- vals[inc,i] - lower[i]
         m.scaled1 <- m - lower[i]
         
         gamma.fit<-optim(c(log(m.scaled1^2/v), log(m.scaled1/v)), 
                          gamma.error, values = vals.scaled1, 
-                         probabilities = probs[,i], 
-                         weights = weights[,i])
+                         probabilities = probs[inc,i], 
+                         weights = weights[inc,i])
         gamma.parameters[i,] <- exp(gamma.fit$par)
         ssq[i, "gamma"] <- gamma.fit$value
         
@@ -230,8 +238,8 @@ fitdist <-
                                  log(std)), 
                                lognormal.error, 
                                values = vals.scaled1, 
-                               probabilities = probs[,i], 
-                               weights = weights[,i])
+                               probabilities = probs[inc,i], 
+                               weights = weights[inc,i])
         lognormal.parameters[i, 1:2] <- c(lognormal.fit$par[1],
                                           exp(lognormal.fit$par[2]))
         ssq[i, "lognormal"] <- lognormal.fit$value
@@ -239,8 +247,8 @@ fitdist <-
         logt.fit <- optim(c(log(m.scaled1), log(std)), 
                           logt.error, 
                           values = vals.scaled1, 
-                          probabilities = probs[,i], 
-                          weights = weights[,i], 
+                          probabilities = probs[inc,i], 
+                          weights = weights[inc,i], 
                           degreesfreedom = tdf[i])
         logt.parameters[i,1:2] <- c(logt.fit$par[1], exp(logt.fit$par[2]))
         logt.parameters[i,3] <- tdf[i]
@@ -250,21 +258,21 @@ fitdist <-
       # Beta distribution fits ----
       
       if((lower[i] > -Inf) & (upper[i] < Inf)){
-        vals.scaled2 <- (vals[,i] - lower[i]) / (upper[i] - lower[i])
+        vals.scaled2 <- (vals[inc,i] - lower[i]) / (upper[i] - lower[i])
         m.scaled2 <- (m - lower[i]) / (upper[i] - lower[i])
         v.scaled2 <- v / (upper[i] - lower[i])^2
         
         alp <- abs(m.scaled2 ^3 / v.scaled2 * (1/m.scaled2-1) - m.scaled2)
         bet <- abs(alp/m.scaled2 - alp)
-        if(identical(probs[, i], 
-                     (vals[, i] - lower[i]) / (upper[i] - lower[i]))){
+        if(identical(probs[inc, i], 
+                     (vals[inc, i] - lower[i]) / (upper[i] - lower[i]))){
           alp <- bet <- 1
         }
         beta.fit <- optim(c(log(alp), log(bet)), 
                           beta.error, 
                           values = vals.scaled2, 
-                          probabilities = probs[,i], 
-                          weights = weights[,i])
+                          probabilities = probs[inc,i], 
+                          weights = weights[inc,i])
         beta.parameters[i,] <- exp(beta.fit$par)
         ssq[i, "beta"] <- beta.fit$value	
         
@@ -276,8 +284,8 @@ fitdist <-
         
         # Distributions are fitted to Y:= Upper limit - X
         
-        valsMirrored <- upper[i] - vals[, i]
-        probsMirrored <- 1 - probs[, i]
+        valsMirrored <- upper[i] - vals[inc, i]
+        probsMirrored <- 1 - probs[inc, i]
         mMirrored <- upper[i] - m
         
         # Mirror gamma
@@ -287,7 +295,7 @@ fitdist <-
         mirrorgamma.fit<-optim(c(log(mMirrored^2/v), log(mMirrored/v)), 
                                gamma.error, values = valsMirrored, 
                                probabilities = probsMirrored, 
-                               weights = weights[,i])
+                               weights = weights[inc,i])
         mirrorgamma.parameters[i,] <- exp(mirrorgamma.fit$par)
         ssq[i, "mirrorgamma"] <- mirrorgamma.fit$value
         
@@ -315,7 +323,7 @@ fitdist <-
                                      lognormal.error, 
                                      values = valsMirrored, 
                                      probabilities = probsMirrored, 
-                                     weights = weights[,i])
+                                     weights = weights[inc,i])
         mirrorlognormal.parameters[i, 1:2] <-
           c(mirrorlognormal.fit$par[1],
             exp(mirrorlognormal.fit$par[2]))
@@ -327,7 +335,7 @@ fitdist <-
                           logt.error, 
                           values = valsMirrored, 
                           probabilities = probsMirrored, 
-                          weights = weights[,i], 
+                          weights = weights[inc,i], 
                           degreesfreedom = tdf[i])
         mirrorlogt.parameters[i,1:2] <- c(mirrorlogt.fit$par[1],
                                           exp(mirrorlogt.fit$par[2]))

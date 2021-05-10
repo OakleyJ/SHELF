@@ -530,8 +530,7 @@ plotfit(params$fit1, d = "mirrorlogt", xlab = "Y", ylab = expression(f[Y](y)))
 
 <hr>
 
-# Conditional distribution of $X$, given $Y$ takes its median value
-$y_{0.5}$
+# Conditional distribution of $X$, given $Y$ takes its median value $y_{0.5}$
 
 
 ### Elicited cumulative probabilities
@@ -540,7 +539,7 @@ $y_{0.5}$
 expert <- 1
 sf <- 3
 mydf <- data.frame( params$fit2$vals[expert, ], params$fit2$probs[expert, ])
-colnames(mydf) <- c( "$x$", "$P(X\\le x | Y = y_{0.5})$")
+colnames(mydf) <- c( "$x$", "$P(X\\le x \\mid Y = y_{0.5})$")
 knitr::kable(mydf)
 ```
 
@@ -574,7 +573,8 @@ All parameter values reported to 3 significant figures.
 #### Normal 
 
 ```{r}
-plotfit(params$fit2, d = "normal")
+plotfit(params$fit2, d = "normal",
+        ylab = expression(f[X~"|"~Y](x)))
 ```
 
 
@@ -607,7 +607,8 @@ Sample `n = 1000` random values with the command
 
 
 ```{r}
-plotfit(params$fit2, d = "t")
+plotfit(params$fit2, d = "t",
+        ylab = expression(f[X~"|"~Y](x)))
 ```
 
 ```{r, echo = FALSE}
@@ -676,7 +677,8 @@ sigsq,"))`" )
 
 ```{r}
 if(!is.na(params$fit2$ssq[expert, 4])){
-plotfit(params$fit2, d = "lognormal")
+plotfit(params$fit2, d = "lognormal",
+        ylab = expression(f[X~"|"~Y](x)))
 }
 ```
 
@@ -729,7 +731,8 @@ rate,")`" )
 
 ```{r}
 if(!is.na(params$fit2$ssq[expert, 3])){
-plotfit(params$fit2, d = "gamma")
+plotfit(params$fit2, d = "gamma",
+        ylab = expression(f[X~"|"~Y](x)))
 }
 ```
 
@@ -781,7 +784,8 @@ with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
 
 ```{r}
 if(!is.na(params$fit2$ssq[expert, "logt"])){
-plotfit(params$fit2, d = "logt")
+plotfit(params$fit2, d = "logt",
+        ylab = expression(f[X~"|"~Y](x)))
 }
 ```
 
@@ -862,7 +866,8 @@ if(is.na(params$fit2$ssq[expert, 6])){
 
 ```{r}
 if(!is.na(params$fit2$ssq[expert, "beta"])){
-plotfit(params$fit2, d = "beta")
+plotfit(params$fit2, d = "beta",
+        ylab = expression(f[X~"|"~Y](x)))
 }
 ```
 
@@ -916,7 +921,8 @@ rate,")`" )
 
 ```{r}
 if(!is.na(params$fit2$ssq[expert, "mirrorgamma"])){
-plotfit(params$fit2, d = "mirrorgamma")
+plotfit(params$fit2, d = "mirrorgamma",
+        ylab = expression(f[X~"|"~Y](x)))
 }
 ```
 
@@ -968,7 +974,8 @@ sigsq,"))`" )
 
 ```{r}
 if(!is.na(params$fit2$ssq[expert, "mirrorlognormal"])){
-plotfit(params$fit2, d = "mirrorlognormal")
+plotfit(params$fit2, d = "mirrorlognormal",
+        ylab = expression(f[X~"|"~Y](x)))
 }
 ```
 
@@ -1015,7 +1022,8 @@ with $$\\nu = ", tdf,"$$ $$\\mu  = ", m, "$$ $$\\sigma = ", s , ".$$")
 
 ```{r}
 if(!is.na(params$fit2$ssq[expert, "mirrorlogt"])){
-plotfit(params$fit2, d = "mirrorlogt")
+plotfit(params$fit2, d = "mirrorlogt",
+        ylab = expression(f[X~"|"~Y](x)))
 }
 ```
 
