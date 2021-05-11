@@ -65,16 +65,21 @@ elicitMixture <- function(){
             conditionalPanel(condition="input.myTab==2",
                              h4("Conditional density plots"),
                              uiOutput("extensionValue"),
-                             selectInput("dist", label = "Distribution", 
+                             selectInput("dist", label = h5("Distribution"), 
                                          choices =  list(Histogram = "hist",
                                                          Normal = "normal", 
                                                          'Student-t' = "t",
                                                          Gamma = "gamma",
                                                          'Log normal' = "lognormal",
                                                          'Log Student-t' = "logt",
-                                                         Beta = "beta", 
+                                                         Beta = "beta",
+                                                         'Mirror gamma' = "mirrorgamma",
+                                                         'Mirror log normal' = "mirrorlognormal",
+                                                         'Mirror log Student-t' = "mirrorlogt",
                                                          'Best fitting' = "best"),
-                                         selected = "best")),
+                                         #choiceValues = 1:8,
+                                         selected = "normal"
+                             )),
             conditionalPanel(condition="input.myTab==3",
                              h4("Marginal density plot"),
                              uiOutput("allDistributions")),
@@ -321,7 +326,8 @@ elicitMixture <- function(){
               probs = pQuantile(),
               lower = l(),
               upper = u(),
-              expertnames = colnames(input$extensionProbs)),
+              expertnames = colnames(input$extensionProbs),
+              tdf = 10),
               error = function(e){NULL})
     })
     
@@ -521,7 +527,10 @@ elicitMixture <- function(){
                                     Gamma = "gamma",
                                     'Log normal' = "lognormal",
                                     'Log Student-t' = "logt",
-                                    Beta = "beta", 
+                                    Beta = "beta",
+                                    'Mirror gamma' = "mirrorgamma",
+                                    'Mirror log normal' = "mirrorlognormal",
+                                    'Mirror log Student-t' = "mirrorlogt",
                                     'Best fitting' = "best"),
                     selected = "best")
       }
@@ -597,12 +606,12 @@ elicitMixture <- function(){
       req(myfit(), fq(), xlimPDF(), input$fs)
       xlimits <- xlimPDF()
       
-      plotfit(myfit(), d = input$dist,
+      suppressWarnings(plotfit(myfit(), d = input$dist,
               ex = which(input$extensionVariableValue ==
                            colnames(input$extensionProbs))[1],
               int = F, ql = fq()[1], qu = fq()[2],
               xl = xlimPDF()[1], xu = xlimPDF()[2], 
-              fs = input$fs)
+              fs = input$fs))
     })
     
     output$distPlot <- renderPlot({

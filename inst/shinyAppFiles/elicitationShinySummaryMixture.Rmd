@@ -33,6 +33,7 @@ knitr::kable(params$probY)
 
 ```{r}
 l <- params$fit$limits[, 1]
+u <- params$fit$limits[, 2]
 expert <- 1
 sf <- 3
 n.experts <- nrow(params$fit$probs)
@@ -109,7 +110,7 @@ rownames(normaldf) <- expertnames
 knitr::kable(normaldf, escape = FALSE)
 ```
 
-Sample `n = 1000` random values (for expert A) with the command
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
 
 `rnorm(n = 1000, mean = `r mu[1]`, sd = sqrt(`r sigsq[1]`)) `
 
@@ -136,7 +137,7 @@ knitr::kable(tdataf, escape = FALSE)
 
 
 
-Sample `n = 1000` random values (for expert A) with the command
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
 
 ` `r m[1]` + `r s[1]` * rt(n = 1000, df = `r tdf[1]`) `
 <hr>
@@ -156,7 +157,7 @@ rownames(lnormdf) <- expertnames
 knitr::kable(lnormdf, escape = FALSE)
 ```
 
-Sample `n = 1000` random values (for expert A) with the command
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
 
 ` `r l[1]` +  rlnorm(n = 1000, meanlog = `r mu[1]`, sdlog = `r signif(sqrt(sigsq[1]), 3)`) `
 <hr>
@@ -174,7 +175,7 @@ rownames(gammadf) <- expertnames
 knitr::kable(gammadf, escape = FALSE)
 ```
 
-Sample `n = 1000` random values (for expert A) with the command
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
 
 ` `r l[1]` +  rgamma(n = 1000, shape = `r shape[1]`, rate = `r rate[1]`) `
 
@@ -195,7 +196,7 @@ rownames(logtdf) <- expertnames
 knitr::kable(logtdf, escape = FALSE)
 ```
 
-Sample `n = 1000` random values (for expert A) with the command
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
 
 ` `r l[1]` + exp( `r m[1]` + `r s[1]` * rt(n = 1000, df = `r tdf[1]`)) `
 
@@ -215,10 +216,70 @@ rownames(betadf) <- expertnames
 knitr::kable(betadf, escape = FALSE)
 ```
 
-Sample `n = 1000` random values (for expert A) with the command
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
 
 ` `r l[1]` + (`r params$fit$limits[1, 2] - l[1] `) * rbeta(n = 1000, shape1 = `r shape1[1]`, shape2 = `r shape2[1]`) `
 
+#### Mirror log normal 
+
+$$f_{X|Y}(x) = \frac{1}{U-x} \times \frac{1}{\sqrt{2\pi\sigma^2}} 
+\exp\left(-\frac{1}{2\sigma^2}(\ln (U-x) - \mu)^2\right), \quad x <U,$$
+
+and $f_{X|Y}(x)=0$ otherwise, with
+
+```{r}
+mu <- signif(params$fit$mirrorlognormal[, 1], 3)
+sigsq <- signif(params$fit$mirrorlognormal[, 2]^2, 3)  
+lnormdf <- data.frame(mu, sigsq, u)
+colnames(lnormdf) <- c("$\\mu$", "$\\sigma^2$", "$U$")
+rownames(lnormdf) <- expertnames
+knitr::kable(lnormdf, escape = FALSE)
+```
+
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
+
+` `r u[1]` -  rlnorm(n = 1000, meanlog = `r mu[1]`, sdlog = `r signif(sqrt(sigsq[1]), 3)`) `
+<hr>
+#### Mirror gamma  
+
+$$f_{X|Y}(x) =\frac{\beta ^ {\alpha}}{\Gamma(\alpha)}(U-x)^{\alpha - 1} \exp\left(- \beta (U-x)\right), \quad x <U,$$ 
+and $f_{X|Y}(x)=0$ otherwise, with
+
+```{r}
+shape <- signif(params$fit$mirrorgamma[, 1], 3)
+rate <- signif(params$fit$mirrorgamma[, 2], 3)  
+gammadf <- data.frame(shape, rate, u)
+colnames(gammadf) <- c("$\\alpha$", "$\\beta$", "$U$")
+rownames(gammadf) <- expertnames
+knitr::kable(gammadf, escape = FALSE)
+```
+
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
+
+` `r u[1]` -  rgamma(n = 1000, shape = `r shape[1]`, rate = `r rate[1]`) `
+
+<hr>
+#### Mirror log Student$-t$ 
+
+$$f_{X|Y}(x) =\frac{1}{U-x} \times \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\times\sigma\times \sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{\ln (U-x) - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2}, \quad x <U,$$ 
+and $f_{X|Y}(x)=0$ otherwise, with
+
+```{r}
+m <- signif(params$fit$mirrorlogt[, 1], 3)
+s <- signif(params$fit$mirrorlogt[, 2], 3)
+tdf <- params$fit$mirrorlogt[, 3]
+  
+logtdf <- data.frame(m, s, tdf, u)
+colnames(logtdf) <- c("$\\mu$", "$\\sigma$", "$\\nu$", "$U$")
+rownames(logtdf) <- expertnames
+knitr::kable(logtdf, escape = FALSE)
+```
+
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
+
+` `r u[1]` - exp( `r m[1]` + `r s[1]` * rt(n = 1000, df = `r tdf[1]`)) `
+
+<hr>
 
 ### Best fitting conditional distributions
 
