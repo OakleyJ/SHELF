@@ -251,4 +251,4 @@ server = function(input, output) {
 
 
 
-))}
+), launch.browser = TRUE)}

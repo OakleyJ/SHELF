@@ -8,8 +8,7 @@ elicitMarginalsInput <- function(id) {
       sidebarPanel(
         numericInput(ns("nTheta"), h5("Number of categories"),
                      value = 3, min = 3, step = 1),
-        textInput(ns("thetaLabels"), h5("Category labels"),
-                  value = "A, B, C"),
+        uiOutput(ns("enterThetaLabels")),
         textInput(ns("probs"), label = h5("Cumulative probabilities"), 
                   value = "0.25, 0.5, 0.75"),
         uiOutput(ns("categoryToDisplay"))
@@ -32,13 +31,21 @@ elicitMarginalsInput <- function(id) {
 elicitMarginals <- function(input, output, session, fs){
   
   
+  
   thetaNames <- reactive({
+    req(input$thetaLabels)
     temp <- unlist(strsplit(input$thetaLabels, ","))
     trimws(temp)
   })
   
   p <- reactive({
     eval(parse(text = paste("c(", input$probs, ")")))
+  })
+  
+  output$enterThetaLabels <- renderUI({
+    ns <- session$ns
+    textInput(ns("thetaLabels"), h5("Category labels"),
+              value = paste(LETTERS[1:input$nTheta], collapse = ", "))
   })
   
   output$categoryToDisplay <- renderUI({
@@ -52,11 +59,15 @@ elicitMarginals <- function(input, output, session, fs){
   
   
   output$EnterJudgements <- renderUI({
-    initialdf <- matrix(c(0.5, 0.55, 0.6,
-                                     0.22, 0.3, 0.35, 
-                                     0.11, .15, 0.2),
-                                   length(p()), input$nTheta)
-    colnames(initialdf) <- thetaNames()
+    req(thetaNames(), p(), input$nTheta)
+    pvec <- (1 / input$nTheta) * p() / 0.5
+    pvec[pvec>=1] <- 0.999
+    pvec[pvec<=0] <- 0.001
+    initialdf <- matrix(pvec,
+                        length(p()),
+                        input$nTheta)
+    if(length(thetaNames()) == input$nTheta){
+      colnames(initialdf) <- thetaNames()}
     rownames(initialdf) <- p()
     ns <- session$ns
     shinyMatrix::matrixInput(inputId = ns("myvals"), value =  initialdf,
@@ -66,7 +77,7 @@ elicitMarginals <- function(input, output, session, fs){
   })
   
   allFits <- reactive({
-    marginalFits <- vector("list", length = 3)
+    marginalFits <- vector("list", length = input$nTheta)
     for(i in seq_along(marginalFits)){
       marginalFits[[i]] <- fitdist(vals = input$myvals[, i],
                                    probs = p(),

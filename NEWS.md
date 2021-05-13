@@ -1,6 +1,8 @@
 SHELF v1.7.0.9000 (2020-05-26) 
 ==============================
 
+* Bugs fixed in elicitDirichlet() - code wouldn't run with more than three categories.
+
 * fitdist() has a new argument for excluding log t and mirror log t when identifying best fit (default is FALSE).
 
 * Plots can be downloaded from shiny apps as .png files.
