@@ -4,7 +4,6 @@ function(fit, d = "best", pl = -Inf, pu = Inf, ql = NA, qu = NA, sf = 3, ex = 1)
 	if(d == "best"){
 		d <- fit$best.fitting[ex, 1]
 	}
-	index<-switch(which(d==c("normal", "t", "gamma", "lognormal", "logt","beta", "hist", "best")), 1, 2, 3, 4, 5, 6, 7, best.index)
 	
 	par(ps=15)
 	par(mar = c(5.1, 5.1, 4.1, 2.1))

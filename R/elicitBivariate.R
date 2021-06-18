@@ -237,7 +237,7 @@ elicitBivariate<- function(){
       #d = dist[as.numeric(input$radio1)]
      # dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
       suppressWarnings(plotfit(myfit1(), d = input$dist1,
-                               int = F, ql = 0.05, qu = 0.95,
+                                ql = 0.05, qu = 0.95,
                                xl = limits1()[1], xu = limits1()[2], 
                                fs = input$fs))
     
@@ -251,7 +251,7 @@ elicitBivariate<- function(){
         
       #  dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
         suppressWarnings(plotfit(myfit2(), d = input$dist2,
-                                 int = F, ql = 0.05, qu = 0.95,
+                                  ql = 0.05, qu = 0.95,
                                  xl = limits2()[1], xu = limits2()[2], 
                                  fs = input$fs))
       

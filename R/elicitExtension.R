@@ -24,6 +24,7 @@
 #' 
 #' }
 #' @import shiny
+#' @importFrom utils read.table
 #' @export
 elicitExtension<- function(){
   runApp(list(
@@ -376,6 +377,7 @@ elicitExtension<- function(){
     
     output$yHistogram <- renderPlot({
       req(ry())
+      Y <- NULL # hack to avoid R CMD check NOTE
       df1 <- data.frame(Y = ry())
       ggplot(df1, aes(x = Y))+
         geom_histogram(colour = "blue", fill = "white", bins = 30) +
@@ -389,7 +391,7 @@ elicitExtension<- function(){
       #d = dist[as.numeric(input$radio1)]
      # dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
       suppressWarnings(plotfit(myfit1(), d = input$dist1,
-                               int = F, ql = 0.05, qu = 0.95,
+                                ql = 0.05, qu = 0.95,
                                xl = limits1()[1], xu = limits1()[2], 
                                fs = input$fs))
     
@@ -402,7 +404,7 @@ elicitExtension<- function(){
       #d = dist[as.numeric(input$radio1)]
       # dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
       suppressWarnings(plotfit(myfit2(), d = input$dist2,
-                               int = F, ql = 0.05, qu = 0.95,
+                                ql = 0.05, qu = 0.95,
                                xl = limits2()[1], xu = limits2()[2], 
                                fs = input$fs))
       

@@ -609,7 +609,7 @@ elicitMixture <- function(){
       suppressWarnings(plotfit(myfit(), d = input$dist,
               ex = which(input$extensionVariableValue ==
                            colnames(input$extensionProbs))[1],
-              int = F, ql = fq()[1], qu = fq()[2],
+               ql = fq()[1], qu = fq()[2],
               xl = xlimPDF()[1], xu = xlimPDF()[2], 
               fs = input$fs))
     })

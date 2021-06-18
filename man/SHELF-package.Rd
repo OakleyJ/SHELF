@@ -6,17 +6,20 @@
 \alias{SHELF}
 \title{Tools to Support the Sheffield Elicitation Framework}
 \description{
-Implements various methods for eliciting a probability distribution for a
-single parameter from an expert or a group of experts. The expert provides a
-small number of probability or quantile judgements, corresponding to points
-on his or her cumulative distribution function. A range of parametric
-distributions can then be fitted and displayed, with feedback provided in
-the form of additional quantiles. A graphical interface for the roulette
-elicitation method is also provided. For multiple experts, a weighted linear
-pool can be calculated.
+Implements various methods for eliciting a probability distribution
+for a single parameter from an expert or a group of experts. The expert
+provides a small number of probability judgements, corresponding
+to points on his or her cumulative distribution function. A range of parametric
+distributions can then be fitted and displayed, with feedback provided in the
+form of fitted probabilities and percentiles. For multiple experts, a weighted
+linear pool can be calculated. Also includes functions for eliciting beliefs
+about population distributions, eliciting multivariate distributions using a
+Gaussian copula, eliciting a Dirichlet distribution, and eliciting distributions 
+for variance parameters in a random effects meta-analysis model. R Shiny apps  
+for most of the methods are included. 
 
 \tabular{ll}{ Package: \tab SHELF\cr Type: \tab Package\cr Version: \tab
-1.7.0.9000\cr Date: \tab 2020-05-26\cr License: \tab GPL-2 | GPL-3\cr }
+1.8.0\cr Date: \tab 2021-06-18\cr License: \tab GPL-2 | GPL-3\cr }
 }
 \examples{
 \dontrun{

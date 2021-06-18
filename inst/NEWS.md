@@ -1,3 +1,30 @@
+SHELF v1.8.0 (2021-06-18) 
+==============================
+
+* argument int removed from plotfit(): can no longer launch shiny apps from the plotfit() command for plotting distributions. Use elicit() and elicitMultiple() instead for interactive plotting.
+
+* elicitation report files (R Markdown documents) now include plots of fitted distributions.
+
+* Bugs fixed in elicitDirichlet() - code wouldn't run with more than three categories.
+
+* fitdist() has a new argument for excluding log t and mirror log t when identifying best fit (default is FALSE).
+
+* Plots can be downloaded from shiny apps as .png files.
+
+* New (negatively skewed) distributions: mirror gamma, mirror lognormal, and mirror log t. These all fit distributions to (upper - X). 
+
+* Better handling of expert names: elicitMultiple(): can now click on and edit expert names; names are displayed in all plots. plotfit() will now use the expert names, if provided in fitdist(). Can also specify names in plotTertiles() and plotQuartiles(). 
+
+* elicitMultiple(): can now control axes limits in quartile and tertile plot.
+
+* new function rlinearpool() for sampling from a weighted linear pool
+
+* bug fixed in copulaSample. Was rounding samples to 3 s.f. Increased to 8. Mistake in help file corrected, regarding syntax for distribution names.
+
+* elicitExtension(): can now upload a sample from the distribution of the extension variable, instead of eliciting a distribution.
+
+* plotfit(): additional argument returnPlot (default is FALSE) will also return the plot as a ggplot object.
+
 SHELF v1.7.0 (2020-02-06) 
 ==============================
 

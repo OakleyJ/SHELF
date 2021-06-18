@@ -275,7 +275,7 @@ elicitHeterogen <- function(lower = 1, upper = 10,
                              as.numeric(vals$myfit$Log.normal[2]))))
       
         plotfit(vals$myfit, d=dist[as.numeric(input$radio)],
-                int = F, ql=0.025, qu=0.975, xl = lower, xu = xu,
+                 ql=0.025, qu=0.975, xl = lower, xu = xu,
                 xlab = "r", ylab = expression(f[R](r)))
       }
     })

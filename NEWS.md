@@ -1,5 +1,11 @@
-SHELF v1.7.0.9000 (2020-05-26) 
+SHELF v1.8.0 (2021-06-18) 
 ==============================
+
+* argument int removed from plotfit(): can no longer launch shiny apps from the
+plotfit() command for plotting distributions. Use elicit() and elicitMultiple()
+instead for interactive plotting.
+
+* elicitation report files (R Markdown documents) now include plots of fitted distributions.
 
 * Bugs fixed in elicitDirichlet() - code wouldn't run with more than three categories.
 

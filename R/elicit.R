@@ -423,7 +423,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
         
         dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
         suppressWarnings(plotfit(myfit(), d = input$dist,
-                                 int = F, ql = fq()[1], qu = fq()[2],
+                                  ql = fq()[1], qu = fq()[2],
                                  xl = xlimPDF()[1], xu = xlimPDF()[2], 
                                  fs = input$fs,
                                  xlab = input$xLabel))
