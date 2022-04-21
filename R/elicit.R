@@ -5,10 +5,23 @@
 #' additional feedback. Probabilities can be specified directly, or the roulette 
 #' elicitation method can be used. 
 #' 
+#' All input arguments are optional, and can be set/changed within the app itself.
 #' Click on the "Help" tab for instructions. Click the "Quit" button to exit the app and return
 #' the results from the \code{fitdist} command. Click "Download report" to generate a report
-#' of all the fitted distributions.
-#'
+#' of all the fitted distributions. 
+#' 
+#' @param lower A lower limit for the uncertain quantity X. 
+#' Will be ignored when fitting distributions that are not bounded below. Also sets 
+#' the lower limit for the grid in the roulette method.
+#' @param upper An upper limit for the uncertain quantity X. 
+#' Will be ignored when fitting distributions that are not bounded above. Also sets 
+#' the upper limit for the grid in the roulette method.
+#' @param gridheight The number of grid cells for each bin in the roulette method.
+#' @param nbins The number of bins used in the rouletted method.
+#' @param method Set to "roulette" for the app to display the roulette method by default.
+#' Any other string will display the general method by default.
+
+#' 
 #' @aliases elicit roulette 
 #' @return An object of class \code{elicitation}, which is returned once the 
 #' Quit button has been clicked. See \code{\link{fitdist}} for details.
@@ -22,7 +35,18 @@
 #' }
 #' @import shiny
 #' @export
-elicit<- function(){
+elicit<- function(lower = 0, upper = 100, gridheight = 10,
+                  nbins = 10, method = "general"){
+  
+  limits <- paste0(lower, ", ", upper)
+  if(method=="roulette"){
+    startingMethod <- 2
+    startingPanel <- "Roulette"}else{
+    startingMethod <- 1
+    startingPanel <- "PDF"
+  }
+  
+  
   runApp(list(
   ui = shinyUI(fluidPage(
     
@@ -33,11 +57,11 @@ elicit<- function(){
       sidebarPanel(
         wellPanel(
         textInput("limits", label = h5("Parameter limits"), 
-                  value = "0, 100"),
+                  value = limits),
         radioButtons("method", label = h5("Elicitation method"), 
                      choiceNames = list("General", "Roulette"),
                      choiceValues =  1:2,
-                     selected = 1)
+                     selected = startingMethod)
         ),
         conditionalPanel(
           condition = "input.method == 1",
@@ -54,9 +78,9 @@ elicit<- function(){
           wellPanel(
             h5("Roulette options"),
             numericInput("nBins", label = h5("Number of bins"),
-                         value = 10, min = 3),
+                         value = nbins, min = 3),
             numericInput("gridHeight", 
-                         label = h5("Grid height"), value = 10, min  = 1)
+                         label = h5("Grid height"), value = gridheight, min  = 1)
           )
         ),
             
@@ -215,7 +239,8 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
                 tabPanel("Help", 
                          includeHTML(system.file("shinyAppFiles", "help.html",
                                                  package="SHELF"))
-                         )
+                         ),
+                selected = startingPanel
               )
       )
     )

@@ -5,7 +5,23 @@
 \alias{roulette}
 \title{Elicit judgements and fit distributions interactively}
 \usage{
-elicit()
+elicit(lower = 0, upper = 100, gridheight = 10, nbins = 10, method = "general")
+}
+\arguments{
+\item{lower}{A lower limit for the uncertain quantity X. 
+Will be ignored when fitting distributions that are not bounded below. Also sets 
+the lower limit for the grid in the roulette method.}
+
+\item{upper}{An upper limit for the uncertain quantity X. 
+Will be ignored when fitting distributions that are not bounded above. Also sets 
+the upper limit for the grid in the roulette method.}
+
+\item{gridheight}{The number of grid cells for each bin in the roulette method.}
+
+\item{nbins}{The number of bins used in the rouletted method.}
+
+\item{method}{Set to "roulette" for the app to display the roulette method by default.
+Any other string will display the general method by default.}
 }
 \value{
 An object of class \code{elicitation}, which is returned once the 
@@ -18,6 +34,7 @@ additional feedback. Probabilities can be specified directly, or the roulette
 elicitation method can be used.
 }
 \details{
+All input arguments are optional, and can be set/changed within the app itself.
 Click on the "Help" tab for instructions. Click the "Quit" button to exit the app and return
 the results from the \code{fitdist} command. Click "Download report" to generate a report
 of all the fitted distributions.
