@@ -1,8 +1,8 @@
 Package: SHELF
 Type: Package
 Title: Tools to Support the Sheffield Elicitation Framework 
-Version: 1.8.0
-Date: 2021-06-18
+Version: 1.8.0.9000
+Date: 2022-04-21
 Author: Jeremy Oakley
 Maintainer: Jeremy Oakley <j.oakley@sheffield.ac.uk>
 Description: Implements various methods for eliciting a probability distribution
