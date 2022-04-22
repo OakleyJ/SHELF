@@ -1,3 +1,11 @@
+SHELF v1.8.0.9000 (2022-04-21) 
+==============================
+
+* optional input arguments added to elicit() to allow roulette options
+to be specified from command line.
+
+* bug fixed: elicit() will return, as outputs, vals and probs as 1 x n arrays. If these were to be used as inputs to fitdist(), they would need to be n x 1 arrays. fitdist() will now correct this. 
+
 SHELF v1.8.0 (2021-06-18) 
 ==============================
 
