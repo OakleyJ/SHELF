@@ -139,9 +139,11 @@ fitdist <-
       matrix(NA, n.experts, 3)
     beta.parameters <- matrix(NA, n.experts, 2)
     ssq<-matrix(NA, n.experts, 9)
+    notes <- NULL
     
     colnames(ssq) <- c("normal", "t",
-                       "gamma", "lognormal", "logt", "beta",
+                       "gamma", "lognormal", "logt", 
+                      "beta", 
                        "mirrorgamma",
                        "mirrorlognormal",
                        "mirrorlogt")
@@ -158,21 +160,18 @@ fitdist <-
     limits <- data.frame(lower = lower, upper = upper)
     row.names(limits) <- expertnames
     
+    # requirements for distribution fitting ----
     
     for(i in 1:n.experts){
-      if (min(probs[,i]) > 0.4 ){stop("smallest elicited probability must be less than 0.4")}
+      if (length(probs[, i]) < 1){stop("need at least one elicited probability")}
       if (min(probs[,i]) < 0 | max(probs[,i]) > 1 ){stop("probabilities must be between 0 and 1")}
-      if (max(probs[,i]) < 0.6 ){stop("largest elicited probability must be greater than 0.6")}
       if (min(vals[,i]) < lower[i]){stop("elicited parameter values cannot be smaller than lower parameter limit")}
       if (max(vals[,i]) > upper[i]){stop("elicited parameter values cannot be greater than upper parameter limit")}
       if (tdf[i] <= 0 ){stop("Student-t degrees of freedom must be greater than 0")}
-      if (min(probs[-1,i] - probs[-nrow(probs),i]) < 0 ){stop("probabilities must be specified in ascending order")}
-      if (min(vals[-1,i] - vals[-nrow(vals),i]) <= 0 ){stop("parameter values must be specified in ascending order")}
-      
       
       # Need to exclude any probability judgements
       # P(X<=x) = 0 or P(X<=x) = 1
-      # Should enforce these probabilities via the parameter limits
+      # Facilitator should enforce these probabilities via the parameter limits
       
       inc <- (probs[, i] > 0) & (probs[, i] < 1)
       
@@ -180,6 +179,21 @@ fitdist <-
       maxprob <- max(probs[inc, i])
       minvals <- min(vals[inc, i])
       maxvals <- max(vals[inc, i])
+      
+      # Main distribution fits, assuming appropriately small and large probabilities elicited ----
+      
+       
+      
+      
+      # Get starting values for optimisation ----
+      # Fit a normal distribution to get starting values
+      
+      # Appropriately small and large probabilities specified:
+      
+      if ((min(probs[,i]) < 0.4 ) & (max(probs[,i]) > 0.6 )) {
+        if (min(probs[-1,i] - probs[-nrow(probs),i]) < 0 ){stop("probabilities must be specified in ascending order")}
+        if (min(vals[-1,i] - vals[-nrow(vals),i]) <= 0 ){stop("parameter values must be specified in ascending order")}
+        
       
       q.fit <- approx(x = probs[inc,i], y = vals[inc,i],
                       xout = c(0.4, 0.5, 0.6))$y
@@ -198,6 +212,18 @@ fitdist <-
         # where Z_a is a-th quantile from N(0, 1), X_a is a-th quantile of X
         m <- (minvals * maxq - maxvals * minq) / (maxq - minq)
         v <- ((maxvals - minvals) / (maxq - minq))^2
+        
+        # mlog used for lognormal
+        mlog <- (log(minvals - lower[i]) * 
+                   maxq - log(maxvals - lower[i]) * minq) /
+          (maxq - minq)
+        
+        # mlog used for mirror lognormal
+        mlogMirror <- (log(upper[i] - maxvals) * 
+                         (1 - minq) -
+                         log(upper[i] - minvals) * (1-maxq)) /
+          (maxq - minq)
+        
      # }else{
       #  minq <- qnorm(min(probs[probs[, i] > 0, i]))
       #  maxq <- qnorm(max(probs[probs[, i] < 1, i]))
@@ -205,6 +231,9 @@ fitdist <-
       #  v<- (u - l)^2 / 0.25 # Estimated variance on original scale
      # } 
       
+      
+      
+       
       # Symmetric distribution fits ----
       
       normal.fit <- optim(c(m, 0.5*log(v)), 
@@ -241,9 +270,9 @@ fitdist <-
         
         std<-((log(u - lower[i])-log(l - lower[i]))/1.35)
         
-        mlog <- (log(minvals - lower[i]) * 
-                   maxq - log(maxvals - lower[i]) * minq) /
-          (maxq - minq)
+        # mlog <- (log(minvals - lower[i]) * 
+        #            maxq - log(maxvals - lower[i]) * minq) /
+        #   (maxq - minq)
         
         lognormal.fit <- optim(c(mlog,
                                  log(std)), 
@@ -321,10 +350,10 @@ fitdist <-
         # and we model Y = log(upper - X) ~ N(mlogMirror, stdMirror^2)
         
         
-        mlogMirror <- (log(upper[i] - maxvals) * 
-                         (1 - minq) -
-                         log(upper[i] - minvals) * (1-maxq)) /
-          (maxq - minq)
+        # mlogMirror <- (log(upper[i] - maxvals) * 
+        #                  (1 - minq) -
+        #                  log(upper[i] - minvals) * (1-maxq)) /
+        #   (maxq - minq)
         
         stdMirror <-((log(upper[i] - l)-log(upper[i] - u))/1.35)
         
@@ -354,6 +383,46 @@ fitdist <-
         ssq[i, "mirrorlogt"] <- mirrorlogt.fit$value
         
       }
+       }else{
+         notes <- paste0("Did not have smallest elicited probability < 0.4 and ",
+                         "largest > 0.6. If lower and/or upper limits specified, ",
+                         "gamma and mirror gamma are fitted with the shape ",
+                         "parameter fixed at 1, i.e. an exponential distribution.")
+        
+         # Exponential fit ----
+         
+         # If only a single probability specified, or probabilities 
+         # too close to 0.5, will fit a gamma with shape parameter = 1
+         # via fitting an exponential distribution
+         
+         if(lower[i] > -Inf){
+           lambda <- -log(1 - maxprob)/(maxvals - lower[i])
+           exponential.fit <- optimise(exponential.error,
+                                       interval = c(0, 2 * lambda),
+                                       values = vals[inc,i] - lower[i],
+                                       probabilities = probs[inc,i], 
+                                       weights = weights[inc,i])   
+           gamma.parameters[i,] <- c(1, exponential.fit$minimum)
+           ssq[i, "gamma"] <- exponential.fit$objective
+           
+         }
+         
+         if(upper[i] < Inf){
+           lambda <- -log(minprob)/(upper[i] - minvals)
+           mirrorexponential.fit <- optimise(exponential.error,
+                                       interval = c(0, 2 * lambda),
+                                       values = upper[i] - vals[inc, i],
+                                       probabilities = 1 - probs[inc,i], 
+                                       weights = weights[inc,i])   
+           mirrorgamma.parameters[i,] <- c(1, mirrorexponential.fit$minimum)
+           ssq[i, "mirrorgamma"] <- mirrorexponential.fit$objective
+           
+         }
+          
+       }
+      
+      
+      
     }
     dfn <- data.frame(normal.parameters)
     names(dfn) <-c ("mean", "sd")
@@ -396,7 +465,7 @@ fitdist <-
     
     if(excludelogt){
       reducedssq <- ssq[, c("normal", "t", "gamma",
-                              "lognormal", "beta",
+                              "lognormal", "beta", 
                               "mirrorgamma",
                               "mirrorlognormal")]
       index <- apply(reducedssq, 1, which.min)
@@ -424,7 +493,8 @@ fitdist <-
                 mirrorlogt = dfmirrorlt,
                 ssq = ssq, 
                 best.fitting = best.fitting, vals = t(vals), 
-                probs = t(probs), limits = limits)
+                probs = t(probs), limits = limits, 
+                notes = notes)
     class(fit) <- "elicitation"
     fit
   }

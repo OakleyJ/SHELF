@@ -199,6 +199,45 @@ test_that("mirror gamma distribution fitting and feedback works",{
                signif(1 - pgamma(u - c(-3, 3), a, b),3))
 })
 
+test_that("shifted exponential distribution fitting and feedback works",{
+  skip_on_cran()
+  lambda <- 0.5
+  l <- 10
+  vals <- 12
+  myfit <- fitdist(vals, pexp(vals-l, rate = lambda ), lower = l)
+  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(11, 14))
+  gamma.parameters <- unlist(myfit$Gamma)
+  best.name <- as.character(unlist(myfit$best.fitting))
+  attributes(gamma.parameters) <- NULL
+  expect_equal(gamma.parameters, c(1, lambda), tolerance = 0.001)
+  expect_equal(best.name, "gamma")
+  expect_equal(fb$fitted.quantiles[, "gamma"], 
+               signif(l + qgamma(c(0.05, 0.95), 1, lambda),3))
+  expect_equal(fb$fitted.probabilities[, "gamma"],
+               signif(pgamma(c(11, 14)-l, 1, lambda),3))
+})
+
+test_that("mirror exponential distribution fitting and feedback works",{
+  skip_on_cran()
+  lambda <- 0.1
+  u <- 25
+  p <- 0.33
+  v <- u - qgamma(1 - p, 1, lambda)
+  myfit <- fitdist(vals = v, probs = p, lower = -10,
+                   upper = u)
+  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(-3, 3))
+  mirrorgammaparameters <- unlist(myfit$mirrorgamma)
+  best.name <- as.character(unlist(myfit$best.fitting))
+  attributes(mirrorgammaparameters) <- NULL
+  expect_equal(mirrorgammaparameters, c(1, lambda), tolerance = 0.001)
+  expect_equal(best.name, "mirrorgamma")
+  expect_equal(fb$fitted.quantiles[, "mirrorgamma"], 
+               signif(u - qgamma(1 - c(0.05, 0.95), 1, lambda),3),
+               tolerance = 0.01)
+  expect_equal(fb$fitted.probabilities[, "mirrorgamma"],
+               signif(1 - pgamma(u - c(-3, 3), 1, lambda),3))
+})
+
 
 
 test_that("precision fitting works - normal",{
