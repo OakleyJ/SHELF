@@ -78,11 +78,19 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		
 		fx <- dgamma(x - xl, fit$Gamma[ex,1], fit$Gamma[ex,2])  
 		
+		if(fit$Gamma[ex,1] == 1){
 		dist.title = paste("Gamma(",
 		                   signif(fit$Gamma[ex,1], sf),
 		                   ", ",
 		                   signif(fit$Gamma[ex,2], sf),
-		                   ")", sep="")
+		                   ") (exponential)", sep="")}else{
+		                     dist.title = paste("Gamma(",
+		                                        signif(fit$Gamma[ex,1], sf),
+		                                        ", ",
+		                                        signif(fit$Gamma[ex,2], sf),
+		                                        ")", sep="")
+		                     
+		                   }
 	}
 	
 	if(d == "lognormal"){
@@ -245,11 +253,18 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 	  fx <- dgamma(xu - x, fit$mirrorgamma[ex,1],
 	               fit$mirrorgamma[ex,2])  
 	  
+	  if(fit$mirrorgamma[ex,1] ==1){
 	  dist.title = paste("Mirror gamma(",
 	                     signif(fit$mirrorgamma[ex,1], sf),
 	                     ", ",
 	                     signif(fit$mirrorgamma[ex,2], sf),
-	                     ")", sep="")
+	                     ") (mirror exponential)", sep="")}else{
+	                       dist.title = paste("Mirror gamma(",
+	                                          signif(fit$mirrorgamma[ex,1], sf),
+	                                          ", ",
+	                                          signif(fit$mirrorgamma[ex,2], sf),
+	                                          ")", sep="") 
+	                     }
 	} 
 	
   if(d == "mirrorlognormal"){

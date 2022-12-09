@@ -91,13 +91,92 @@ plotfit <- function(fit,
                     percentages = FALSE,
                     returnPlot = FALSE){
   
+  # Error handling if fitted distribution is not available ----
+  
+  errorDist <- "Distribution cannot be fitted. Requirements are"
+  errorL <- "- finite lower limit"
+  errorU <- "- finite upper limit"
+  errorP <- "- smallest elicited probability < 0.4\n- largest elicited probability > 0.6"
+  errorO <- "- at least one elicited probability, greater than 0 and less than 1"
+  
 
-  if(d=="beta" & (min(fit$limits) == -Inf | max(fit$limits) == Inf )){stop("Parameter limits must be finite to fit a beta distribution")}
-  if(d=="gamma" & min(fit$limits) == -Inf ){stop("Lower parameter limit must be finite to fit a (shifted) gamma distribution")}
-  if(d=="lognormal" & min(fit$limits) == -Inf ){stop("Lower parameter limit must be finite to fit a (shifted) log normal distribution")}
-  if(d=="logt" & min(fit$limits) == -Inf ){stop("Lower parameter limit must be finite to fit a (shifted) log t distribution")}
-  if(is.na(ql)==F & (ql <0 | ql>1 )){stop("Lower feedback quantile must be between 0 and 1")}
-  if(is.na(qu)==F & (qu <0 | qu>1 )){stop("Upper feedback quantile must be between 0 and 1")}
+  
+  index <- !is.na(c(0, myfit$ssq[1, ]))
+  
+  
+  errorPlotBeta <- paste(errorDist, errorL, errorU, errorP,
+                         "Availale fitted distributions are:",
+                         paste(distributions[index],
+                               collapse = ", "),sep = "\n")
+  errorPlotGamma <- paste(errorDist, errorL, errorO,
+                          "Availale fitted distributions are:",
+                          paste(distributions[index],
+                                collapse = ", "), sep = "\n")
+  errorPlotLogNormal <- paste(errorDist, errorL, errorP,
+                              "Availale fitted distributions are:",
+                              paste(distributions[index],
+                                    collapse = ", "), sep = "\n")
+  errorPlotMirrorGamma <- paste(errorDist, errorU, errorO,
+                                "Availale fitted distributions are:",
+                                paste(distributions[index],
+                                      collapse = ", "), sep = "\n")
+  errorPlotMirrorLogNormal <-paste(errorDist, errorU, errorP,
+                                   "Availale fitted distributions are:",
+                                   paste(distributions[index],
+                                         collapse = ", "), sep = "\n")
+  errorPlotNormal <- paste(errorDist, errorP,
+                           "Availale fitted distributions are:",
+                           paste(distributions[index],
+                                 collapse = ", "), sep = "\n")
+  
+  if(d == "hist"){noFit <- FALSE}else{
+  noFit <- is.na(myfit$ssq[1, d])
+  }
+  
+  
+  emptyPlot <- ggplot() +
+    theme_void(base_size = fs) +
+    xlim(0, 10)
+  
+  if(d=="beta" & noFit ){
+    return(emptyPlot + 
+             annotate("text",0,0,
+                           label=errorPlotBeta, hjust = 0, size = fs /2))
+  }
+  if((d=="normal" | d == "t") & noFit ){
+    return(emptyPlot + 
+             annotate("text",0,0,
+                           label=errorPlotNormal, hjust = 0, size = fs /2))
+  }
+  if(d=="gamma" & noFit ){
+    return(emptyPlot + 
+             annotate("text",0,0,
+                           label=errorPlotGamma, hjust = 0, size = fs / 2))
+  }
+  if((d=="lognormal" | d == "logt") & noFit ){
+    return(emptyPlot + 
+             annotate("text",0,0,
+                           label=errorPlotLogNormal, hjust = 0, size = fs /2))
+  }
+  if(d=="mirrorgamma" & noFit ){
+    return(emptyPlot + 
+             annotate("text",0,0,
+                           label=errorPlotMirrorGamma, hjust = 0, size = fs /2))
+  }
+  if((d=="mirrorlognormal" | d == "mirrorlogt") & noFit ){
+    return(emptyPlot + 
+             annotate("text",0,0,
+                           label=errorPlotMirrorLogNormal, hjust = 0, size = fs /2))
+  }
+    
+
+
+  # if(d=="beta" & (min(fit$limits) == -Inf | max(fit$limits) == Inf )){stop("Parameter limits must be finite to fit a beta distribution")}
+  # if(d=="gamma" & min(fit$limits) == -Inf ){stop("Lower parameter limit must be finite to fit a (shifted) gamma distribution")}
+  # if(d=="lognormal" & min(fit$limits) == -Inf ){stop("Lower parameter limit must be finite to fit a (shifted) log normal distribution")}
+  # if(d=="logt" & min(fit$limits) == -Inf ){stop("Lower parameter limit must be finite to fit a (shifted) log t distribution")}
+  # if(is.na(ql)==F & (ql <0 | ql>1 )){stop("Lower feedback quantile must be between 0 and 1")}
+  # if(is.na(qu)==F & (qu <0 | qu>1 )){stop("Upper feedback quantile must be between 0 and 1")}
   
   theme_set(theme_grey(base_size = fs))
   theme_update(plot.title = element_text(hjust = 0.5))
