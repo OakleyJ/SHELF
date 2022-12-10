@@ -48,6 +48,9 @@ elicit<- function(lower = 0, upper = 100, gridheight = 10,
   
   
   runApp(list(
+  
+  # User interface ----  
+    
   ui = shinyUI(fluidPage(
     
     # Application title
@@ -245,23 +248,25 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       )
     )
   )),
+  
+  # Server ----
    
   server = function(input, output) {
     
-    # Parameter limits
+    # Parameter limits ----
     limits <- reactive({
       tryCatch(eval(parse(text = paste("c(", input$limits, ")"))),
                error = function(e){NULL})
     })
     
-    # Feedback quantiles
+    # Feedback quantiles ----
     fq <- reactive({
       tryCatch(eval(parse(text = paste("c(", input$fq, ")"))),
                error = function(e){NULL})
       
     })
     
-    # Feedback probabilities. Needs to know parameter limits
+    # Feedback probabilities. Needs to know parameter limits ----
     output$feedbackProbabilities <- renderUI({
       textInput("fp", label = h5("Feedback probabilities"), 
                 paste(limits(), collapse = ", "))
@@ -272,7 +277,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       
     }) 
     
-    # Axes limits for pdf/cdf plots. Needs to know parameter limits
+    # Axes limits for pdf/cdf plots. Needs to know parameter limits ----
     output$setPDFxaxisLimits <- renderUI({
       textInput("xlimPDF", label = h5("x-axis limits"), 
                 paste(limits(), collapse = ", "))
@@ -292,7 +297,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       
     })
     
-    # Elicited probabilities and values
+    # Elicited probabilities and values ----
     p <- reactive({
       gp <-  tryCatch(eval(parse(text = paste("c(", input$probs, ")"))),
                       error = function(e){NULL})
@@ -310,7 +315,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       myv
     })
     
-    # Extract quartiles and tertiles by linear interpolation
+    # Extract quartiles and tertiles by linear interpolation ----
     # (Will be correct if elicited directly)
     m <- reactive({
       req(p(), v())
@@ -360,6 +365,8 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       }
       approx(xIn, yIn, 0.75)$y
     })
+    
+    # Roulette ----
 
     # Extract number of bins and grid height, 
     # and grid positions for roulette method
@@ -430,7 +437,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
         rl$chips <- rep(0, input$nBins)}
     })
    
-    # Fit distributions to elicited judgements
+    # Fit distributions to elicited judgements ----
     myfit <- reactive({
       req(limits(), v(), p())
       fitdist(vals = v(), probs = p(), lower = limits()[1],

@@ -93,44 +93,47 @@ plotfit <- function(fit,
   
   # Error handling if fitted distribution is not available ----
   
-  errorDist <- "Distribution cannot be fitted. Requirements are"
+  errorDist <- "Distribution has not been fitted. Requirements are"
   errorL <- "- finite lower limit"
   errorU <- "- finite upper limit"
   errorP <- "- smallest elicited probability < 0.4\n- largest elicited probability > 0.6"
   errorO <- "- at least one elicited probability, greater than 0 and less than 1"
   
 
-  
-  index <- !is.na(c(0, myfit$ssq[1, ]))
+  distributions <- c("histogram", "normal", "Student-t", "gamma",
+                     "log normal", "log Student-t", "beta",
+                     "mirror gamma", "mirror log normal",
+                     "mirror log Student-t")
+  index <- !is.na(c(0, fit$ssq[1, ]))
   
   
   errorPlotBeta <- paste(errorDist, errorL, errorU, errorP,
-                         "Availale fitted distributions are:",
+                         "Available fitted distributions are:",
                          paste(distributions[index],
                                collapse = ", "),sep = "\n")
   errorPlotGamma <- paste(errorDist, errorL, errorO,
-                          "Availale fitted distributions are:",
+                          "Available fitted distributions are:",
                           paste(distributions[index],
                                 collapse = ", "), sep = "\n")
   errorPlotLogNormal <- paste(errorDist, errorL, errorP,
-                              "Availale fitted distributions are:",
+                              "Available fitted distributions are:",
                               paste(distributions[index],
                                     collapse = ", "), sep = "\n")
   errorPlotMirrorGamma <- paste(errorDist, errorU, errorO,
-                                "Availale fitted distributions are:",
+                                "Available fitted distributions are:",
                                 paste(distributions[index],
                                       collapse = ", "), sep = "\n")
   errorPlotMirrorLogNormal <-paste(errorDist, errorU, errorP,
-                                   "Availale fitted distributions are:",
+                                   "Available fitted distributions are:",
                                    paste(distributions[index],
                                          collapse = ", "), sep = "\n")
   errorPlotNormal <- paste(errorDist, errorP,
-                           "Availale fitted distributions are:",
+                           "Available fitted distributions are:",
                            paste(distributions[index],
                                  collapse = ", "), sep = "\n")
   
   if(d == "hist"){noFit <- FALSE}else{
-  noFit <- is.na(myfit$ssq[1, d])
+  noFit <- is.na(fit$ssq[1, d])
   }
   
   

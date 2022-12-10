@@ -97,7 +97,9 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
                                   
     }
     if(dist == "normal"){
-      
+      if(is.na(fit$ssq[ex, "normal"])){
+        dist.title <- "Normal distribution not fitted"
+      }else{
       dist.title <- paste("Normal (mean = ",
                           signif(fit$Normal[ex,1], sf),
                           ", sd = ",
@@ -115,10 +117,12 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
           addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
           addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
         }
-      
+      }
     }
     if(dist == "t"){
-      
+      if(is.na(fit$ssq[ex, "t"])){
+        dist.title <- "Student-t distribution not fitted"
+      }else{
       dist.title=paste("Student-t(",
                        signif(fit$Student.t[ex,1], sf),
                        ", ",
@@ -139,10 +143,12 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
           addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
           addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
-      
+      }
     }
     if(dist == "lognormal"){
-      
+      if(is.na(fit$ssq[ex, "lognormal"])){
+        dist.title <- "Log normal distribution not fitted"
+      }else{
       dist.title = paste("Log normal(",
                          signif(fit$Log.normal[ex,1], sf),
                          ", ",
@@ -166,12 +172,14 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
           addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
           addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
-      
+      }
       
     }
     
     if(dist == "mirrorlognormal"){
-      
+      if(is.na(fit$ssq[ex, "mirrorlognormal"])){
+        dist.title <- "Mirror log normal distribution not fitted"
+      }else{
       dist.title = paste("Mirror log normal(",
                          signif(fit$mirrorlognormal[ex,1], sf),
                          ", ",
@@ -195,12 +203,14 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
           addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
           addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
-      
+      }
       
     }
     
     if(dist == "gamma"){
-      
+      if(is.na(fit$ssq[ex, "gamma"])){
+        dist.title <- "Gamma distribution not fitted"
+      }else{
       dist.title = paste("Gamma(",
                          signif(fit$Gamma[ex,1], sf),
                          ", ",
@@ -223,11 +233,13 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
           addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
           addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
-      
+      }
     }
     
     if(dist == "mirrorgamma"){
-      
+      if(is.na(fit$ssq[ex, "mirrorgamma"])){
+        dist.title <- "Mirror gamma distribution not fitted"
+      }else{
       dist.title = paste("Mirror gamma(",
                          signif(fit$mirrorgamma[ex,1], sf),
                          ", ",
@@ -250,11 +262,13 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
           addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
           addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
-      
+      }
     }
     
     if(dist == "logt"){
-      
+      if(is.na(fit$ssq[ex, "logt"])){
+        dist.title <- "Log Student-t distribution not fitted"
+      }else{
       dist.title = paste("Log T(",
                          signif(fit$Log.Student.t[ex,1], sf),
                          ", ",
@@ -285,9 +299,11 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
       }
       
     }
-    
+    }
     if(dist == "mirrorlogt"){
-      
+      if(is.na(fit$ssq[ex, "mirrorlogt"])){
+        dist.title <- "Mirror log Student-t distribution not fitted"
+      }else{
       dist.title = paste("Mirror log T(",
                          signif(fit$mirrorlogt[ex,1], sf),
                          ", ",
@@ -318,8 +334,13 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
       }
       
     }
-    
+    }
+      
     if(dist == "beta"){
+      
+      if(is.na(fit$ssq[ex, "beta"])){
+        dist.title <- "Beta distribution not fitted"
+      }else{
       
       dist.title =paste("Beta(",
                         signif(fit$Beta[ex,1], sf),
@@ -344,6 +365,7 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
           addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
       }
       
+      }
     }
   p1 <- p1 + labs(title = dist.title)  
   }
