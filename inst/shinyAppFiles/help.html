@@ -14,7 +14,18 @@
 <p>For the <b>General</b> method, specify (any number of) cumulative probabilities P(X<=x). </p>
 <ul>
 <li> Specify values x1, x2,... in the <b>Parameter values</b> box, in increasing order, separated by commas.
-<li> Specify the corresponding probabilities P(X<=x1), P(X<=x2),... in the <b>Cumulative probabilities</b> box, separated by commas. The smallest probability needs to be less than 0.4, and the largest probability needs to be greater than 0.6.
+<li> Specify the corresponding probabilities P(X<=x1), P(X<=x2),... in the <b>Cumulative probabilities</b> box, separated by commas. The requirements for each distribution to be fitted are as follows:
+<ul>
+<li> <b>Normal</b>: smallest elicited probability less than 0.4; largest elicited probablity greater than 0.6.
+<li> <b>Student-t </b>: smallest elicited probability less than 0.4; largest elicited probablity greater than 0.6.
+<li> <b>Gamma </b>: finite lower limit and at least one elicited probability greater than 0 and less than 1.
+<li> <b>Log normal </b>: finite lower limit; smallest elicited probability less than 0.4; largest elicited probablity greater than 0.6.
+<li> <b>Log Student-t </b>: finite lower limit; smallest elicited probability less than 0.4; largest elicited probablity greater than 0.6.
+<li> <b>Beta </b>: finite lower limit; finite upper limit; smallest elicited probability less than 0.4; largest elicited probablity greater than 0.6.
+<li> <b>Mirror gamma </b>: finite upper limit and at least one elicited probability greater than 0 and less than 1.
+<li> <b>Mirror log normal </b>: finite upper limit; smallest elicited probability less than 0.4; largest elicited probablity greater than 0.6.
+<li> <b>Mirror Student-t </b>: finite upper limit; smallest elicited probability less than 0.4; largest elicited probablity greater than 0.6.
+</ul>
 </ul>
 If the <b>Roulette method</b> is selected, click on the Roulette tab and click directly in the plot to allocate probs. Click just below the line at 0 on the y-axis to clear a column. 
 
