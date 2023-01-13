@@ -104,7 +104,7 @@ plotfit <- function(fit,
                      "log normal", "log Student-t", "beta",
                      "mirror gamma", "mirror log normal",
                      "mirror log Student-t")
-  index <- !is.na(c(0, fit$ssq[1, ]))
+  index <- !is.na(c(0, fit$ssq[ex, ]))
   
   
   errorPlotBeta <- paste(errorDist, errorL, errorU, errorP,
@@ -132,14 +132,56 @@ plotfit <- function(fit,
                            paste(distributions[index],
                                  collapse = ", "), sep = "\n")
   
-  if(d == "hist"){noFit <- FALSE}else{
-  noFit <- is.na(fit$ssq[1, d])
-  }
-  
+  # If single expert chosen, check whether selected distributions fitted for that expert
+  # If no expert specified, just check for any expert with missing selected distribution
   
   emptyPlot <- ggplot() +
     theme_void(base_size = fs) +
     xlim(0, 10)
+  
+  # If best fit chosen, find out if any parametric fits are available
+  # either for all experts, or for selected expert
+  # For histogram plot, need finite lower and upper limits
+  
+  if(is.na(ex)){
+    noBestFit <- sum(!is.na(fit$ssq)) == 0
+    noHistFit <- any(is.infinite(unlist(fit$limits)))
+  }else{
+    noBestFit <- sum(!is.na(fit$ssq[ex, ])) == 0
+    noHistFit <- any(is.infinite(unlist(fit$limits[ex, ])))
+  }
+  
+  # If distribution specified, check to see if it is available
+  
+  noFit <- TRUE
+  
+  if(d %in% colnames(fit$ssq)){
+    if(is.na(ex)){
+      noFit <- anyNA(fit$ssq[, d])
+    }else{
+      noFit <- anyNA(fit$ssq[ex, d])
+    }
+      
+  }
+  
+  if(d == "hist" & noHistFit){
+    return(emptyPlot + 
+             annotate("text",0,0,
+                      label="Histogram not available.\nFinite lower and upper limits required.",
+                      hjust = 0, size = fs /2))
+  }
+  
+
+  
+  if(d=="best" & noBestFit){
+    return(emptyPlot + 
+             annotate("text",0,0,
+                      label="No distributions fitted",
+                      hjust = 0, size = fs /2))
+    
+  }
+  
+  
   
   if(d=="beta" & noFit ){
     return(emptyPlot + 
