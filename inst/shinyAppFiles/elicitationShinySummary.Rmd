@@ -53,71 +53,133 @@ ux <- max(params$fit$vals[expert, ])
 ```
 
 
+
+
+```{r}
+judgementsDF <- data.frame(judgement = c("lower limit",
+                                         "upper limit",
+                                         "smallest elicited probability",
+                                         "largest elicited probability"
+                                         )
+                           ,
+                           value = c(params$fit$limits[expert, "lower"],
+                                         params$fit$limits[expert, "upper"],
+                                         min(params$fit$probs[expert, ]),
+                                          max(params$fit$probs[expert, ])
+                                         )
+                           )
+                                         
+                                             
+                                         
+                                        
+```
+
+```{asis, echo = any(is.na(params$fit$ssq[expert, ]))}
+**Note**: not all distributions have been fitted. The requirements for fitting each distribution are as follows.
+
+- Normal, Student-t: smallest elicited probability less than 0.4; largest elicited probability greater than 0.6.
+
+- Log normal and log Student-t: finite lower limit; smallest elicited probability less than 0.4; largest elicited probability greater than 0.6.
+
+- Gamma: finite lower limit; at least one elicited probability between 0 and 1.
+
+- Beta : finite lower  and upper limits; smallest elicited probability less than 0.4; largest elicited probability greater than 0.6.
+
+- Mirror gamma: finite upper limit; at least one elicited probability between 0 and 1.
+
+- Mirror log normal and mirror log Student-t: finite upper limit; smallest elicited probability less than 0.4; largest elicited probability greater than 0.6.
+
+The judgements provided were as follows.
+```
+
+```{r, eval = any(is.na(params$fit$ssq[expert, ]))}
+knitr::kable(judgementsDF)
+```
+
 ### Distributions
 
 All parameter values reported to 3 significant figures.
 
 #### Normal 
 
-```{r}
-plotfit(params$fit, d = "normal")
-```
-
 
 ```{r, echo = FALSE}
-mu <- signif(params$fit$Normal[expert, 1], sf)
-sigsq <- signif(params$fit$Normal[expert, 2]^2, sf)
+if(is.na(params$fit$ssq[expert, "normal"])){
+  equationNormal <- "Distribution not fitted."
+  samplingNormal <- NULL
+  samplingNormalText <- NULL
+}else{
+  mu <- signif(params$fit$Normal[expert, 1], sf)
+  sigsq <- signif(params$fit$Normal[expert, 2]^2, sf)
+  
+  equationNormal <- paste0("$$f_X(x)=\\frac{1}{\\sqrt{2\\pi\\sigma^2}} 
+\\exp\\left(-\\frac{1}{2 \\sigma^2}(x - \\mu)^2\\right),\\quad -\\infty<x<\\infty,$$ 
+with $$\\mu = ", mu,"$$ $$\\sigma^2  = ", sigsq, "$$")
+  
+
+  
+  samplingNormal <- paste0("` rnorm(n = 1000, mean = ", mu,", sd = sqrt(",
+sigsq,"))`" )
+  
+  samplingNormalText <- "Sample `n = 1000` random values with the command"
+  
+} 
 ```
 
 
-$$
-f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} 
-\exp\left(-\frac{1}{2 \sigma^2}(x - \mu)^2\right),\quad -\infty<x<\infty,
-$$
-with
-\begin{align*}
-\mu &= `r mu`,\\
-\sigma^2 &= `r sigsq`.
-\end{align*}
+
+```{r}
+if(!is.na(params$fit$ssq[expert, "normal"])){
+plotfit(params$fit, d = "normal")
+}
+```
+
+`r paste(equationNormal)`
 
 
+`r paste(samplingNormalText)`
+
+`r paste(samplingNormal)`
 
 
-Sample `n = 1000` random values with the command
-
-`rnorm(n = 1000, mean = `r mu`, sd = sqrt(`r sigsq`)) `
 
 <hr>
 
 #### Student$-t$ 
 
 
-```{r}
-plotfit(params$fit, d = "t")
-```
-
 ```{r, echo = FALSE}
-m <- signif(params$fit$Student.t[expert, 1], 3)
+if(is.na(params$fit$ssq[expert, "t"])){
+  equationT <- "Distribution not fitted."
+  samplingT <- NULL
+  samplingTtext <- NULL
+}else{
+  m <- signif(params$fit$Student.t[expert, 1], 3)
 s <- signif(params$fit$Student.t[expert, 2], 3)
 tdf <- params$fit$Student.t[expert, 3]
+  
+  equationT <- paste0("$$
+f_X(x) = \\frac{\\Gamma((\\nu + 1)/2)}{\\Gamma(\\nu/2)\\sigma\\sqrt{\\nu \\pi}} \\left(1 + \\frac{1}{\\nu}\\left(\\frac{x - \\mu}{\\sigma}\\right)^2\\right)^{-(\\nu + 1)/2},\\quad -\\infty<x<\\infty,
+$$ 
+with $$\\nu = ", tdf,"$$ $$\\mu = ", m,"$$ $$\\sigma  = ", s, "$$")
+  
+  samplingT <- paste0("`", m, " + ", s, " * rt(n = 1000, df = ", tdf, ")`")
+  
+  samplingTtext <- "Sample `n = 1000` random values with the command"
+  
+} 
 ```
 
-$$
-f_X(x) = \frac{\Gamma((\nu + 1)/2)}{\Gamma(\nu/2)\sigma\sqrt{\nu \pi}} \left(1 + \frac{1}{\nu}\left(\frac{x - \mu}{\sigma}\right)^2\right)^{-(\nu + 1)/2},\quad -\infty<x<\infty,
-$$
-with
-\begin{align*}
-\nu &= `r tdf`,\\
-\mu &= `r m`,\\
-\sigma &= `r s`.\\
-\end{align*}
+
+`r paste(equationT)`
+
+
+`r paste(samplingTtext)`
+
+`r paste(samplingT)`
 
 
 
-
-Sample `n = 1000` random values with the command
-
-` `r m` + `r s` * rt(n = 1000, df = `r tdf`) `
 <hr>
 #### Log normal 
 
@@ -125,7 +187,7 @@ Sample `n = 1000` random values with the command
 
 ```{r, echo = FALSE}
 if(is.na(params$fit$ssq[expert, 4])){
-  equationLogNormal <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  equationLogNormal <- "Distribution not fitted."
   samplingLogNormal <- NULL
   samplingLogNormalText <- NULL
   shiftLognormal <- NULL
@@ -181,7 +243,7 @@ plotfit(params$fit, d = "lognormal")
 
 ```{r}
 if(is.na(params$fit$ssq[expert, 3])){
-  equationGamma <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  equationGamma <- "Distribution not fitted."
   samplingGamma <- NULL
   samplingGammaText <- NULL
   shiftGamma <- NULL
@@ -235,7 +297,7 @@ plotfit(params$fit, d = "gamma")
 
 ```{r}
 if(is.na(params$fit$ssq[expert, 4])){
-  equationLogStudentT <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  equationLogStudentT <- "Distribution not fitted."
   samplingLogStudentT <- NULL
   samplingLogStudentTText <- NULL
   shiftLogStudentT <- NULL
@@ -310,7 +372,7 @@ shape2 <- signif(params$fit$Beta[expert, 2], 3)
 ```{r, echo = FALSE}
 if(is.na(params$fit$ssq[expert, 6])){
   scalingBeta <- NULL
-  equationBeta <- "Distribution not fitted. Arguments `lower` and `upper` need to be specified in the `fitdist` command."
+  equationBeta <- "Distribution not fitted."
   samplingBeta <- NULL
   samplingBetaText <- NULL
 }else{
@@ -371,7 +433,7 @@ plotfit(params$fit, d = "beta")
 
 ```{r}
 if(is.na(params$fit$ssq[expert, "mirrorgamma"])){
-  equationMirrorGamma <- "Distribution not fitted. Argument `upper` needs to be specified in the `fitdist` command."
+  equationMirrorGamma <- "Distribution not fitted."
   samplingMirrorGamma <- NULL
   samplingMirrorGammaText <- NULL
   shiftMirrorGamma <- NULL
@@ -423,7 +485,7 @@ plotfit(params$fit, d = "mirrorgamma")
 
 ```{r, echo = FALSE}
 if(is.na(params$fit$ssq[expert, "mirrorlognormal"])){
-  equationMirrorLogNormal <- "Distribution not fitted. Argument `upper` needs to be specified in the `fitdist` command."
+  equationMirrorLogNormal <- "Distribution not fitted."
   samplingMirrorLogNormal <- NULL
   samplingMirrorLogNormalText <- NULL
   shiftMirrorLognormal <- NULL
@@ -474,7 +536,7 @@ plotfit(params$fit, d = "mirrorlognormal")
 
 ```{r}
 if(is.na(params$fit$ssq[expert, "mirrorlogt"])){
-  equationMirrorLogStudentT <- "Distribution not fitted. Argument `lower` needs to be specified in the `fitdist` command."
+  equationMirrorLogStudentT <- "Distribution not fitted."
   samplingMirrorLogStudentT <- NULL
   samplingMirrorLogStudentTText <- NULL
   shiftMirrorLogStudentT <- NULL
