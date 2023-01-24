@@ -41,6 +41,7 @@
 #' plotted with the same colour, reducing the legend size.
 #' @param percentages Set to \code{TRUE} to use percentages on the x-axis.
 #' @param returnPlot Set to \code{TRUE} to return the plot as a ggplot object.
+#' @param showPlot Set to \code{FALSE} to suppress displaying the plot.
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
 #' @examples
 #' 
@@ -89,7 +90,8 @@ plotfit <- function(fit,
                     ylab = expression(f[X](x)),
                     legend_full = TRUE,
                     percentages = FALSE,
-                    returnPlot = FALSE){
+                    returnPlot = FALSE,
+                    showPlot = TRUE){
   
   # Error handling if fitted distribution is not available ----
   
@@ -231,7 +233,8 @@ plotfit <- function(fit,
     if(xu == Inf & max(fit$limits[,2]) < Inf){xu <- max(fit$limits[,2]) }
       p1 <- suppressWarnings(makeGroupPlot(fit, xl, xu, d, lwd, xlab, ylab,
                                            expertnames = rownames(fit$Normal)))
-      print(p1)
+      if(showPlot){print(p1)}
+      
       if(returnPlot){
         return(p1)
       }
@@ -254,7 +257,7 @@ plotfit <- function(fit,
                                               lwd, xlab, ylab, legend_full,
                                               expertnames = rownames(fit$Normal)
                                               )
-    print(p1)
+    if(showPlot){print(p1)}
     if(returnPlot){
       return(p1)
     }
@@ -273,7 +276,7 @@ plotfit <- function(fit,
                                                                  percentages)
                                             
                                       )
-    print(p1)
+    if(showPlot){print(p1)}
     if(returnPlot){
       return(p1)
     }
@@ -288,7 +291,7 @@ plotfit <- function(fit,
                                                   xu, ql, qu, sf, ex = 1,
                                                   lwd, xlab, ylab,
                                                   percentages))
-      print(p1)
+      if(showPlot){print(p1)}
       
       if(returnPlot){
         return(p1)

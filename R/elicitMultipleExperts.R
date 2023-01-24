@@ -345,9 +345,7 @@ if they have been provided,
                                class = "numeric",
                                cols = list(names = TRUE,
                                            editableNames = TRUE),
-                               rows = list(names = TRUE),
-                               paste = TRUE,
-                               copy = TRUE)
+                               rows = list(names = TRUE))
     })
     
     newFile <- reactiveValues(chips = TRUE,
@@ -423,13 +421,14 @@ if they have been provided,
     
     output$EnterChips <- renderUI({
       
+      # Warning message: copy paste functionality has been removed from the current version. 
+      # Please use version 0.4.0 if needed
+      
       shinyMatrix::matrixInput(inputId = "myChips", value =  initialChips(),
                                class = "numeric",
                                cols = list(names = TRUE),
                                rows = list(names = TRUE,
-                                           editableNames = TRUE),
-                               paste = TRUE,
-                               copy = TRUE)
+                                           editableNames = TRUE))
     })
     
     

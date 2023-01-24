@@ -1,10 +1,17 @@
 SHELF v1.8.0.9000 (2022-04-21) 
 ==============================
 
+* new function compareGroupRIO(). Use this to produce plots to compare the the final consensus ("RIO") distribution with the individual elicited judgements, and a linear pool of the individual elicited judgements. 
+
+* can now fit exponential distributions as a special case of the Gamma distribution (or mirror exponential as special case of mirror gamma). Only requires one appropriate limit and a single probability. Mainly intended for the roulette method, if probs are only allocated to two adjacent bins. Updated error reporting when fitdist() is unable to fit distributions.
+
+* bug fixed: output names from feedback() were different depending on whether single or multiple experts. Changed to be consistent with single expert case.
+
 * optional input arguments added to elicit() to allow roulette options
 to be specified from command line.
 
-* bug fixed: elicit() will return, as outputs, vals and probs as 1 x n arrays. If these were to be used as inputs to fitdist(), they would need to be n x 1 arrays. fitdist() will now correct this. 
+* bug fixed: elicit() will return, as outputs, vals and probs as 1 x n arrays. If these were to be used as inputs to fitdist(), they would need to be n x 1 arrays. fitdist() will now correct this.
+
 
 SHELF v1.8.0 (2021-06-18) 
 ==============================

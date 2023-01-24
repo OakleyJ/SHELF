@@ -22,7 +22,8 @@ plotfit(
   ylab = expression(f[X](x)),
   legend_full = TRUE,
   percentages = FALSE,
-  returnPlot = FALSE
+  returnPlot = FALSE,
+  showPlot = TRUE
 )
 }
 \arguments{
@@ -78,6 +79,8 @@ plotted with the same colour, reducing the legend size.}
 \item{percentages}{Set to \code{TRUE} to use percentages on the x-axis.}
 
 \item{returnPlot}{Set to \code{TRUE} to return the plot as a ggplot object.}
+
+\item{showPlot}{Set to \code{FALSE} to suppress displaying the plot.}
 }
 \description{
 Plots the fitted density function for one or more experts. Can also plot a

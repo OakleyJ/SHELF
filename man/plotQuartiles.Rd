@@ -15,7 +15,7 @@ plotQuartiles(
 )
 }
 \arguments{
-\item{vals}{a matrix of elicited tertiles and medians: one column per expert, first 
+\item{vals}{a matrix of elicited quartiles and medians: one column per expert, first 
 row is the 25th percentile, 2nd row is the median, last row is the 75th percentile.}
 
 \item{lower}{a vector of lower plausible limits: one per expert}

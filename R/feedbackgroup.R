@@ -54,5 +54,14 @@ function(fit, quantiles =  NA, values = NA, dist = "best", sfg = 3){
 	}
 	
 	
-	list(expert.quantiles = signif(expert.quantiles, sfg), expert.probs = signif(expert.probs, sfg), distributions = distributions)
+	# 18/1/23: have just spotted that outputs are "expert.quantiles" and "expert.probs"
+	# if multiple experts, but "fitted.quantiles" and "fitted.probabilities"
+	# if a single expert. I need the naming to be consistent - will use the
+	# single expert case.
+	
+	# list(expert.quantiles = signif(expert.quantiles, sfg), expert.probs = signif(expert.probs, sfg), distributions = distributions)
+	list(fitted.quantiles = signif(expert.quantiles, sfg),
+	     fitted.probabilities = signif(expert.probs, sfg),
+	     distributions = distributions)
+	
 }

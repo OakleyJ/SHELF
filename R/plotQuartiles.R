@@ -5,7 +5,7 @@
 #' to be equally likely. The experts' medians are shown as dashed lines.
 #'
 #'
-#' @param vals a matrix of elicited tertiles and medians: one column per expert, first 
+#' @param vals a matrix of elicited quartiles and medians: one column per expert, first 
 #' row is the 25th percentile, 2nd row is the median, last row is the 75th percentile.
 #' @param lower a vector of lower plausible limits: one per expert
 #' @param upper a vector of upper plausible limits: one per expert

@@ -2,6 +2,7 @@
 
 export(cdffeedback)
 export(cdfplot)
+export(compareGroupRIO)
 export(compareIntervals)
 export(condDirichlet)
 export(copulaSample)
