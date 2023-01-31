@@ -9,7 +9,10 @@ compareGroupRIO(
   RIOFit,
   type = "density",
   dLP = "best",
-  dRIO = "best"
+  dRIO = "best",
+  xlab = "x",
+  ylab = expression(f[X](x)),
+  fs = 12
 )
 }
 \arguments{

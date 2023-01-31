@@ -37,7 +37,11 @@
 #' }
 #' @export
 
-compareGroupRIO <- function(groupFit, RIOFit, type = "density", dLP = "best", dRIO = "best"){
+compareGroupRIO <- function(groupFit, RIOFit, type = "density",
+                            dLP = "best", dRIO = "best",
+                            xlab = "x",
+                            ylab = expression(f[X](x)),
+                            fs = 12){
   
   if(class(groupFit) == "character"){
     groupFit <- readSHELFcsv(groupFit)
@@ -57,7 +61,7 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density", dLP = "best", dR
                              quantiles = c(0.25,
                                            0.5,
                                            0.75))$fitted.quantiles[, dRIO]
-    LPQuartiles <- qlinearpool(group, q = c(0.25, 0.5, 0.75), d = dLP)
+    LPQuartiles <- qlinearpool(groupFit, q = c(0.25, 0.5, 0.75), d = dLP)
     
     quartileVals <- cbind(individualQuartiles, LPQuartiles,
                           RIOQuartiles)
@@ -78,7 +82,7 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density", dLP = "best", dR
                              quantiles = c(0.33,
                                            0.5,
                                            0.67))$fitted.quantiles[, dRIO]
-    LPTertiles <- qlinearpool(group, q = c(0.33, 0.5, 0.67), d = dLP)
+    LPTertiles <- qlinearpool(groupFit, q = c(0.33, 0.5, 0.67), d = dLP)
 
     tertileVals <- cbind(individualTertiles, LPTertiles,
                          RIOTertiles)
@@ -135,6 +139,7 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density", dLP = "best", dR
     
     
   }
+  p1 <- p1 + labs(x = xlab, y = ylab) + theme_grey(base_size = fs)
   
   print(p1)       
   
@@ -181,7 +186,7 @@ readSHELFcsv <- function(filename){
     expertnames <- colnames(SHELFcsv)[-1]
   }
   
-  groupfit <- fitdist(vals = v, probs = p, lower = l, upper = u,
+  fitdist(vals = v, probs = p, lower = l, upper = u,
                       expertnames  = expertnames)
   
 }

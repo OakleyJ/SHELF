@@ -1,6 +1,9 @@
 SHELF v1.8.0.9000 (2022-04-21) 
 ==============================
 
+* Changed multivariate normal sampling in copulaSample() to use Cholesky decomposition
+instead of eigendecomposition.
+
 * new function compareGroupRIO(). Use this to produce plots to compare the the final consensus ("RIO") distribution with the individual elicited judgements, and a linear pool of the individual elicited judgements. 
 
 * can now fit exponential distributions as a special case of the Gamma distribution (or mirror exponential as special case of mirror gamma). Only requires one appropriate limit and a single probability. Mainly intended for the roulette method, if probs are only allocated to two adjacent bins. Updated error reporting when fitdist() is unable to fit distributions.

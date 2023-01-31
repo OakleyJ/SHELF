@@ -239,6 +239,14 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
                            condition = "input.method == 1",
                            h5("Please select the roulette elicitation method")
                          )),
+                tabPanel("Compare group/RIO",
+                         fileInput("loadCSV", label = NULL, 
+                                   buttonLabel = "Upload judgements"),
+                         radioButtons("comparePlotType", label = h5("Plot Type"),
+                                      choices = c("Density functions" = "density",
+                                                  "Quartile judgements" = "quartiles",
+                                                  "Tertile judgements" = "tertiles")),
+                         plotOutput("compareRIO")),
                 tabPanel("Help", 
                          includeHTML(system.file("shinyAppFiles", "help.html",
                                                  package="SHELF"))
@@ -562,7 +570,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       plotRoulette()
     })
     
-    # Feedback - get fitted quantiles/probabilities ...
+    # Feedback - get fitted quantiles/probabilities ----
     
     quantileValues <- reactive({
       req(fq(), myfit())
@@ -629,7 +637,25 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
       quantileValues()
     })
     
-    # Download individual plots
+    # Compare individual elicited judgements with RIO ----
+    
+    groupFit <- reactive({
+      file <- input$loadCSV
+      ext <- tools::file_ext(file$datapath)
+      
+      req(file)
+      validate(need(ext == "csv", "Please upload a csv file"))
+      readSHELFcsv(file$datapath)
+    })
+    
+    output$compareRIO <- renderPlot({
+      req(groupFit(), myfit())
+      compareGroupRIO(groupFit(), myfit(), type = input$comparePlotType,
+                      fs = input$fs,
+                      xlab = input$xLabel)
+    })
+    
+    # Download individual plots ----
     output$downloadDensities = downloadHandler(
       filename = 'fittedPDF.png',
       content = function(file) {

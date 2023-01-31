@@ -67,7 +67,13 @@ copulaSample <- function(..., cp, n, d = NULL) {
       return(NULL)
     }
   } else{
-    z <- MASS::mvrnorm(n, mu = rep(0, n.vars), r)
+    
+    
+    # Change from eigendecomposition to Cholesky. Problems
+    # reported with reproducibility: some machines flip the signs of the eigenvectors
+    #z <- MASS::mvrnorm(n, mu = rep(0, n.vars), r)
+    z <- matrix(rnorm(n.vars * n), n, n.vars) %*% chol(r)
+    
     p <- pnorm(z)
     
     theta <- matrix(0, n, n.vars)
