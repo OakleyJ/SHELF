@@ -14,10 +14,13 @@
 #' @param RIOFit an object of class \code{elicitation} containing a single set of 
 #' of probability judgements corresponding to the "Rational Impartial Observer (RIO)".
 #' @param type the plot used to show the comparison: one of "quartiles", "tertiles" or "density".
-#' @param dLP: the distribution fitted to each expert's judgements and to the linear pool. Options are 
+#' @param dLP the distribution fitted to each expert's judgements and to the linear pool. Options are 
 #' Options are "normal", "t", "gamma", "lognormal", "logt","beta", "mirrorgamma",
 #'"mirrorlognormal", "mirrorlogt" "hist" (for a histogram fit), and "best" (for best fitting).
-#' @param dLP: the distribution fitted to RIO's judgements. Options are the same as for \code{dLP}.
+#' @param dRIO the distribution fitted to RIO's judgements. Options are the same as for \code{dLP}.
+#' @param xlab x-axis label in plot
+#' @param ylab y-axis label in plot
+#' @param fs font size used in plot
 
 
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
@@ -43,7 +46,7 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
                             ylab = expression(f[X](x)),
                             fs = 12){
   
-  if(class(groupFit) == "character"){
+  if(inherits(groupFit, "character")){
     groupFit <- readSHELFcsv(groupFit)
   }
   
@@ -105,6 +108,9 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
     
     rioData <- ggplot_build(pRIO)$data[[1]]
     groupData <- ggplot_build(pgroup)$data
+    
+    x <- y <- expert <- NULL # hack to avoid R CMD check NOTE
+    
  
     df1 <- NULL
     for(i in 1:(n.experts + 1)){

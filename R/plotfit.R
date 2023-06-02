@@ -106,7 +106,11 @@ plotfit <- function(fit,
                      "log normal", "log Student-t", "beta",
                      "mirror gamma", "mirror log normal",
                      "mirror log Student-t")
-  index <- !is.na(c(0, fit$ssq[ex, ]))
+  
+  if(is.na(ex)){
+    index <- !is.na(c(0, fit$ssq[1, ]))}else{
+      index <- !is.na(c(0, fit$ssq[ex, ]))
+    }
   
   
   errorPlotBeta <- paste(errorDist, errorL, errorU, errorP,

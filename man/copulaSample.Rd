@@ -4,7 +4,7 @@
 \alias{copulaSample}
 \title{Generate correlated samples from elicited marginal distributions using a multivariate normal copula}
 \usage{
-copulaSample(..., cp, n, d = NULL)
+copulaSample(..., cp, n, d = NULL, ex = 1)
 }
 \arguments{
 \item{...}{A list of objects of class \code{elicitation}.
@@ -17,8 +17,12 @@ Only the upper triangular elements in the matrix need to be specified; the remai
 \item{n}{The sample size to be generated}
 
 \item{d}{A vector of distributions to be used for each elicited quantity: a string with elements chosen from
-\code{"normal", "t", "gamma", "lognormal", "logt", "beta"}. The default is to use
+\code{"normal", "t", "gamma", "lognormal", "logt", "beta", "mirrorgamma", "mirrorlognormal", "mirrorlogt"}. The default is to use
 the best fitting distribution in each case.}
+
+\item{ex}{If separate judgements have been elicited from multiple experts and stored
+in the \code{elicitation} objects, use this argument to select a single expert's judgements
+for sampling. Note that this function will not simultaneously generate samples for all experts.}
 }
 \value{
 A matrix of sampled values, one row per sample.

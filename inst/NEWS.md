@@ -1,7 +1,32 @@
+SHELF v1.9.0 (2023-05-31) 
+==============================
+
+* Changed multivariate normal sampling in copulaSample() to use Cholesky decomposition
+instead of eigendecomposition (latter can produce different results on different machines).
+
+* new function compareGroupRIO(). Use this to produce plots to compare the the final consensus ("RIO") distribution with the individual elicited judgements, and a linear pool of the individual elicited judgements. Incorporated this feature in the elicit() app.
+
+* can now fit exponential distributions as a special case of the Gamma distribution (or mirror exponential as special case of mirror gamma). Only requires one appropriate limit and a single probability. Mainly intended for the roulette method, if probs are only allocated to two adjacent bins. Updated error reporting when fitdist() is unable to fit distributions.
+
+* bug fixed: output names from feedback() were different depending on whether single or multiple experts. Changed to be consistent with single expert case.
+
+* optional input arguments added to elicit() to allow roulette options
+to be specified from command line.
+
+* bug fixed: elicit() will return, as outputs, vals and probs as 1 x n arrays. If these were to be used as inputs to fitdist(), they would need to be n x 1 arrays. fitdist() will now correct this.
+
+* bug fixed: copulaSample() will now run if fitdist() was used on separate judgements from multiple experts. Extra argument (ex) used to select judgements from a single expert (copulaSample() will not produce judgements for multiple experts simultaneously).
+
+* new package test for copulaSample()
+
+* some internal naming changes in fitdist(): tParameters, fFit, tError. (Sorry, my naming formatting is all over the place...)
+
 SHELF v1.8.0 (2021-06-18) 
 ==============================
 
-* argument int removed from plotfit(): can no longer launch shiny apps from the plotfit() command for plotting distributions. Use elicit() and elicitMultiple() instead for interactive plotting.
+* argument int removed from plotfit(): can no longer launch shiny apps from the
+plotfit() command for plotting distributions. Use elicit() and elicitMultiple()
+instead for interactive plotting.
 
 * elicitation report files (R Markdown documents) now include plots of fitted distributions.
 

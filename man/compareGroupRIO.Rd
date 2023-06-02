@@ -25,7 +25,17 @@ of probability judgements corresponding to the "Rational Impartial Observer (RIO
 
 \item{type}{the plot used to show the comparison: one of "quartiles", "tertiles" or "density".}
 
-\item{dLP:}{the distribution fitted to RIO's judgements. Options are the same as for \code{dLP}.}
+\item{dLP}{the distribution fitted to each expert's judgements and to the linear pool. Options are 
+Options are "normal", "t", "gamma", "lognormal", "logt","beta", "mirrorgamma",
+"mirrorlognormal", "mirrorlogt" "hist" (for a histogram fit), and "best" (for best fitting).}
+
+\item{dRIO}{the distribution fitted to RIO's judgements. Options are the same as for \code{dLP}.}
+
+\item{xlab}{x-axis label in plot}
+
+\item{ylab}{y-axis label in plot}
+
+\item{fs}{font size used in plot}
 }
 \description{
 Produce one of three plots to compare the individual elicited judgements with the final

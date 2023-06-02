@@ -130,7 +130,7 @@ fitdist <-
     
     n.experts <- ncol(vals)
     normal.parameters <- matrix(NA, n.experts, 2)
-    t.parameters <- matrix(NA, n.experts, 3)
+    tParameters <- matrix(NA, n.experts, 3)
     mirrorgamma.parameters <- gamma.parameters <- 
       matrix(NA, n.experts, 2)
     mirrorlognormal.parameters <- 
@@ -245,14 +245,14 @@ fitdist <-
       
       # starting values: c(m, log((u - m)/ qt(0.6, tdf[i])))
       
-      t.fit <- optim(c(m, 0.5*log(v)), t.error, 
+      tFit <- optim(c(m, 0.5*log(v)), tError, 
                      values = vals[inc,i], 
                      probabilities = probs[inc,i], 
                      weights = weights[inc,i], 
                      degreesfreedom = tdf[i])
-      t.parameters[i, 1:2] <- c(t.fit$par[1], exp(t.fit$par[2]))
-      t.parameters[i, 3] <- tdf[i]
-      ssq[i, "t"] <- t.fit$value
+      tParameters[i, 1:2] <- c(tFit$par[1], exp(tFit$par[2]))
+      tParameters[i, 3] <- tdf[i]
+      ssq[i, "t"] <- tFit$value
       
       # Positive skew distribution fits ----
       
@@ -428,7 +428,7 @@ fitdist <-
     names(dfn) <-c ("mean", "sd")
     row.names(dfn) <- expertnames
     
-    dft <- data.frame(t.parameters)
+    dft <- data.frame(tParameters)
     names(dft) <-c ("location", "scale", "df")
     row.names(dft) <- expertnames
     

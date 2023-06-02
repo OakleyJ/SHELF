@@ -13,9 +13,11 @@
 #' Only the upper triangular elements in the matrix need to be specified; the remaining elements can be set at 0.
 #' @param n The sample size to be generated
 #' @param d A vector of distributions to be used for each elicited quantity: a string with elements chosen from
-#' \code{"normal", "t", "gamma", "lognormal", "logt", "beta"}. The default is to use
+#' \code{"normal", "t", "gamma", "lognormal", "logt", "beta", "mirrorgamma", "mirrorlognormal", "mirrorlogt"}. The default is to use
 #' the best fitting distribution in each case.
-#'
+#' @param ex If separate judgements have been elicited from multiple experts and stored
+#' in the \code{elicitation} objects, use this argument to select a single expert's judgements
+#' for sampling. Note that this function will not simultaneously generate samples for all experts.
 #
 
 #' @return A matrix of sampled values, one row per sample.
@@ -35,17 +37,15 @@
 #' quad.probs[2, 3] <- 0.3
 #' copulaSample(myfit1, myfit2, myfit3, cp=quad.probs, n=100, d=NULL)
 #' }
-
-#' @importFrom MASS mvrnorm
 #' @export
 
-copulaSample <- function(..., cp, n, d = NULL) {
+copulaSample <- function(..., cp, n, d = NULL, ex = 1) {
   elicitation.fits <- list(...)
   n.vars <- length(elicitation.fits)
   
   if (is.null(d)) {
     d <- sapply(elicitation.fits, function(x) {
-      unlist(x$best.fitting)
+      unlist(x$best.fitting[ex, 1])
     })
   }
   
@@ -80,14 +80,14 @@ copulaSample <- function(..., cp, n, d = NULL) {
     for (i in 1:n.vars) {
    
         if(d[i] ==  "best"){
-        d[i] <- as.character(elicitation.fits[[i]]$best.fitting[1, 1])
+        d[i] <- as.character(elicitation.fits[[i]]$best.fitting[ex, 1])
     
       }
     
       
       theta[, i] <- feedback(elicitation.fits[[i]],
                              quantiles = p[, i],
-                             sf = 8)$fitted.quantiles[d[i]][, 1]
+                             sf = 8, ex = ex)$fitted.quantiles[d[i]][, 1]
     }
     return(theta)
   }

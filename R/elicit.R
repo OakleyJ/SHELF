@@ -240,13 +240,20 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
                            h5("Please select the roulette elicitation method")
                          )),
                 tabPanel("Compare group/RIO",
+                         helpText("If you are working with multiple experts, 
+                                  and you have elicited their judgements individually with the 
+                                  multiple experts app, you can download the judgements from that 
+                                  app as a .csv file, and upload it here. You will then see a comparison
+                                  between the individual judgements, a linear pool, and the distribution
+                                  you have elicited in this app."),
                          fileInput("loadCSV", label = NULL, 
                                    buttonLabel = "Upload judgements"),
                          radioButtons("comparePlotType", label = h5("Plot Type"),
                                       choices = c("Density functions" = "density",
                                                   "Quartile judgements" = "quartiles",
                                                   "Tertile judgements" = "tertiles")),
-                         plotOutput("compareRIO")),
+                         plotOutput("compareRIO"),
+                         ),
                 tabPanel("Help", 
                          includeHTML(system.file("shinyAppFiles", "help.html",
                                                  package="SHELF"))
@@ -326,52 +333,34 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     # Extract quartiles and tertiles by linear interpolation ----
     # (Will be correct if elicited directly)
     m <- reactive({
-      req(p(), v())
-      approx(p(), v(), 0.5)$y
+      req(p(), v(), limits())
+      approx(c(0, p(), 1),
+             c(limits()[1], v(), limits()[2]),
+             0.5)$y
     })
     t1 <- reactive({
       req(p(), v(), limits())
-      if(min(p()) > 1/3){
-        xIn <- c(0, p())
-        yIn <- c(limits()[1], v())
-      }else{
-        xIn <- p()
-        yIn <- v()
-      }
-      approx(xIn, yIn, 1/3)$y
+      approx(c(0, p(), 1),
+             c(limits()[1], v(), limits()[2]),
+             1/3)$y
     })
     t2 <- reactive({
       req(p(), v(), limits())
-      if(max(p()) < 2/3){
-        xIn <- c(p(), 1)
-        yIn <- c(v(), limits()[2])
-      }else{
-        xIn <- p()
-        yIn <- v()
-      }
-      approx(xIn, yIn, 2/3)$y
+      approx(c(0, p(), 1),
+             c(limits()[1], v(), limits()[2]),
+             2/3)$y
     })
     Q1 <- reactive({
       req(p(), v(), limits())
-      if(min(p()) > 0.25){
-        xIn <- c(0, p())
-        yIn <- c(limits()[1], v())
-      }else{
-        xIn <- p()
-        yIn <- v()
-      }
-      approx(xIn, yIn, 0.25)$y
+      approx(c(0, p(), 1),
+             c(limits()[1], v(), limits()[2]),
+             0.25)$y
     })
     Q3 <- reactive({
       req(p(), v(), limits())
-      if(max(p()) < 0.75){
-        xIn <- c(p(), 1)
-        yIn <- c(v(), limits()[2])
-      }else{
-        xIn <- p()
-        yIn <- v()
-      }
-      approx(xIn, yIn, 0.75)$y
+      approx(c(0, p(), 1),
+             c(limits()[1], v(), limits()[2]),
+             0.75)$y
     })
     
     # Roulette ----

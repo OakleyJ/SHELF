@@ -1,14 +1,6 @@
 ---
 title: "Eliciting a Dirichlet Distribution"
-author: "Jeremy Oakley"
-date: "`r Sys.Date()`"
-fontsize: 12pt
-output:
-  pdf_document:
-    number_sections: true
-    fig_caption: true
-    
-fig_caption: yes
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Eliciting a Dirichlet Distribution}
   %\VignetteEngine{knitr::rmarkdown}
@@ -16,7 +8,8 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      collapse = TRUE)
 ```
 
 We illustrate the process of eliciting a Dirichlet distribution using the methodology and case study in Zapata-Vazquez, R., O'Hagan, A. and Bastos, L. S. (2014). Eliciting expert judgements about a set of proportions. Journal of Applied Statistics 41, 1919-1933. Quoting from their Section 3.4,

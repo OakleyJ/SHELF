@@ -1,13 +1,6 @@
 ---
 title: "Eliciting Dependent Distributions using Multivariate Normal Copulas"
-date: "`r Sys.Date()`"
-author: "Jeremy E. Oakley"
-fontsize: 12pt
-output:
-  pdf_document:
-    number_sections: true
-    fig_caption: true
-    
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Eliciting Dependent Distributions using Multivariate Normal Copulas}
   %\VignetteEngine{knitr::rmarkdown}
