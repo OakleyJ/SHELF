@@ -112,17 +112,6 @@ fitdist <-
     if(is.matrix(probs)==F){probs <- matrix(probs, nrow = nrow(vals), ncol = ncol(vals))}
     
     
-    # <begin hack>
-    # When first writing all this, I decided to have one column per expert
-    # in vals and probs...but then one row per expert when vals and probs
-    # are returned as outputs within the elicitation object. So fitdist won't
-    # work if it's re-run using its own outputs! 
-    # The next two lines are a hack to fix this.
-    
-    if(nrow(vals) == 1){vals <- t(vals)}
-    if(nrow(probs) == 1){probs <- t(probs)}
-    # <end hack>
-    
     if(is.matrix(weights)==F){weights <- matrix(weights, nrow = nrow(vals), ncol = ncol(vals))}
     if(length(lower)==1){lower <- rep(lower, ncol(vals))}
     if(length(upper)==1){upper <- rep(upper, ncol(vals))}

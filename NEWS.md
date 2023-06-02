@@ -13,8 +13,6 @@ instead of eigendecomposition (latter can produce different results on different
 * optional input arguments added to elicit() to allow roulette options
 to be specified from command line.
 
-* bug fixed: elicit() will return, as outputs, vals and probs as 1 x n arrays. If these were to be used as inputs to fitdist(), they would need to be n x 1 arrays. fitdist() will now correct this.
-
 * bug fixed: copulaSample() will now run if fitdist() was used on separate judgements from multiple experts. Extra argument (ex) used to select judgements from a single expert (copulaSample() will not produce judgements for multiple experts simultaneously).
 
 * new package test for copulaSample()
