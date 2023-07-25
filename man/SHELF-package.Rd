@@ -52,10 +52,10 @@ v <- matrix(c(30, 40, 50, 20, 25, 35), 3, 2)
 p <- c(0.25, 0.5, 0.75)
 myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
 # plot each distribution
-plotfit(myfit, int = TRUE)
+plotfit(myfit)
 
 ## plot the distribution for one expert only
-plotfit(myfit, int = TRUE, ex = 1)
+plotfit(myfit, ex = 1)
 
 ## Enter judgements in interactive mode
 elicit()

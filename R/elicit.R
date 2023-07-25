@@ -696,13 +696,16 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     output$downloadRoulette = downloadHandler(
       filename = 'roulette.png',
       content = function(file) {
-        device <- function(..., width, height) {
-          grDevices::png(..., width = 5, height = 3,
-                         res = 300, units = "in")
-        }
-        ggsave(file, plot = plotRoulette(),
-               device = device, width = 5,
-               height = 3, units = "in")
+       # device <- function(..., width, height) {
+        #  grDevices::png(..., width = 5, height = 3,
+        #                 res = 300, units = "in")
+        #}
+        #ggsave(file, plot = plotRoulette(),
+         #      device = device, width = 5,
+          #     height = 3, units = "in")
+        grDevices::png(file)
+        plotRoulette()
+        dev.off()
       })
     
     # Download R Markdown report
