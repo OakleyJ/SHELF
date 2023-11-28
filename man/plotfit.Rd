@@ -9,6 +9,8 @@ plotfit(
   d = "best",
   xl = -Inf,
   xu = Inf,
+  yl = 0,
+  yu = NA,
   ql = NA,
   qu = NA,
   lp = FALSE,
@@ -42,6 +44,10 @@ distribution, if a histogram fit is chosen).}
 \item{xu}{The upper limit for the x-axis. The default is the 0.999 quantile
 of the fitted distribution (or the 0.999 quantile of a fitted normal
 distribution, if a histogram fit is chosen).}
+
+\item{yl}{The lower limit for the y-axis. Default value is 0.}
+
+\item{yu}{The upper limit for the y-axis. Will be set automatically if not specified.}
 
 \item{ql}{A lower quantile to be indicated on the density function plot.
 Only displayed when plotting the density function for a single expert.}

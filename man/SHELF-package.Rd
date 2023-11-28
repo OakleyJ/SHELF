@@ -19,7 +19,7 @@ for variance parameters in a random effects meta-analysis model. R Shiny apps
 for most of the methods are included. 
 
 \tabular{ll}{ Package: \tab SHELF\cr Type: \tab Package\cr Version: \tab
-1.9.0\cr Date: \tab 2023-05-31\cr License: \tab GPL-2 | GPL-3\cr }
+1.9.0.9000\cr Date: \tab 2023-05-31\cr License: \tab GPL-2 | GPL-3\cr }
 }
 \examples{
 \dontrun{
