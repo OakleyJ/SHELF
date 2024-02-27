@@ -19,6 +19,12 @@ function(fit, d = "best", ex = 1, pl, pu, ql = NULL, qu = NULL, nx = 200){
 		fx <- dt((x - fit$Student.t[ex,1])/fit$Student.t[ex,2], fit$Student.t[ex,3])/fit$Student.t[ex,2]
 	}
 	
+	if(d == "skewnormal"){
+	  fx <- sn::dsn(x, fit$Skewnormal[ex, 1],
+	                fit$Skewnormal[ex, 2],
+	                fit$Skewnormal[ex, 3])
+	}
+	
 	if(d == "gamma"){
 		xl <- fit$limits[ex,1]
 		if(xl == -Inf){xl <- 0}

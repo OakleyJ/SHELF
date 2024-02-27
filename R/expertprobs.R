@@ -10,6 +10,12 @@ function(fit, x, d = "best", ex = 1){
 	if(d == "normal"){
 		px <- pnorm(x, fit$Normal[ex,1], fit$Normal[ex,2]) 		
 	}
+  
+  if(d == "skewnormal"){
+    px <- sn::psn(x, xi = fit$Skewnormal[ex,1],
+                  omega = fit$Skewnormal[ex,2],
+                  alpha = fit$Skewnormal[ex,3]) 		
+  }
 	
 	if(d == "t"){
 		px <- pt((x - fit$Student.t[ex,1])/fit$Student.t[ex,2], fit$Student.t[ex,3])	

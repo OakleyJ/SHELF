@@ -36,6 +36,7 @@ Imports:
     scales,
     shiny,
     shinyMatrix,
+    sn,
     stats,
     tidyr,
     utils

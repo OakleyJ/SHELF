@@ -52,6 +52,7 @@ elicitMultiple <- function(){
                       choices =  list(Histogram = "hist",
                                       Normal = "normal", 
                                       'Student-t' = "t",
+                                      'Skew normal' = "skewnormal",
                                       Gamma = "gamma",
                                       'Log normal' = "lognormal",
                                       'Log Student-t' = "logt",

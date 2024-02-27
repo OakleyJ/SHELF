@@ -52,6 +52,8 @@ An object of class \code{elicitation}. This is a list containing the elements
 \item{Student.t}{Parameters of the fitted t distributions. Note that (X -
 location) / scale has a standard t distribution. The degrees of freedom is
 not fitted; it is specified as an argument to \code{fitdist}.}
+\item{Skewnormal}{Parameters of the fitted skew-normal distribution. The skew-normal
+distribution is implemented using the sn package. See sn::dsn for details.}
 \item{Gamma}{Parameters of the fitted gamma distributions. Note that E(X - \code{lower}) =
 shape / rate.} 
 \item{Log.normal}{Parameters of the fitted log normal

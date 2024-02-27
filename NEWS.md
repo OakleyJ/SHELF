@@ -1,3 +1,8 @@
+SHELF v1.9.0.9000 (2024-02-27) 
+==============================
+
+* Added the skew normal distribution to the set of fitted distributions.
+
 SHELF v1.9.0 (2023-05-31) 
 ==============================
 

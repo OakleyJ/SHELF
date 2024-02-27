@@ -98,6 +98,7 @@ elicit<- function(lower = 0, upper = 100, gridheight = 10,
                       choices =  list(Histogram = "hist",
                                       Normal = "normal", 
                                       'Student-t' = "t",
+                                      'Skew normal' = "skewnormal",
                                       Gamma = "gamma",
                                       'Log normal' = "lognormal",
                                       'Log Student-t' = "logt",
@@ -234,7 +235,10 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
                            fluidRow(
                              column(4,
                                     downloadButton('downloadRoulette',
-                                                   "Download plot")))),
+                                                   "Download plot")),
+                             column(4,
+                                    downloadButton('downloadRouletteCSV',
+                                                   "Download allocation (csv)")))),
                          conditionalPanel(
                            condition = "input.method == 1",
                            h5("Please select the roulette elicitation method")
@@ -708,6 +712,21 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
         dev.off()
       })
     
+    # Download roulette allocation as csv
+    
+    output$downloadRouletteCSV <- downloadHandler(
+      filename = function() {
+        paste('roulette-', Sys.Date(), '.csv', sep='')
+      },
+      content = function(file) {
+        rouletteCSV <- data.frame(bins = paste0("(",bin.left(),
+                                               ", ",bin.right(),"]"),
+                                 probs = rl$chips)
+                                 
+        utils::write.csv(rouletteCSV, file)
+      }
+    )
+    
     # Download R Markdown report
     output$report <- downloadHandler(
       filename = function(){switch(input$outFormat,
@@ -724,7 +743,20 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
                   tempReport, overwrite = TRUE)
         
         # Set up parameters to pass to Rmd document
-        params <- list(fit = myfit())
+        if(input$method==1){
+          params <- list(fit = myfit(), roulette = FALSE)
+        }
+        
+        
+        # Include roulette allocation
+        
+        if(input$method==2){
+          params <- list(fit = myfit(),
+                         bin.left = bin.left(),
+                         bin.right = bin.right(),
+                         chips = rl$chips,
+                         roulette = TRUE)
+        }
         
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document

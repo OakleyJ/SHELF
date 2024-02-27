@@ -32,7 +32,7 @@ plotfit(
 \item{fit}{An object of class \code{elicitation}.}
 
 \item{d}{The distribution fitted to each expert's probabilities. Options are
-\code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
+\code{"normal"}, \code{"t"}, \code{"skewnormal"}, \code{"gamma"}, \code{"lognormal"},
 \code{"logt"},\code{"beta"}, \code{"mirrorgamma"},
 \code{"mirrorlognormal"}, \code{"mirrorlogt"} \code{"hist"} (for a histogram fit), and
 \code{"best"} (for best fitting)}

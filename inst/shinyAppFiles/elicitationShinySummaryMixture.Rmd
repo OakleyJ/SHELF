@@ -141,6 +141,33 @@ Sample `n = 1000` random values (for `r expertnames[1]`) with the command
 
 ` `r m[1]` + `r s[1]` * rt(n = 1000, df = `r tdf[1]`) `
 <hr>
+
+#### Skew normal 
+```{r, echo = FALSE}
+xi <- signif(params$fit$Skewnormal[, 1], sf)
+omega <- signif(params$fit$Skewnormal[, 2], sf)
+alpha <- signif(params$fit$Skewnormal[, 3], sf)
+
+```
+
+
+$$f_{X|Y}(x)=\frac{2}{\omega}\phi\left(\frac{x-\xi}{\omega}\right)\Phi\left(\alpha\left(\frac{x-\xi}{\omega}\right)\right),\quad -\infty<x<\infty,$$ 
+where $\phi(.)$ and $\Phi(.)$ are the probability density function and cumulative distribution function respectively of the standard normal distribution, and with
+
+```{r}
+skewnormaldf <- data.frame(xi, omega, alpha)
+colnames(skewnormaldf) <- c("$\\xi$", "$\\omega$", "$\\alpha$")
+rownames(skewnormaldf) <- expertnames
+knitr::kable(skewnormaldf, escape = FALSE)
+```
+
+Sample `n = 1000` random values (for `r expertnames[1]`) with the command
+
+`sn::rsn(n = 1000, xi = `r xi[1]`, omega = `r omega[1]`, alpha = `r alpha[1]`) `
+
+<hr>
+
+
 #### Log normal 
 
 $$f_{X|Y}(x) = \frac{1}{x-L} \times \frac{1}{\sqrt{2\pi\sigma^2}} 

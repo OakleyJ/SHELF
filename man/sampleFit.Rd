@@ -27,7 +27,7 @@ within an object of class \code{elicitation}
 v <- c(20,30,50)
 p <- c(0.25,0.5,0.75)
 myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
-samplefit(myfit, n = 10)
+sampleFit(myfit, n = 10)
 }
 
 }

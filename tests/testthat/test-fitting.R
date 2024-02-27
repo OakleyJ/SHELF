@@ -22,7 +22,7 @@ test_that("student-t distribution fitting and feedback works",{
   m <- 10
   s <- 20
   tdftest <- 4
-  vals <- c(m - s, m , m + 2 * s)
+  vals <- c(m - s, m , m + s, m + 2 * s)
   myfit <- fitdist(vals, pt((vals-m)/s, tdftest ), tdf = tdftest)
   fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(m -0.5*s, m+s))
   t.parameters <- unlist(myfit$Student.t)
@@ -36,6 +36,32 @@ test_that("student-t distribution fitting and feedback works",{
                signif(pt(c( -0.5, 1), tdftest),3))
 })
 
+
+test_that("skew normal distribution fitting and feedback works",{
+  skip_on_cran()
+  xi <- 10
+  omega <- 5
+  alpha <- 4
+  probs <- c(0.25, 0.5, 0.75)
+  myfit <- fitdist(vals = sn::qsn(probs, xi = xi, omega = omega, alpha = alpha),
+                   probs = probs)
+  fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(xi - omega,
+                                                            xi + omega))
+  skewnorm.parameters <- unlist(myfit$Skewnormal)
+  best.name <- as.character(unlist(myfit$best.fitting))
+  attributes(skewnorm.parameters) <- NULL
+  expect_equal(signif(skewnorm.parameters, 3), c(xi, omega, alpha))
+  expect_equal(best.name, "skewnormal")
+  expect_equal(fb$fitted.quantiles[, "skewnormal"], 
+               signif(sn::qsn(c(0.05, 0.95), xi = xi, omega = omega, alpha = alpha)
+                      ,3))
+  expect_equal(fb$fitted.probabilities[, "skewnormal"],
+               signif(sn::psn(c(xi - omega,
+                                xi + omega),
+                              xi = xi,
+                              omega = omega,
+                              alpha = alpha),3))
+})
 
 test_that("log-t distribution fitting and feedback works",{
   skip_on_cran()
@@ -61,7 +87,7 @@ test_that("mirror log-t distribution fitting and feedback works",{
   m <- log(30)
   s <- 0.5
   tdftest <- 5
-  vals <- c(22, 30, 42)
+  vals <- c(22, 30, 35, 42)
   u <- 60
   myfit <- fitdist(vals, 1 - pt((log(u - vals) - m) / s, tdftest ), lower = 0, tdf = tdftest,
                    upper = u)
@@ -85,7 +111,7 @@ test_that("scaled beta distribution fitting and feedback works",{
   b <- 20
   l <- 10
   u <- 60
-  vals <- c(18, 20, 24)
+  vals <- c(18, 20, 22, 24)
   myfit <- fitdist(vals, pbeta((vals-l)/(u-l), a, b ), lower = l, upper = u)
   fb <- feedback(myfit, quantiles=c(0.05, 0.95), values = c(19, 29))
   beta.parameters <- unlist(myfit$Beta)
@@ -183,7 +209,7 @@ test_that("mirror gamma distribution fitting and feedback works",{
   a <- 50
   b <- 2
   u <- 25
-  p <- c(0.25, 0.5 , 0.75)
+  p <- c(0.25, 0.5 , 0.6, 0.75)
   v <- u - qgamma(1 - p, a, b)
   myfit <- fitdist(vals = v, probs = p, lower = -10,
                    upper = u)

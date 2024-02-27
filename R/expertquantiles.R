@@ -9,6 +9,12 @@ function(fit, q, d = "best", ex = 1){
 		qx <- qnorm(q, fit$Normal[ex,1], fit$Normal[ex,2]) 		
 	}
 	
+  if(d == "skewnormal"){
+    qx <- sn::qsn(q, xi = fit$Skewnormal[ex,1],
+                  omega = fit$Skewnormal[ex,2],
+                  alpha = fit$Skewnormal[ex,3]) 		
+  }
+  
 	if(d == "t"){
 		qx <- fit$Student.t[ex,1] + fit$Student.t[ex,2] * qt(q, fit$Student.t[ex,3])	
 	}

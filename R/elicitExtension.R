@@ -107,6 +107,7 @@ elicitExtension<- function(){
                                               choices =  list(Histogram = "hist",
                                                               Normal = "normal", 
                                                               'Student-t' = "t",
+                                                              'Skew normal' = "skewnormal",
                                                               Gamma = "gamma",
                                                               'Log normal' = "lognormal",
                                                               'Log Student-t' = "logt",
@@ -202,6 +203,7 @@ elicitExtension<- function(){
                                               choices =  list(Histogram = "hist",
                                                               Normal = "normal", 
                                                               'Student-t' = "t",
+                                                              'Skew normal' = "skewnormal",
                                                               Gamma = "gamma",
                                                               'Log normal' = "lognormal",
                                                               'Log Student-t' = "logt",
@@ -513,12 +515,12 @@ elicitExtension<- function(){
       
       if(validTransform){
       
-      X <- ..density.. <- NULL
+      X <- NULL
       xQuantiles <- signif(quantile(df1()$X,
                                    c(0.05, 0.5, 0.95)),
                           3)
       attr(xQuantiles, "names") <- NULL
-      ggplot(df1(), aes(x = X, y = ..density..))+
+      ggplot(df1(), aes(x = X))+
         geom_density(fill = "steelblue") +
         scale_x_continuous(breaks = xQuantiles,
                            minor_breaks = NULL) +

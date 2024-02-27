@@ -34,6 +34,8 @@
 #' \item{Student.t}{Parameters of the fitted t distributions. Note that (X -
 #' location) / scale has a standard t distribution. The degrees of freedom is
 #' not fitted; it is specified as an argument to \code{fitdist}.}
+#' \item{Skewnormal}{Parameters of the fitted skew-normal distribution. The skew-normal
+#' distribution is implemented using the sn package. See sn::dsn for details.}
 #' \item{Gamma}{Parameters of the fitted gamma distributions. Note that E(X - \code{lower}) =
 #' shape / rate.} 
 #' \item{Log.normal}{Parameters of the fitted log normal
@@ -119,6 +121,7 @@ fitdist <-
     
     n.experts <- ncol(vals)
     normal.parameters <- matrix(NA, n.experts, 2)
+    skewnormal.parameters <- matrix(NA, n.experts, 3)
     tParameters <- matrix(NA, n.experts, 3)
     mirrorgamma.parameters <- gamma.parameters <- 
       matrix(NA, n.experts, 2)
@@ -127,10 +130,10 @@ fitdist <-
     mirrorlogt.parameters <- logt.parameters <-
       matrix(NA, n.experts, 3)
     beta.parameters <- matrix(NA, n.experts, 2)
-    ssq<-matrix(NA, n.experts, 9)
+    ssq<-matrix(NA, n.experts, 10)
     notes <- NULL
     
-    colnames(ssq) <- c("normal", "t",
+    colnames(ssq) <- c("normal", "t", "skewnormal",
                        "gamma", "lognormal", "logt", 
                       "beta", 
                        "mirrorgamma",
@@ -243,6 +246,47 @@ fitdist <-
       tParameters[i, 3] <- tdf[i]
       ssq[i, "t"] <- tFit$value
       
+      # skew normal fit ----
+      # will fit 3 parameters in skew normal, so need at least 3 judgements
+      if(length(vals[inc, i]) > 2){
+        
+        # Fit in two stages. First, optimise for location and scale, over
+        # fixed grid of shape/slant parameters
+        
+        alphaVec <- c(-20, -10, -5:5, 10, 20)
+        delta <- alphaVec / sqrt(1 + alphaVec^2)
+        eVec <- rep(0, 15)
+        
+        # Get starting values by matching moments to fitted normal distribution
+        omegaStart <- normal.parameters[i,2] / sqrt(1 - 2*delta^2/pi)
+        xiStart <- normal.parameters[i,1] - omegaStart * delta*sqrt(2/pi)
+        for(j in 1:15){
+          
+          eVec[j]<- optim(c(xiStart[j], log(omegaStart[j])), 
+                          skewnormal.error, values = vals[inc, i], 
+                          probabilities = probs[inc,i], 
+                          weights = weights[inc,i],
+                          snAlpha = alphaVec[j])$value
+
+        }
+        
+        # Now find best fit, and optimise over all three parameters, starting
+        # from that best fit
+        
+        index <- which.min(eVec)
+        skewnormal.fit <- optim(c(xiStart[index], log(omegaStart[index]),
+                                    alphaVec[index]), 
+                                  skewnormal.error.joint,
+                                values = vals[inc, i], 
+                                  probabilities = probs[inc,i], 
+                                  weights = weights[inc,i])
+      
+      skewnormal.parameters[i,] <- c(skewnormal.fit$par[1],
+                                     exp(skewnormal.fit$par[2]),
+                                     skewnormal.fit$par[3])
+      ssq[i, "skewnormal"] <- skewnormal.fit$value
+      
+      }
       # Positive skew distribution fits ----
       
       
@@ -417,6 +461,10 @@ fitdist <-
     names(dfn) <-c ("mean", "sd")
     row.names(dfn) <- expertnames
     
+    dfsn <- data.frame(skewnormal.parameters)
+    names(dfsn) <-c ("location", "scale" , "slant")
+    row.names(dfsn) <- expertnames
+    
     dft <- data.frame(tParameters)
     names(dft) <-c ("location", "scale", "df")
     row.names(dft) <- expertnames
@@ -453,7 +501,7 @@ fitdist <-
     row.names(ssq) <- expertnames
     
     if(excludelogt){
-      reducedssq <- ssq[, c("normal", "t", "gamma",
+      reducedssq <- ssq[, c("normal", "t", "skewnormal", "gamma",
                               "lognormal", "beta", 
                               "mirrorgamma",
                               "mirrorlognormal")]
@@ -474,7 +522,7 @@ fitdist <-
     probs <- data.frame(probs)
     names(probs) <- expertnames
     
-    fit <- list(Normal = dfn, Student.t = dft, 
+    fit <- list(Normal = dfn, Student.t = dft, Skewnormal = dfsn, 
                 Gamma = dfg, Log.normal = dfln, 
                 Log.Student.t = dflt, Beta = dfb,
                 mirrorgamma = dfmirrorg,

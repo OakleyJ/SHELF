@@ -30,6 +30,29 @@ function(fit, d = "best", pl = -Inf, pu = Inf,
 		                         signif(fit$Normal[ex,2], sf), ")",
 		                         sep="")
 	}
+  
+  if(d == "skewnormal"){
+    
+    if(pl == -Inf){pl <- sn::qsn(0.001, fit$Skewnormal[ex,1],fit$Skewnormal[ex,2] , fit$Skewnormal[ex,3] )}
+    if(pu == Inf){pu <- sn::qsn(0.999, fit$Skewnormal[ex,1],fit$Skewnormal[ex,2] , fit$Skewnormal[ex,3])}
+    x <- seq(from = pl, to = pu, length = 200)
+    if(is.na(ql) == F){
+      x.q1 <- sn::qsn(ql, fit$Skewnormal[ex,1],fit$Skewnormal[ex,2] , fit$Skewnormal[ex,3])
+      x <- sort(c(x, x.q1))
+    }
+    if(is.na(qu) == F){
+      x.q2 <- sn::qsn(qu, fit$Skewnormal[ex,1],fit$Skewnormal[ex,2] , fit$Skewnormal[ex,3])
+      x <- sort(c(x, x.q2))
+    }
+    fx <- sn::dsn(x, fit$Skewnormal[ex,1],fit$Skewnormal[ex,2] , fit$Skewnormal[ex,3]) 
+    dist.title <- paste("Skew normal\n(location = ",
+                        signif(fit$Skewnormal[ex,1], sf),
+                        ", scale = ",
+                        signif(fit$Skewnormal[ex,2], sf),
+                        ", slant = ",
+                        signif(fit$Skewnormal[ex,3], sf),")",
+                        sep="")
+  }
 	
 	if(d == "t"){
 		

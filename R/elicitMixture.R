@@ -69,6 +69,7 @@ elicitMixture <- function(){
                                          choices =  list(Histogram = "hist",
                                                          Normal = "normal", 
                                                          'Student-t' = "t",
+                                                         'Skew normal' = "skewnormal",
                                                          Gamma = "gamma",
                                                          'Log normal' = "lognormal",
                                                          'Log Student-t' = "logt",
@@ -476,9 +477,7 @@ elicitMixture <- function(){
       shinyMatrix::matrixInput(inputId = "extensionProbs", value =  initialPy(),
                                class = "numeric",
                                cols = list(names = TRUE, editableNames = TRUE),
-                               rows = list(names = TRUE),
-                               paste = TRUE,
-                               copy = TRUE)
+                               rows = list(names = TRUE))
       
     })
     
@@ -487,9 +486,7 @@ elicitMixture <- function(){
       shinyMatrix::matrixInput(inputId = "myvals", value =  initialVals(),
                                class = "numeric",
                                cols = list(names = TRUE),
-                               rows = list(names = TRUE),
-                               paste = TRUE,
-                               copy = TRUE)
+                               rows = list(names = TRUE))
     })
     
     output$EnterChips <- renderUI({
@@ -497,9 +494,7 @@ elicitMixture <- function(){
       shinyMatrix::matrixInput(inputId = "myChips", value =  initialChips(),
                                class = "numeric",
                                cols = list(names = TRUE),
-                               rows = list(names = TRUE),
-                               paste = TRUE,
-                               copy = TRUE)
+                               rows = list(names = TRUE))
     })
     
     output$setPDFxaxisLimits <- renderUI({
@@ -524,6 +519,7 @@ elicitMixture <- function(){
                     choices =  list(Histogram = "hist",
                                     Normal = "normal", 
                                     'Student-t' = "t",
+                                    'Skew normal' = "skewnormal",
                                     Gamma = "gamma",
                                     'Log normal' = "lognormal",
                                     'Log Student-t' = "logt",
