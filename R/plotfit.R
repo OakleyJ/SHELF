@@ -8,7 +8,7 @@
 #' 
 #' @param fit An object of class \code{elicitation}.
 #' @param d The distribution fitted to each expert's probabilities. Options are
-#' \code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
+#' \code{"normal"}, \code{"t"}, \code{"skewnormal"}, \code{"gamma"}, \code{"lognormal"},
 #' \code{"logt"},\code{"beta"}, \code{"mirrorgamma"},
 #' \code{"mirrorlognormal"}, \code{"mirrorlogt"} \code{"hist"} (for a histogram fit), and
 #' \code{"best"} (for best fitting)
@@ -104,6 +104,7 @@ plotfit <- function(fit,
   errorU <- "- finite upper limit"
   errorP <- "- smallest elicited probability < 0.4\n- largest elicited probability > 0.6"
   errorO <- "- at least one elicited probability, greater than 0 and less than 1"
+  errorS <- "- at least three elicited probabilties"
   
 
   distributions <- c("histogram", "normal", "Student-t", "gamma",
@@ -138,6 +139,10 @@ plotfit <- function(fit,
                                    paste(distributions[index],
                                          collapse = ", "), sep = "\n")
   errorPlotNormal <- paste(errorDist, errorP,
+                           "Available fitted distributions are:",
+                           paste(distributions[index],
+                                 collapse = ", "), sep = "\n")
+  errorPlotSkewNormal <- paste(errorDist, errorP, errorS,
                            "Available fitted distributions are:",
                            paste(distributions[index],
                                  collapse = ", "), sep = "\n")
@@ -202,6 +207,11 @@ plotfit <- function(fit,
     return(emptyPlot + 
              annotate("text",0,0,
                            label=errorPlotNormal, hjust = 0, size = fs /2))
+  }
+  if(d=="skewnormal" & noFit ){
+    return(emptyPlot + 
+             annotate("text",0,0,
+                      label=errorPlotSkewNormal, hjust = 0, size = fs /2))
   }
   if(d=="gamma" & noFit ){
     return(emptyPlot + 
