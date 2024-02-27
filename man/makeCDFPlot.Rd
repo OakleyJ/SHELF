@@ -40,7 +40,7 @@ in the set of elicited probabilities}
 \item{fit}{object of class \code{elicitation}}
 
 \item{dist}{the fitted distribution to be plotted. Options are
-\code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
+\code{"normal"}, \code{"t"}, \code{"skewnormal"}, \code{"gamma"}, \code{"lognormal"},
 \code{"logt"},\code{"beta"}, \code{"mirrorgamma"},
 \code{"mirrorlognormal"}, \code{"mirrorlogt"} \code{"hist"} (for a histogram fit)}
 

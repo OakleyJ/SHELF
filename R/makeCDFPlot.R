@@ -13,7 +13,7 @@
 #' @param fontsize font size to be used in the plot
 #' @param fit object of class \code{elicitation}
 #' @param dist the fitted distribution to be plotted. Options are
-#' \code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
+#' \code{"normal"}, \code{"t"}, \code{"skewnormal"}, \code{"gamma"}, \code{"lognormal"},
 #' \code{"logt"},\code{"beta"}, \code{"mirrorgamma"},
 #' \code{"mirrorlognormal"}, \code{"mirrorlogt"} \code{"hist"} (for a histogram fit)
 #' @param showFittedCDF logical. Should a fitted distribution function
@@ -145,6 +145,39 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
       }
       }
     }
+    
+    if(dist == "skewnormal"){
+      if(is.na(fit$ssq[ex, "skewnormal"])){
+        dist.title <- "Skew normal distribution not fitted"
+      }else{
+        dist.title <- paste("Skew normal\n(location = ",
+                            signif(fit$Skewnormal[ex,1], sf),
+                            ", scale = ",
+                            signif(fit$Skewnormal[ex,2], sf),
+                            ", slant = ",
+                            signif(fit$Skewnormal[ex,3], sf),")",
+                            sep="")
+        
+        p1 <- p1 + stat_function(fun = sn::psn, 
+                                 args = list(xi = fit$Skewnormal[1, 1],
+                                             omega = fit$Skewnormal[1, 2],
+                                             alpha = fit$Skewnormal[1, 3])
+        )
+        if(showQuantiles){
+          xl <- sn::qsn(ql, xi = fit$Skewnormal[1, 1],
+                        omega = fit$Skewnormal[1, 2],
+                        alpha = fit$Skewnormal[1, 3])
+          xu <- sn::qsn(qu, xi = fit$Skewnormal[1, 1],
+                        omega = fit$Skewnormal[1, 2],
+                        alpha = fit$Skewnormal[1, 3])
+          p1 <- p1 + 
+            addQuantileCDF(xaxisLower, xl, ql, xaxisUpper) + 
+            addQuantileCDF(xaxisLower, xu, qu, xaxisUpper) 
+        }
+      }
+    }
+    
+    
     if(dist == "lognormal"){
       if(is.na(fit$ssq[ex, "lognormal"])){
         dist.title <- "Log normal distribution not fitted"
