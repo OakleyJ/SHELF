@@ -42,7 +42,7 @@ Dirichlet fit.}
 
 \item{fs}{The font size used in the plot.}
 
-\item{silent}{Set to \code{TRUE} to supress printing of results to the console.}
+\item{silent}{Set to \code{TRUE} to suppress printing of results to the console.}
 }
 \value{
 The parameters of the fitted Dirichlet distribution.

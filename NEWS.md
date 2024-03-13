@@ -3,6 +3,14 @@ SHELF v1.9.0.9000 (2024-02-27)
 
 * Added the skew normal distribution to the set of fitted distributions.
 
+* Bug fixed in feedback - was forcing rounding to 3 s.f. if using feedback for multiple experts.
+
+* elicitQuartiles() and elicitTertiles() are deprecated. Use elicit() instead.
+
+* condDirichlet() is deprecated. Use elicitDirchlet() instead.
+
+* elicitConcProb() is deprecated. Use elicitBivariate() instead.
+
 SHELF v1.9.0 (2023-05-31) 
 ==============================
 

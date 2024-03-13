@@ -56,5 +56,5 @@ cdfplot <- function(medianfit, precisionfit,
                     ymax = uppercdf), colour = "blue", fill = "blue", 
                 alpha=0.5) +
     geom_line(size = 2.0, colour = "red") 
-  print(cdp)
+  cdp
 }

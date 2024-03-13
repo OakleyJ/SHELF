@@ -709,7 +709,7 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
           #     height = 3, units = "in")
         grDevices::png(file)
         plotRoulette()
-        dev.off()
+        grDevices::dev.off()
       })
     
     # Download roulette allocation as csv

@@ -1,4 +1,4 @@
-#' Plot elicted quartiles, median and plausible range for each expert
+#' Plot elicited quartiles, median and plausible range for each expert
 #'
 #' Displays a horizontal bar for each expert, to represent the expert's plausible range.
 #' The coloured sections indicate the experts' quartiles: four intervals judged by the expert

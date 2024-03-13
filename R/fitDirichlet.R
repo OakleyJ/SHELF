@@ -26,7 +26,7 @@
 #' @param xlab x-axis label on the marginal distribution plot.
 #' @param ylab y-axis label on the marginal distribution plot.
 #' @param fs The font size used in the plot.
-#' @param silent Set to \code{TRUE} to supress printing of results to the console.
+#' @param silent Set to \code{TRUE} to suppress printing of results to the console.
 #
 
 #' @return The parameters of the fitted Dirichlet distribution.

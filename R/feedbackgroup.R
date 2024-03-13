@@ -1,5 +1,5 @@
 feedbackgroup <-
-function(fit, quantiles =  NA, values = NA, dist = "best", sfg = 3){
+function(fit, quantiles =  NA, values = NA, dist = "best", sfg ){
 	
 	
 	n.experts <- nrow(fit$limits)
@@ -36,7 +36,7 @@ function(fit, quantiles =  NA, values = NA, dist = "best", sfg = 3){
 		
 		distributions[1, i] <- expertDist
 		
-		temp <- feedbacksingle(fit, quantiles, values, ex = i)
+		temp <- feedbacksingle(fit, quantiles, values, ex = i, sf = sfg)
 		expert.quantiles[, i] <- temp$fitted.quantiles[, expertDist]
 		expert.probs[, i] <- temp$fitted.probabilities[, expertDist]
 	}
@@ -48,8 +48,8 @@ function(fit, quantiles =  NA, values = NA, dist = "best", sfg = 3){
 	# single expert case.
 	
 	# list(expert.quantiles = signif(expert.quantiles, sfg), expert.probs = signif(expert.probs, sfg), distributions = distributions)
-	list(fitted.quantiles = signif(expert.quantiles, sfg),
-	     fitted.probabilities = signif(expert.probs, sfg),
+	list(fitted.quantiles = expert.quantiles,
+	     fitted.probabilities = expert.probs,
 	     distributions = distributions)
 	
 }
