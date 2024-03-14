@@ -115,3 +115,48 @@ test_that("feedback for multiple experts works",{
   expect_equal(fb$fitted.probabilities[, 3], plnorm(1:2, log(mu), sigma),
                tolerance = 1e-4)
 })
+
+
+test_that("feedback for multiple experts works",{
+  skip_on_cran()
+  p1 <- c(0.33, 0.5, 0.66, 0.75)
+  a <- 5; b <- 5
+  v1 <- qgamma(p1, a, b)
+  mu <- 10 ; sigma <- 2
+  v2 <- qnorm(p1, mu, sigma)
+  v3 <- qlnorm(p1, log(mu), sigma)
+  V <- matrix(c(v1, v2, v3), 4, 3)
+  myfit <- fitdist(vals = V, probs = p1, lower = 0)
+  
+  fb <- feedback(myfit, quantiles = c(0.1, 0.9),
+                 values = c(1, 2), sf = 6)
+  
+  expect_equal(fb$fitted.quantiles[, 1], qgamma(c(0.1, 0.9), a, b),
+               tolerance = 1e-3)
+  expect_equal(fb$fitted.quantiles[, 2], qnorm(c(0.1, 0.9), mu, sigma),
+               tolerance = 1e-3)
+  expect_equal(fb$fitted.quantiles[, 3], qlnorm(c(0.1, 0.9), log(mu), sigma),
+               tolerance = 1e-3)
+  
+  expect_equal(fb$fitted.probabilities[, 1], pgamma(1:2, a, b),
+               tolerance = 1e-4)
+  expect_equal(fb$fitted.probabilities[, 2], pnorm(1:2, mu, sigma),
+               tolerance = 1e-4)
+  expect_equal(fb$fitted.probabilities[, 3], plnorm(1:2, log(mu), sigma),
+               tolerance = 1e-4)
+})
+
+
+test_that("linear pool density works",{
+  skip_on_cran()
+  p1 <- c(0.1, 0.5, 0.66, 0.9)
+  a <- 20; b <- 2
+  v1 <- qgamma(p1, a, b)
+  mu <- 9 ; sigma <- 3
+  v2 <- qnorm(p1, mu, sigma)
+  V <- matrix(c(v1, v2), 4, 2)
+  myfit <- fitdist(vals = V, probs = p1, lower = 0)
+  fx <- linearPoolDensity(myfit, xl = 0, xu = 20, lpw = c(2, 1))
+  x <- seq(from = 0, to = 20, length = 200)
+  expect_equal(fx$f, 1/3*dnorm(x, mu, sigma) + 2/3 * dgamma(x, a, b), tolerance = 1e-6)
+})

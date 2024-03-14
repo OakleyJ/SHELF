@@ -147,7 +147,7 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
   }
   p1 <- p1 + labs(x = xlab, y = ylab) + theme_grey(base_size = fs)
   
-  print(p1)       
+  p1  
   
 }
 

@@ -7,12 +7,14 @@
 #' @param interval The probability p for each interval (i.e. the fitted probability for each expert 
 #' that the displayed interval contains the uncertain quantity will be p)
 #' @param dist The distribution fitted to each expert's probabilities. Options are
-#' \code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
-#' \code{"logt"},\code{"beta"}, and
+#' \code{"normal"}, \code{"t"}, \code{"skewnormal"}, \code{"gamma"}, \code{"lognormal"},
+#' \code{"logt"},\code{"beta"}, \code{"mirrorgamma"},
+#' \code{"mirrorlognormal"}, \code{"mirrorlogt"} \code{"hist"} (for a histogram fit), and
 #' \code{"best"} (for best fitting). Can be a vector if different distributions are desired for each expert.
 #' @param fs font size used in the plot.
 #' @param xlab A string or expression giving the x-axis label.
 #' @param ylab A string or expression giving the y-axis label.
+#' @param showDist TRUE/FALSE for reporting distributions used for each expert
 #' 
 #' @examples
 #' 
@@ -24,14 +26,14 @@
 #' }
 #' @export
 compareIntervals <- function(fit, interval = 0.95, dist = "best", fs = 12, 
-                             xlab = "x", ylab = "expert"){
+                             xlab = "x", ylab = "expert", showDist = TRUE){
   
   low <- med <- up <- NULL # hack to avoid R CMD check NOTE
   
   n.experts <- nrow(fit$limits)
   fb <- feedback(fit, quantiles = c((1 - interval) / 2, 0.5, 0.5 + interval /2),
                  dist = dist)
-  df1<-t(fb$expert.quantiles)
+  df1<-t(fb$fitted.quantiles)
   colnames(df1) <- c("low", "med", "up")
   expert <-factor(LETTERS[1 : n.experts], levels = LETTERS[n.experts : 1])
   df1<-data.frame(df1, expert)
@@ -40,8 +42,12 @@ compareIntervals <- function(fit, interval = 0.95, dist = "best", fs = 12,
     geom_segment(aes(yend = expert, xend = up)) +
     geom_point(aes(x = med), colour = "red", size = 3) +
     labs(x = xlab, y = ylab)
-  print(p1)
-  print(fb$distributions)  
+  
+  if(showDist){
+    print(fb$distributions)  
+  }
+  p1
+  
 }
 
 

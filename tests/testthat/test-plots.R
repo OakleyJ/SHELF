@@ -1,4 +1,5 @@
 test_that("multiple expert plot works", {
+  skip_on_cran()
   v <- matrix(c(30, 40, 50, 20, 25, 35), 3, 2)
   p <- c(0.25, 0.5, 0.75)
   myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
@@ -7,6 +8,7 @@ test_that("multiple expert plot works", {
 })
 
 test_that("multiple expert linear pool plot works", {
+  skip_on_cran()
   v <- matrix(c(30, 40, 50, 20, 25, 35), 3, 2)
   p <- c(0.25, 0.5, 0.75)
   myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
@@ -17,6 +19,7 @@ test_that("multiple expert linear pool plot works", {
 
 
 test_that("single expert plot works", {
+  skip_on_cran()
   v <- matrix(c(30, 40, 50, 20, 25, 35), 3, 2)
   p <- c(0.25, 0.5, 0.75)
   myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
@@ -26,6 +29,7 @@ test_that("single expert plot works", {
 })
 
 test_that("single expert plot works - histogram", {
+  skip_on_cran()
   v <- matrix(c(30, 40, 50, 20, 25, 35), 3, 2)
   p <- c(0.25, 0.5, 0.75)
   myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
@@ -35,6 +39,7 @@ test_that("single expert plot works - histogram", {
 })
 
 test_that("CDF plot works", {
+  skip_on_cran()
   vQuartiles <- c(30, 35, 45)
   pQuartiles<- c(0.25, 0.5, 0.75)
   myfit <- fitdist(vals = vQuartiles, probs = pQuartiles, lower = 0)
@@ -46,6 +51,7 @@ test_that("CDF plot works", {
 })
 
 test_that("quartile plot works", {
+  skip_on_cran()
   l <- c(2, 1, 5, 1)
   u <- c(95, 90, 65, 40)
   v <- matrix(c(15, 25, 40,
@@ -59,6 +65,7 @@ test_that("quartile plot works", {
 })
 
 test_that("tertile plot works", {
+  skip_on_cran()
   l <- c(-5, 0, 5, -10)
   u <- c(15, 35, 50, 35)
   v <- matrix(c(5, 8, 10,
@@ -72,9 +79,35 @@ test_that("tertile plot works", {
 
 
 test_that("distributions CDF plot works", {
+  skip_on_cran()
   prfit <- fitprecision(interval = c(60, 70), propvals = c(0.2, 0.4), trans = "log",
                         pplot = FALSE)
   medianfit <- fitdist(vals = c(50, 60, 70), probs = c(0.05, 0.5,  0.95), lower = 0)
   p <- cdfplot(medianfit, prfit)
   vdiffr::expect_doppelganger("distributions CDF plot", p)
+})
+
+test_that("compare group RIO plot works", {
+  skip_on_cran()
+  l <- c(2, 1, 5, 1)
+  u <- c(95, 90, 65, 40)
+  v <- matrix(c(15, 25, 40,
+                10, 20, 40,
+                10, 15, 25,
+                5, 10, 20),
+              3, 4)
+  p <- c(0.25, 0.5, 0.75)
+  group <- fitdist(vals = v, probs = p, lower = l, upper = u)
+  rio <- fitdist(vals = c(12, 20, 25), probs = p, lower = 1, upper = 100)
+  p <- compareGroupRIO(groupFit = group, RIOFit = rio, dRIO = "skewnormal")
+  vdiffr::expect_doppelganger("group RIO CDF plot", p)
+})
+
+test_that("compare interval plot works", {
+  skip_on_cran()
+  v <- matrix(c(30, 40, 50, 20, 25, 35, 40, 50, 60, 35, 40, 50), 3, 4)
+  p <- c(0.25, 0.5, 0.75)
+  myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
+  p <- compareIntervals(myfit, interval = 0.5)
+  vdiffr::expect_doppelganger("compare interval plot", p)
 })
