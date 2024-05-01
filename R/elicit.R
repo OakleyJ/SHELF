@@ -440,10 +440,17 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
    
     # Fit distributions to elicited judgements ----
     myfit <- reactive({
-      req(limits(), v(), p())
+      req(limits(), v(), p(), input$tdf)
+      
+      check <- checkJudgementsValid(probs = p(), vals = v(),
+                           tdf = input$tdf,
+                           lower = limits()[1],
+                           upper= limits()[2])
+      if(check$valid == TRUE){
       fitdist(vals = v(), probs = p(), lower = limits()[1],
               upper = limits()[2], 
               tdf = input$tdf)
+      }
     })
     
     # All plots have separate functions, so can be called from 
@@ -778,3 +785,4 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
   #), launch.browser = TRUE)
   shinyApp(ui, server, options = list(launch.browser = TRUE))
 }
+

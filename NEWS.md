@@ -13,7 +13,9 @@ SHELF v1.9.0.9000 (2024-02-27)
 
 * non-exported function extractDistributions() removed.
 
-* package test coverage improved
+* package test coverage improved.
+
+* elicitation report includes roulette allocation, if used.
 
 SHELF v1.9.0 (2023-05-31) 
 ==============================

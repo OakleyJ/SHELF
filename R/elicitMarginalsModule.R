@@ -39,7 +39,8 @@ elicitMarginals <- function(input, output, session, fs){
   })
   
   p <- reactive({
-    eval(parse(text = paste("c(", input$probs, ")")))
+    tryCatch(eval(parse(text = paste("c(", input$probs, ")"))),
+             error = function(e){NULL})
   })
   
   output$enterThetaLabels <- renderUI({
@@ -77,6 +78,7 @@ elicitMarginals <- function(input, output, session, fs){
   })
   
   allFits <- reactive({
+    req(p(), input$nTheta > 0)
     marginalFits <- vector("list", length = input$nTheta)
     for(i in seq_along(marginalFits)){
       marginalFits[[i]] <- fitdist(vals = input$myvals[, i],

@@ -190,50 +190,78 @@ elicitBivariate<- function(){
     X1 <- X2 <- xpos <- ypos <- hjustvar <- vjustvar <- annotateText <- NULL
     
     limits1 <- reactive({
-      eval(parse(text = paste("c(", input$limits1, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$limits1, ")"))),
+               error = function(e){NULL})
     })
     
     limits2 <- reactive({
-      eval(parse(text = paste("c(", input$limits2, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$limits2, ")"))),
+               error = function(e){NULL})
     })
     
     p1 <- reactive({
-      eval(parse(text = paste("c(", input$probs1, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$probs1, ")"))),
+               error = function(e){NULL})
     })
     
     p2 <- reactive({
-      eval(parse(text = paste("c(", input$probs2, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$probs2, ")"))),
+               error = function(e){NULL})
     })
     
     v1 <- reactive({
-      eval(parse(text = paste("c(", input$values1, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$values1, ")"))),
+               error = function(e){NULL})
     })
     
     v2 <- reactive({
-      eval(parse(text = paste("c(", input$values2, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$values2, ")"))),
+               error = function(e){NULL})
     })
     
     m1 <- reactive({
+      req(p1(), v1())
       approx(p1(), v1(), 0.5)$y
     })
     
     m2 <- reactive({
+      req(p2(), v2())
       approx(p2(), v2(), 0.5)$y
     })
   
     myfit1 <- reactive({
+      
+      req(limits1(), v1(), p1(), input$tdf1)
+      
+      check <- checkJudgementsValid(probs = p1(), vals = v1(),
+                                    tdf = input$tdf1,
+                                    lower = limits1()[1],
+                                    upper= limits1()[2])
+      if(check$valid == TRUE){
+      
         fitdist(vals = v1(), probs = p1(), lower = limits1()[1],
               upper = limits1()[2], 
               tdf = input$tdf1)
+      }
     })
     
     myfit2 <- reactive({
+      req(limits2(), v2(), p2(), input$tdf2)
+      
+      check <- checkJudgementsValid(probs = p2(), vals = v2(),
+                                    tdf = input$tdf2,
+                                    lower = limits2()[1],
+                                    upper= limits2()[2])
+      if(check$valid == TRUE){
       fitdist(vals = v2(), probs = p2(), lower = limits2()[1],
               upper = limits2()[2], 
               tdf = input$tdf2)
+      }
     })
     
     output$distPlot1 <- renderPlot({
+      
+      req(myfit1(), limits1())
       
   
       #d = dist[as.numeric(input$radio1)]
@@ -249,7 +277,7 @@ elicitBivariate<- function(){
     
     output$distPlot2 <- renderPlot({
       
-     
+      req(myfit2(), limits2())
         
       #  dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
         suppressWarnings(plotfit(myfit2(), d = input$dist2,
@@ -261,6 +289,7 @@ elicitBivariate<- function(){
     })
     
     df1 <- reactive({
+      req(myfit1(), myfit2(), input$concProb > 0, input$concProb < 1)
       conc.probs <- matrix(0, 2, 2)
       conc.probs[1, 2] <- input$concProb
       data.frame(copulaSample(myfit1(), myfit2(), cp = conc.probs, 
@@ -269,6 +298,8 @@ elicitBivariate<- function(){
     })
     
     output$bivariatePlot <- renderPlot({
+      req(df1(), m1(), m2(), input$concProb > 0, input$concProb < 1 )
+      
       
       theme_set(theme_grey(base_size = input$fs))
       

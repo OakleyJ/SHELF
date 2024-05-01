@@ -100,6 +100,7 @@ elicitDirichlet <- function(){
              includeHTML(system.file("shinyAppFiles", "DirichletHelp.html",
                                      package="SHELF")))
     
+    
   )
   
 ),
@@ -124,6 +125,7 @@ server = function(input, output) {
   
   
   output$DirichletPlot <- renderPlot({
+    req(theta$allFits())
     fitDirichlet(theta$allFits(), categories = theta$categoryLabels(),
                  n.fitted = input$nFitted, silent = TRUE,
                  fs = input$fs)
