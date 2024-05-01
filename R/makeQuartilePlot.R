@@ -1,4 +1,6 @@
 # Display four equally likely intervals as coloured bars
+# This is used in the elicit() app to plot a single set of judgements
+# Different to plotQuartiles() for comparing quartiles from multiple experts
 
 makeQuartilePlot <- function(lower, Q1, m, Q3, upper, fontsize=12, xlab = "x"){
   ggplot()+

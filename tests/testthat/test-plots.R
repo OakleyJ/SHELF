@@ -28,6 +28,17 @@ test_that("single expert plot works", {
   vdiffr::expect_doppelganger("single expert plot", p)
 })
 
+test_that("exponential plot handling works", {
+  skip_on_cran()
+  v <- 1
+  p <- 0.5
+  myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
+  p <- plotfit(myfit, d = "skewnormal", returnPlot = TRUE, showPlot = FALSE)
+  vdiffr::expect_doppelganger("error message plot", p)
+  p <- plotfit(myfit, d = "gamma", returnPlot = TRUE, showPlot = FALSE)
+  vdiffr::expect_doppelganger("exponential distribution plot", p)
+})
+
 test_that("single expert plot works - histogram", {
   skip_on_cran()
   v <- matrix(c(30, 40, 50, 20, 25, 35), 3, 2)
@@ -108,6 +119,6 @@ test_that("compare interval plot works", {
   v <- matrix(c(30, 40, 50, 20, 25, 35, 40, 50, 60, 35, 40, 50), 3, 4)
   p <- c(0.25, 0.5, 0.75)
   myfit <- fitdist(vals = v, probs = p, lower = 0, upper = 100)
-  p <- compareIntervals(myfit, interval = 0.5)
+  p <- compareIntervals(myfit, interval = 0.5, showDist = FALSE)
   vdiffr::expect_doppelganger("compare interval plot", p)
 })

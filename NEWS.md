@@ -11,6 +11,10 @@ SHELF v1.9.0.9000 (2024-02-27)
 
 * elicitConcProb() is deprecated. Use elicitBivariate() instead.
 
+* non-exported function extractDistributions() removed.
+
+* package test coverage improved
+
 SHELF v1.9.0 (2023-05-31) 
 ==============================
 

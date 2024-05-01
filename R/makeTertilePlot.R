@@ -1,5 +1,7 @@
 # Display three equally likely intervals as coloured bars, and 
 # add the median as a dashed line
+# This is used in the elicit() app to plot a single set of judgements
+# Different to plotTertiles() for comparing tertiles from multiple experts
 
 makeTertilePlot <- function(lower, t1, m, t2, upper, fontsize=12, xlab = "x"){
   ggplot()+

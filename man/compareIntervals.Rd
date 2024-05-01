@@ -10,7 +10,8 @@ compareIntervals(
   dist = "best",
   fs = 12,
   xlab = "x",
-  ylab = "expert"
+  ylab = "expert",
+  showDist = TRUE
 )
 }
 \arguments{
@@ -20,8 +21,9 @@ compareIntervals(
 that the displayed interval contains the uncertain quantity will be p)}
 
 \item{dist}{The distribution fitted to each expert's probabilities. Options are
-\code{"normal"}, \code{"t"}, \code{"gamma"}, \code{"lognormal"},
-\code{"logt"},\code{"beta"}, and
+\code{"normal"}, \code{"t"}, \code{"skewnormal"}, \code{"gamma"}, \code{"lognormal"},
+\code{"logt"},\code{"beta"}, \code{"mirrorgamma"},
+\code{"mirrorlognormal"}, \code{"mirrorlogt"} \code{"hist"} (for a histogram fit), and
 \code{"best"} (for best fitting). Can be a vector if different distributions are desired for each expert.}
 
 \item{fs}{font size used in the plot.}
@@ -29,6 +31,8 @@ that the displayed interval contains the uncertain quantity will be p)}
 \item{xlab}{A string or expression giving the x-axis label.}
 
 \item{ylab}{A string or expression giving the y-axis label.}
+
+\item{showDist}{TRUE/FALSE for reporting distributions used for each expert}
 }
 \description{
 Following elicitation of distributions from individual experts, plot fitted probability 

@@ -107,7 +107,8 @@ plotfit <- function(fit,
   errorS <- "- at least three elicited probabilties"
   
 
-  distributions <- c("histogram", "normal", "Student-t", "gamma",
+  distributions <- c("histogram", "normal", "Student-t", "skew normal",
+                     "gamma",
                      "log normal", "log Student-t", "beta",
                      "mirror gamma", "mirror log normal",
                      "mirror log Student-t")

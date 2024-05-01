@@ -47,11 +47,11 @@ elicit<- function(lower = 0, upper = 100, gridheight = 10,
   }
   
   
-  runApp(list(
+  #runApp(list(
   
   # User interface ----  
     
-  ui = shinyUI(fluidPage(
+  ui <- shinyUI(fluidPage(
     
     # Application title
     titlePanel("SHELF: single distribution"),
@@ -266,11 +266,11 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
               )
       )
     )
-  )),
+  ))
   
   # Server ----
    
-  server = function(input, output) {
+  server <- function(input, output) {
     
     # Parameter limits ----
     limits <- reactive({
@@ -775,5 +775,6 @@ into four equally likely regions, as specified by the quartiles. The quartiles d
     }) 
     
   }
-  ), launch.browser = TRUE)
+  #), launch.browser = TRUE)
+  shinyApp(ui, server, options = list(launch.browser = TRUE))
 }
