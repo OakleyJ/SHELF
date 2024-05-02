@@ -125,10 +125,18 @@ server = function(input, output) {
   
   
   output$DirichletPlot <- renderPlot({
-    req(theta$allFits())
+    if(all(theta$allValid() == TRUE)){
     fitDirichlet(theta$allFits(), categories = theta$categoryLabels(),
                  n.fitted = input$nFitted, silent = TRUE,
-                 fs = input$fs)
+                 fs = input$fs)}else{
+                   par(ps = 21)
+                   plot(1, 1, type = "n", xaxt = "n", yaxt = "n",
+                                          xlab = "", ylab = "", xlim = c(0, 1), ylim = c(0, 1)) 
+                   text(0, .8, "Dirichlet not fitted. On the Elicit marginals tab,
+check the smallest cumulative probability is < 0.4
+and the largest cumulative probability is > 0.6.",
+                        adj = c(0,1))
+                 }
   })
   
   output$categoryToFix <- renderUI({
@@ -139,6 +147,9 @@ server = function(input, output) {
   
   output$conditionalPlot <- renderPlot({
     req(input$categoryFixed)
+    
+    if(all(theta$allValid() == TRUE)){
+    
     d<- fittedDirichlet()
     selected <- which(input$categoryFixed == names(d))
     
@@ -199,12 +210,21 @@ server = function(input, output) {
                  aes(xintercept=input$obsValue),  colour="#00BFC4") +
       theme_grey(base_size = input$fs)
 
-    print(p1)
+    print(p1)}else{
+      par(ps = 21)
+      plot(1, 1, type = "n", xaxt = "n", yaxt = "n",
+           xlab = "", ylab = "", xlim = c(0, 1), ylim = c(0, 1)) 
+      text(0, .8, "Dirichlet not fitted. On the Elicit marginals tab,
+check the smallest cumulative probability is < 0.4
+and the largest cumulative probability is > 0.6.",
+           adj = c(0,1))
+      
+    }
     
   })
   
   output$feedback <- renderTable({
-    
+    req(all(theta$allValid() == TRUE))
     feedbackDirichlet(fittedDirichlet(),
                       quantiles = 
                         eval(parse(text = paste("c(", input$fq, ")")))
@@ -229,6 +249,8 @@ server = function(input, output) {
                             package="SHELF"),
                 tempReport, overwrite = TRUE)
       
+      # Check dirichlet has been fitted before continuing
+      req(all(theta$allValid() == TRUE))
       # Set up parameters to pass to Rmd document
       params <- list(allFits = theta$allFits(),
                      categories = theta$categoryLabels(),

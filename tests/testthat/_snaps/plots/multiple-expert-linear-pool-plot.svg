@@ -75,11 +75,17 @@
 <text transform='translate(17.07,276.10) rotate(-90)' style='font-size: 15.00px; font-family: sans;' textLength='4.99px' lengthAdjust='spacingAndGlyphs'>)</text>
 <rect x='634.52' y='243.32' width='79.51' height='80.52' style='stroke-width: 1.16; stroke: none; fill: #FFFFFF;' />
 <text x='640.49' y='258.80' style='font-size: 12.00px; font-family: sans;' textLength='33.36px' lengthAdjust='spacingAndGlyphs'>expert</text>
-<rect x='640.49' y='266.02' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #EBEBEB;' />
+<rect x='640.49' y='266.02' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #F2F2F2;' />
 <line x1='642.22' y1='274.66' x2='656.04' y2='274.66' style='stroke-width: 1.07; stroke: #F8766D; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<rect x='640.49' y='283.30' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #EBEBEB;' />
+<line x1='642.22' y1='274.66' x2='656.04' y2='274.66' style='stroke-width: 1.07; stroke: #F8766D; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<line x1='642.22' y1='274.66' x2='656.04' y2='274.66' style='stroke-width: 1.07; stroke: #F8766D; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<rect x='640.49' y='283.30' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #F2F2F2;' />
 <line x1='642.22' y1='291.94' x2='656.04' y2='291.94' style='stroke-width: 1.07; stroke: #00BA38; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
-<rect x='640.49' y='300.58' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #EBEBEB;' />
+<line x1='642.22' y1='291.94' x2='656.04' y2='291.94' style='stroke-width: 1.07; stroke: #00BA38; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<line x1='642.22' y1='291.94' x2='656.04' y2='291.94' style='stroke-width: 1.07; stroke: #00BA38; stroke-dasharray: 5.69,5.69; stroke-linecap: butt;' />
+<rect x='640.49' y='300.58' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #F2F2F2;' />
+<line x1='642.22' y1='309.22' x2='656.04' y2='309.22' style='stroke-width: 3.20; stroke: #619CFF; stroke-linecap: butt;' />
+<line x1='642.22' y1='309.22' x2='656.04' y2='309.22' style='stroke-width: 3.20; stroke: #619CFF; stroke-linecap: butt;' />
 <line x1='642.22' y1='309.22' x2='656.04' y2='309.22' style='stroke-width: 3.20; stroke: #619CFF; stroke-linecap: butt;' />
 <text x='663.75' y='277.97' style='font-size: 9.60px; font-family: sans;' textLength='35.76px' lengthAdjust='spacingAndGlyphs'>expert.A</text>
 <text x='663.75' y='295.25' style='font-size: 9.60px; font-family: sans;' textLength='35.76px' lengthAdjust='spacingAndGlyphs'>expert.B</text>

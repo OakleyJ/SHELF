@@ -77,10 +77,21 @@ elicitMarginals <- function(input, output, session, fs){
                              rows = list(names = TRUE))
   })
   
+  allValid <- reactive({
+    req(allFits())
+    validVector <- rep(NA, length = input$nTheta )
+    for(i in seq_along(allFits())){
+      validVector[i] <- !is.na(allFits()[[i]]$ssq[1, "beta"])
+      
+    }
+    validVector
+  })
+  
   allFits <- reactive({
     req(p(), input$nTheta > 0)
     marginalFits <- vector("list", length = input$nTheta)
     for(i in seq_along(marginalFits)){
+      
       marginalFits[[i]] <- fitdist(vals = input$myvals[, i],
                                    probs = p(),
                                    lower = 0, 
@@ -108,5 +119,6 @@ elicitMarginals <- function(input, output, session, fs){
   list(allFits = reactive({allFits()}),
        categoryLabels = reactive({thetaNames()}),
        thetaMatrix = reactive({input$myvals}),
-       quantiles = reactive({p()}))
+       quantiles = reactive({p()}),
+       allValid = reactive({allValid()}))
 }
