@@ -118,7 +118,7 @@ elicitHeterogen <- function(lower = 1, upper = 10,
         colnames(vals$myfit$allocation) <- c("lower endpoint", "upper endpoint", "no. probs")
 
 
-    vals$myfit$sumsq <- vals$myfit$ssq[c("Gamma", "Log normal")]
+    vals$myfit$sumsq <- vals$myfit$ssq[c("gamma", "lognormal")]
         vals$myfit$best.fitting <- ifelse(vals$myfit$sumsq[1]< vals$myfit$sumsq[2],
                                           "Gamma", "Log normal")
         colnames(vals$myfit$best.fitting) <- NULL
@@ -159,10 +159,22 @@ elicitHeterogen <- function(lower = 1, upper = 10,
         }
       }
 
-      # Fit distribution, if allocation is sufficent
-      vals$myfit <- try(fitdist(vals$v, vals$p, lower, upper), silent = TRUE)
-      if (inherits(vals$myfit, "try-error")){
-        vals$myfit <- NULL}
+      # Fit distribution, if allocation is sufficient
+      
+      vcheck <- checkJudgementsValid(probs = vals$p,
+                           vals = vals$v, tdf = 1, 
+                           lower = lower,
+                           upper = upper, silent = TRUE,
+                           excludeExponential = TRUE)
+      if(vcheck$valid == TRUE){
+        vals$myfit <- fitdist(vals$v, vals$p, lower, upper)
+      }else{
+        vals$myfit <- NULL
+      }
+     
+      #vals$myfit <- try(fitdist(vals$v, vals$p, lower, upper), silent = TRUE)
+      #if (inherits(vals$myfit, "try-error")){
+      #  vals$myfit <- NULL}
 
       if(!is.null(vals$myfit)){
         allDfs <- getKDEandPheteroDf(vals$myfit, multiplier, l1, l2, l3, lower)
@@ -198,7 +210,7 @@ elicitHeterogen <- function(lower = 1, upper = 10,
         vals$p <- newp[i1:i2]
       }
 
-      # Fit distribution, if allocation is sufficent
+      # Fit distribution, if allocation is sufficient
       vals$myfit <- try(fitdist(vals$v, vals$p, lower, upper), silent = TRUE)
       if (inherits(vals$myfit, "try-error")){
         vals$myfit <- NULL}
@@ -260,6 +272,7 @@ elicitHeterogen <- function(lower = 1, upper = 10,
     })
     
     output$plot2 <- renderPlot({
+      req(vals$myfit)
 
       if(input$fit & !is.null(vals$myfit)){
         dist<-c("gamma", "lognormal", "gamma")

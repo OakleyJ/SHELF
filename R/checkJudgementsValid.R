@@ -1,6 +1,12 @@
-checkJudgementsValid <- function(probs, vals, tdf, lower, upper, silent = TRUE){
+checkJudgementsValid <- function(probs, vals, tdf, lower, upper, silent = TRUE,
+                                 excludeExponential = FALSE){
   valid <- TRUE
   error <- NULL
+  
+  if(any(is.na(probs)) | any(is.na(vals)) ){
+    valid <- FALSE
+    error <- "missing values in probs/vals"
+  }else{
   
     if (length(probs) < 1){
       valid <- FALSE
@@ -33,7 +39,20 @@ checkJudgementsValid <- function(probs, vals, tdf, lower, upper, silent = TRUE){
     valid <- FALSE
     error <- "number of vals must equal number of probs"
   }
-  
+  if (setequal(unique(probs), c(0, 1))){
+    valid <- FALSE
+    error <- "Cannot fit with only elicited probabilities of 0 or 1"
+  }
+  if (excludeExponential == TRUE){
+    # only use this check if want to exclude option to fit exponential only
+    if(min(probs[probs>0]) > 0.4 | max(probs[probs <1]) < 0.6){
+      valid <- FALSE
+      error <- "smallest elicited probability must be < 0.4; largest must be > 0.6\n
+      (Exclude probabilities equalling 0 or 1)."
+    }
+    
+  }
+  }
  list(valid = valid, error = error)   
   
 }
