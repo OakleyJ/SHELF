@@ -316,63 +316,92 @@ elicitExtension<- function(){
     X1 <- X2 <- xpos <- ypos <- hjustvar <- vjustvar <- annotateText <- NULL
     
     limits1 <- reactive({
-      eval(parse(text = paste("c(", input$limits1, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$limits1, ")"))),
+               error = function(e){NULL})
     })
     
     limits2 <- reactive({
-      eval(parse(text = paste("c(", input$limits2, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$limits2, ")"))),
+               error = function(e){NULL})
     })
     
     yCP <- reactive({
-      eval(parse(text = paste("c(", input$yCP, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$yCP, ")"))),
+               error = function(e){NULL})
     })
     
     p1 <- reactive({
-      eval(parse(text = paste("c(", input$probs1, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$probs1, ")"))),
+               error = function(e){NULL})
     })
     
     p2 <- reactive({
-      eval(parse(text = paste("c(", input$probs2, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$probs2, ")"))),
+               error = function(e){NULL})
     })
     
     xMed <- reactive({
-      eval(parse(text = paste("c(", input$xMed, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$xMed, ")"))),
+               error = function(e){NULL})
     })
     
     v1 <- reactive({
-      eval(parse(text = paste("c(", input$values1, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$values1, ")"))),
+               error = function(e){NULL})
     })
     
     v2 <- reactive({
-      eval(parse(text = paste("c(", input$values2, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$values2, ")"))),
+               error = function(e){NULL})
     })
     
     yHyp <- reactive({
-      eval(parse(text = paste("c(", input$valuesY, ")")))
+      tryCatch(eval(parse(text = paste("c(", input$valuesY, ")"))),
+               error = function(e){NULL})
     })
     
     
     
     m1 <- reactive({
+      req(p1(), v1())
       approx(p1(), v1(), 0.5)$y
     })
     
     m2 <- reactive({
+      req(p2(), v2())
       approx(p2(), v2(), 0.5)$y
     })
     
     
   
     myfit1 <- reactive({
+      req(limits1(), v1(), p1(), input$tdf1)
+      
+      check <- checkJudgementsValid(probs = p1(), vals = v1(),
+                                    tdf = input$tdf1,
+                                    lower = limits1()[1],
+                                    upper= limits1()[2])
+      if(check$valid == TRUE){
+      
         fitdist(vals = v1(), probs = p1(), lower = limits1()[1],
               upper = limits1()[2], 
               tdf = input$tdf1)
+      }
     })
     
     myfit2 <- reactive({
+      
+      req(limits2(), v2(), p2(), input$tdf2)
+      
+      check <- checkJudgementsValid(probs = p2(), vals = v2(),
+                                    tdf = input$tdf2,
+                                    lower = limits2()[1],
+                                    upper= limits2()[2])
+      if(check$valid == TRUE){
       fitdist(vals = v2(), probs = p2(), lower = limits2()[1],
               upper = limits2()[2], 
               tdf = input$tdf2)
+      }
     })
     
     
@@ -388,7 +417,7 @@ elicitExtension<- function(){
     })
     
     output$distPlot1 <- renderPlot({
-      
+      req(myfit1(), limits1())
   
       #d = dist[as.numeric(input$radio1)]
      # dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
@@ -402,7 +431,7 @@ elicitExtension<- function(){
     
     output$distPlot2 <- renderPlot({
       
-      
+      req(myfit2(), limits2())
       #d = dist[as.numeric(input$radio1)]
       # dist<-c("hist","normal", "t", "gamma", "lognormal", "logt","beta", "best")
       suppressWarnings(plotfit(myfit2(), d = input$dist2,
@@ -415,7 +444,7 @@ elicitExtension<- function(){
     
     
     output$medianFunction <- renderPlot({
-      
+      req(xMed(), yCP())
       validTransform <- TRUE
      
       if(min(xMed()) <= 0 & input$link == "log"){
@@ -454,7 +483,7 @@ elicitExtension<- function(){
     })
     
     output$conditionalPlot <- renderPlot({
-      
+      req(xMed(), yCP(), yHyp(), myfit2())
       validTransform <- TRUE
       
       if(min(xMed()) <= 0 & input$link == "log"){
@@ -478,7 +507,7 @@ elicitExtension<- function(){
       if(validTransform){
       
       
-      plotConditionalDensities(y = yHyp(),
+      CDplot <- plotConditionalDensities(y = yHyp(),
                                fitX = myfit2(),
                                yCP = yCP(),
                                xMed = xMed(),
@@ -486,6 +515,7 @@ elicitExtension<- function(){
                                medianY = input$medianY,
                                dist = input$dist2,
                                fs = input$fs)
+      suppressMessages(print(CDplot))
       }
       
       
@@ -493,6 +523,7 @@ elicitExtension<- function(){
     
     output$marginalPlot <- renderPlot({
       
+      req(df1())
       validTransform <- TRUE
       
       if(min(xMed()) <= 0 & input$link == "log"){
@@ -531,6 +562,7 @@ elicitExtension<- function(){
     })
     
     ry <- reactive({
+      req(myfit1())
       if(input$yDistEntry == "elicit"){
         if(input$dist1 == "best"){
           ydist <- myfit1()$best.fitting[1, 1]
@@ -546,6 +578,7 @@ elicitExtension<- function(){
     })
     
     df1 <- reactive({
+      req(myfit2(), ry(), yHyp(), xMed())
       #ry <- sampleFit(myfit1(), n = input$n)[, input$dist1]
       xSample <- sampleMarginalFit(myfit2(), 
                                    sampleY = ry(),
@@ -598,6 +631,8 @@ elicitExtension<- function(){
         
         
         # Set up parameters to pass to Rmd document
+        req(myfit1(), myfit2(), m1(), m2(), limits1(),
+            yCP(), xMed(), df1(), ry())
         params <- list(fit1 = myfit1(), fit2 = myfit2(), cp = input$concProb,
                        d = c(input$dist1, input$dist2), m1 = m1(), m2 = m2(),
                        link = input$link, yLimits = limits1(),
