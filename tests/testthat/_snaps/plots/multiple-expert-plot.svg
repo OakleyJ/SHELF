@@ -18,7 +18,7 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
-<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 1.16; stroke: #FFFFFF; fill: #FFFFFF;' />
+<rect x='0.00000000000013' y='0.00' width='720.00' height='576.00' style='stroke-width: 1.16; stroke: #FFFFFF; fill: #FFFFFF;' />
 </g>
 <defs>
   <clipPath id='cpNDkuMTh8NjMxLjEwfDI0Ljg1fDU0Mi4zMA=='>
@@ -77,9 +77,9 @@
 <text transform='translate(17.07,276.10) rotate(-90)' style='font-size: 15.00px; font-family: sans;' textLength='4.99px' lengthAdjust='spacingAndGlyphs'>)</text>
 <rect x='643.05' y='251.96' width='70.97' height='63.24' style='stroke-width: 1.16; stroke: none; fill: #FFFFFF;' />
 <text x='649.03' y='267.44' style='font-size: 12.00px; font-family: sans;' textLength='33.36px' lengthAdjust='spacingAndGlyphs'>expert</text>
-<rect x='649.03' y='274.66' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #F2F2F2;' />
+<rect x='649.03' y='274.66' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #EBEBEB;' />
 <line x1='650.76' y1='283.30' x2='664.58' y2='283.30' style='stroke-width: 2.13; stroke: #F8766D; stroke-linecap: butt;' />
-<rect x='649.03' y='291.94' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #F2F2F2;' />
+<rect x='649.03' y='291.94' width='17.28' height='17.28' style='stroke-width: 1.16; stroke: none; fill: #EBEBEB;' />
 <line x1='650.76' y1='300.58' x2='664.58' y2='300.58' style='stroke-width: 2.13; stroke: #00BFC4; stroke-linecap: butt;' />
 <text x='672.29' y='286.61' style='font-size: 9.60px; font-family: sans;' textLength='35.76px' lengthAdjust='spacingAndGlyphs'>expert.A</text>
 <text x='672.29' y='303.89' style='font-size: 9.60px; font-family: sans;' textLength='35.76px' lengthAdjust='spacingAndGlyphs'>expert.B</text>

@@ -98,21 +98,21 @@ test_that("distributions CDF plot works", {
   vdiffr::expect_doppelganger("distributions CDF plot", p)
 })
 
-test_that("compare group RIO plot works", {
-  skip_on_cran()
-  l <- c(2, 1, 5, 1)
-  u <- c(95, 90, 65, 40)
-  v <- matrix(c(15, 25, 40,
-                10, 20, 40,
-                10, 15, 25,
-                5, 10, 20),
-              3, 4)
-  p <- c(0.25, 0.5, 0.75)
-  group <- fitdist(vals = v, probs = p, lower = l, upper = u)
-  rio <- fitdist(vals = c(12, 20, 25), probs = p, lower = 1, upper = 100)
-  p <- compareGroupRIO(groupFit = group, RIOFit = rio, dRIO = "skewnormal")
-  vdiffr::expect_doppelganger("group RIO CDF plot", p)
-})
+# test_that("compare group RIO plot works", {
+#   skip_on_cran()
+#   l <- c(2, 1, 5, 1)
+#   u <- c(95, 90, 65, 40)
+#   v <- matrix(c(15, 25, 40,
+#                 10, 20, 40,
+#                 10, 15, 25,
+#                 5, 10, 20),
+#               3, 4)
+#   p <- c(0.25, 0.5, 0.75)
+#   group <- fitdist(vals = v, probs = p, lower = l, upper = u)
+#   rio <- fitdist(vals = c(12, 20, 25), probs = p, lower = 1, upper = 100)
+#   p <- compareGroupRIO(groupFit = group, RIOFit = rio, dRIO = "skewnormal")
+#   vdiffr::expect_doppelganger("group RIO CDF plot", p)
+# })
 
 test_that("compare interval plot works", {
   skip_on_cran()

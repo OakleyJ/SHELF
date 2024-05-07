@@ -540,9 +540,9 @@ elicitMixture <- function(){
     
     
     observeEvent(input$extensionProbs,{
-      pY <- input$extensionProbs[1, ]
-
-      if(min(pY)<0 | max(pY)>1 | sum(pY)!=1){
+      pY <- input$extensionProbs[1, ] 
+      # rounding errors in sum(pY) - 1
+      if(min(pY)<0 | max(pY)>1 | abs(sum(pY) - 1)>(10^-8)){
         showNotification("Make sure probabilities are between 0 and 1, and sum
                          to 1.",
                          type = "error",
