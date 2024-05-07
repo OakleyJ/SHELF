@@ -6,7 +6,8 @@
 #' Click on the "Help" tab for instructions. Click the "Quit" button to exit the app and return
 #' the results from the \code{fitdist} command. Click "Download report" to generate a report
 #' of all the fitted distributions.
-#'   
+#' 
+#' @aliases elicitDirichlet condDirichlet  
 #' @return The parameters of the fitted Dirichlet distribution, which are 
 #' returned once the Quit button has been clicked. 
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
@@ -14,7 +15,7 @@
 #' 
 #' \dontrun{
 #' 
-#' elicit()
+#' elicitDirichlet()
 #' 
 #' }
 #' @import shiny

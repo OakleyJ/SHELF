@@ -11,8 +11,7 @@ plotQuartiles(
   fs = 12,
   expertnames = NULL,
   xl = NULL,
-  xlabel = "X",
-  n.breaks = NULL
+  xlabel = "X"
 )
 }
 \arguments{

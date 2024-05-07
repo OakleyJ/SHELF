@@ -3,6 +3,8 @@
 \name{elicit}
 \alias{elicit}
 \alias{roulette}
+\alias{elicitQuartiles}
+\alias{elicitTertiles}
 \title{Elicit judgements and fit distributions interactively}
 \usage{
 elicit(lower = 0, upper = 100, gridheight = 10, nbins = 10, method = "general")

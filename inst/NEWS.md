@@ -1,3 +1,24 @@
+SHELF v1.10.0 (2024-05-07) 
+==============================
+
+* Added the skew normal distribution to the set of fitted distributions.
+
+* Bug fixed in feedback - was forcing rounding to 3 s.f. if using feedback for multiple experts.
+
+* elicitQuartiles() and elicitTertiles() are deprecated. Use elicit() instead.
+
+* condDirichlet() is deprecated. Use elicitDirchlet() instead.
+
+* elicitConcProb() is deprecated. Use elicitBivariate() instead.
+
+* non-exported function extractDistributions() removed.
+
+* package test coverage improved.
+
+* elicitation report includes roulette allocation, if used.
+
+* improved error handling in shiny apps.
+
 SHELF v1.9.0 (2023-05-31) 
 ==============================
 

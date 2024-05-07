@@ -2,6 +2,7 @@
 % Please edit documentation in R/elicitBivariate.R
 \name{elicitBivariate}
 \alias{elicitBivariate}
+\alias{elicitConcProb}
 \title{Elicit a bivariate distribution using a Gaussian copula}
 \usage{
 elicitBivariate()
@@ -28,7 +29,7 @@ generate a csv file with a sample from the joint distribution.
 
 \dontrun{
 
-elicit()
+elicitBivariate()
 
 }
 }

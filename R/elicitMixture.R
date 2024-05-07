@@ -353,6 +353,8 @@ elicitMixture <- function(){
       Py[1, 1] <- 1 - sum(Py[1, -1 ])
       rownames(Py) <- "probability"
       colnames(Py) <- paste0("Y=", 1:input$nY)
+      
+      
       Py
     })
     
@@ -539,13 +541,14 @@ elicitMixture <- function(){
     
     observeEvent(input$extensionProbs,{
       pY <- input$extensionProbs[1, ]
-      if(min(pY<0) | max(pY>1) | sum(pY)!=1){
+
+      if(min(pY)<0 | max(pY)>1 | sum(pY)!=1){
         showNotification("Make sure probabilities are between 0 and 1, and sum
                          to 1.",
                          type = "error",
                          duration  = 10)
         validPy$valid <- NULL
-        
+       
       }else{
         validPy$valid <- TRUE
       }

@@ -13,7 +13,7 @@
 #' for most of the methods are included. 
 #' 
 #' \tabular{ll}{ Package: \tab SHELF\cr Type: \tab Package\cr Version: \tab
-#' 1.9.0.9000\cr Date: \tab 2023-05-31\cr License: \tab GPL-2 | GPL-3\cr }
+#' 1.10.0\cr Date: \tab 2024-05-07\cr License: \tab GPL-2 | GPL-3\cr }
 #' 
 #' @name SHELF-package
 #' @aliases SHELF-package SHELF

@@ -11,7 +11,8 @@
 #' the results from the \code{fitdist} command. Click "Download report" to generate a report
 #' of all the fitted distributions for each uncertain quantity, and "Download sample" to
 #' generate a csv file with a sample from the joint distribution.
-#'   
+#'
+#' @aliases elicitBivariate elicitConcProb   
 #' @return A list, with two objects of class \code{elicitation}, and the 
 #' elicited concordance probability. See \code{\link{fitdist}} for details.
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
@@ -19,7 +20,7 @@
 #' 
 #' \dontrun{
 #' 
-#' elicit()
+#' elicitBivariate()
 #' 
 #' }
 #' @import shiny

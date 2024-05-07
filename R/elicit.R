@@ -22,7 +22,7 @@
 #' Any other string will display the general method by default.
 
 #' 
-#' @aliases elicit roulette 
+#' @aliases elicit roulette elicitQuartiles elicitTertiles
 #' @return An object of class \code{elicitation}, which is returned once the 
 #' Quit button has been clicked. See \code{\link{fitdist}} for details.
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>

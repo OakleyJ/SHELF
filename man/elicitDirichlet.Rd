@@ -2,6 +2,7 @@
 % Please edit documentation in R/elicitDirichlet.R
 \name{elicitDirichlet}
 \alias{elicitDirichlet}
+\alias{condDirichlet}
 \title{Elicit a Dirichlet distribution interactively}
 \usage{
 elicitDirichlet()
@@ -23,7 +24,7 @@ of all the fitted distributions.
 
 \dontrun{
 
-elicit()
+elicitDirichlet()
 
 }
 }

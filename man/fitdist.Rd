@@ -79,7 +79,7 @@ difference between an elicited cumulative probability and the corresponding
 fitted cumulative probability.} 
 \item{best.fitting}{The best fitting
 distribution for each expert, determined by the smallest sum of squared
-errors.} 
+errors. Note that with three judgements only, this is likely to be the skew-normal, as this is a three parameter distribution. } 
 \item{vals}{The elicited values used to fit the distributions.}
 \item{probs}{The elicited probabilities used to fit the distributions.}
 \item{limits}{The lower and upper limits specified by each expert (+/- Inf
