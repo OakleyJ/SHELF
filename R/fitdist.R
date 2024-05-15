@@ -163,10 +163,10 @@ fitdist <-
       
       # Need to exclude any probability judgements
       # P(X<=x) = 0 or P(X<=x) = 1
-      # Facilitator should enforce these probabilities via the parameter limits
+      # Facilitator should enforce these probabilities via the parameter limits  
       
       inc <- (probs[, i] > 0) & (probs[, i] < 1)
-      
+      if(sum(inc) < 1){stop("need at least one probability between 0 and 1")}
       minprob <- min(probs[inc, i])
       maxprob <- max(probs[inc, i])
       minvals <- min(vals[inc, i])
