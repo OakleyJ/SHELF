@@ -183,6 +183,8 @@ fitdist <-
       # Appropriately small and large probabilities specified:
       
       if ((min(probs[,i]) < 0.4 ) & (max(probs[,i]) > 0.6 )) {
+	if (sum(probs[, i] < 0.4 & probs[, i] > 0) < 1) {stop("need at least one probability smaller than 0.4 that is not 0")}
+	if (sum(probs[, i] > 0.6 & probs[, i] < 1) < 1) {stop("need at least one probability larger than 0.6 that is not 1")}
         if (min(probs[-1,i] - probs[-nrow(probs),i]) < 0 ){stop("probabilities must be specified in ascending order")}
         if (min(vals[-1,i] - vals[-nrow(vals),i]) <= 0 ){stop("parameter values must be specified in ascending order")}
         
