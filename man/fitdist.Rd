@@ -24,8 +24,9 @@ probs[i,j]}
 \item{probs}{A vector of elicited probabilies for one expert, or a matrix of
 elicited values for multiple experts (one column per expert). A single
 vector can be used if the probabilities are the same for each expert. For
-each expert, the smallest elicited probability must be less than 0.4, and
-the largest elicited probability must be greater than 0.6.}
+each expert, there should be at least one non-zero probability less than 0.4, and
+at least one elicited probability less and 1 and greater than 0.6. Exponential distributions 
+can be fitted by specifying one limit (\code{lower} or \code{upper}) and one probability between 0 and 1.}
 
 \item{lower}{A single lower limit for the uncertain quantity X, or a vector
 of different lower limits for each expert. Specifying a lower limit will
@@ -53,7 +54,9 @@ An object of class \code{elicitation}. This is a list containing the elements
 location) / scale has a standard t distribution. The degrees of freedom is
 not fitted; it is specified as an argument to \code{fitdist}.}
 \item{Skewnormal}{Parameters of the fitted skew-normal distribution. The skew-normal
-distribution is implemented using the sn package. See sn::dsn for details.}
+distribution is implemented using the sn package. See sn::dsn for details. This distribution
+requires at least three elicited probabilities, including at least one in each interval (0, 0.4)
+and (0.6, 1).}
 \item{Gamma}{Parameters of the fitted gamma distributions. Note that E(X - \code{lower}) =
 shape / rate.} 
 \item{Log.normal}{Parameters of the fitted log normal
