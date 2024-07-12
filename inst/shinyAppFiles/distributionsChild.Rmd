@@ -167,6 +167,11 @@ with $$\\nu = ", tdf,"$$ $$\\mu = ", m,"$$ $$\\sigma  = ", s, "$$")
 } 
 ```
 
+```{r}
+if(!is.na(fit$ssq[expert, "t"])){
+plotfit(fit, d = "t")
+}
+```
 
 `r paste(equationT)`
 
