@@ -1,0 +1,529 @@
+---
+title: "Survival Extrapolation"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+  pdf_document: default
+  word_document: default
+date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
+fontsize: 11pt
+params:
+  allfits: NA
+  individual: NA
+  survivalDF: NA
+  targetTime: NA
+  breakTime: NA
+  truncationTime: NA
+  timeUnit: NA
+  reportDistributions: NA
+  reportGroup1: NA
+  reportGroup2: NA
+  dist1: NA
+  dist2: NA
+  inputMethod: NA
+  reportScenarioTest: NA
+  expRange: NA
+  reportExtrapolation: NA
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE,
+                      fig.pos = 'h',
+                      fig.align = 'center')
+```
+
+```{r non-html outputs, eval = !knitr::is_html_output()}
+knitr::opts_chunk$set(fig.height = 3,
+                      fig.width = 4)
+```
+
+
+```{r help functions}
+
+library(ggplot2)
+
+makeSurvSummaryTable <- function(survDF, sf = 3){
+  
+  nTreatments <- length(levels(survDF$treatment))
+  
+  sTable <- array(NA, c(nTreatments, 5))
+  rownames(sTable) <- levels(survDF$treatment)
+  colnames(sTable) <- c("n", "events", "minimum", "median", "maximum")
+  
+  sv <- survival::survfit(survival::Surv(time, event) ~ treatment, data = survDF)
+  table_output <- summary(sv)$table
+  
+  # Need to keep array format with column names if only one treatment group:
+  if(nTreatments == 1){
+    dnames <- names(table_output)
+    dim(table_output) <- c(1, 9)
+    colnames(table_output) <- dnames
+  }
+  
+  sTable[, c("n", "events", "median")] <- table_output[, c("records", "events", "median")]
+  sTable[, c("minimum")] <- tapply(survDF$time, survDF$treatment, min)
+  sTable[, c("maximum")] <- tapply(survDF$time, survDF$treatment, max)
+  
+  sTable[, c("minimum", "maximum", "median") ] <- 
+    signif( sTable[, c("minimum", "maximum", "median")  ], sf)
+  
+  sTable
+
+}
+
+makeSurvivalTable <- function(survDF, breakTime, truncationTime, timeUnit, dp = 2){
+  sv <- survival::survfit(survival::Surv(time, event) ~ treatment, data = survDF)
+  sTimes <- seq(from = breakTime, to = truncationTime, by = breakTime)
+  nTimes <- length(sTimes)
+  nTreatments <- length(levels(survDF$treatment))
+  tNames <- levels(survDF$treatment)
+  
+  
+  pt <- matrix(round(summary(sv, times = sTimes)$surv , dp),
+               nrow = nTimes, ncol = nTreatments)
+  wt  <- pt
+  if(nrow(wt) > 1){
+    wt[-1, ] <- 1 - round(pt[2:nTimes, ]/pt[1:(nTimes - 1), ], dp)
+    }
+  
+  ciLower <- matrix(round(summary(sv, times = sTimes)$lower , dp),
+                    nrow = nTimes, ncol = nTreatments)
+  ciUpper <- matrix(round(summary(sv, times = sTimes)$upper , dp),
+                    nrow = nTimes, ncol = nTreatments)
+  ci95 <-  matrix (paste0("(", ciLower, ", ", ciUpper,")"),
+                   nrow = nTimes, ncol = nTreatments)
+  sTable <- data.frame(paste0("[", c(0, sTimes[1:(nTimes -1)]), ",", sTimes, ")"),
+                       pt[, 1], ci95[, 1],  wt[, 1])
+  colnames(sTable) <- c(paste0("time interval (", timeUnit,")"),
+                        paste0("survivor (", tNames[1], ")"),
+                        paste0("survivor 95% CI (", tNames[1], ")"),
+                        paste0("hazard (", tNames[1], ")"))
+  
+  if(nTreatments > 1){
+    for(i in 2:nTreatments){
+      dfTemp <-  data.frame(pt[, i], ci95[, i],  wt[, i])
+      colnames(dfTemp) <- c(paste0("survivor (", tNames[i], ")"),
+                            paste0("survivor 95% CI (", tNames[i], ")"),
+                            paste0("hazard (", tNames[i], ")"))
+      sTable <- cbind(sTable, dfTemp)
+    }
+  }
+  
+  sTable
+}
+
+KMextrapolate <- function(tLower = 0,
+                          tUpper,
+                          yl,
+                          yu,
+                          showExp = FALSE,
+                          expLower,
+                          expUpper,
+                          expGroup = "quit",
+                          tTarget,
+                          survDf,
+                          breakTime = 2,
+                          groups = c("continue smoking", "quit smoking"),
+                          xl = "Time (years)",
+                          includeEbar = TRUE,
+                          includeExpRibbon = TRUE,
+                          KMCI = FALSE,
+                          fontsize = 16){
+  # Truncate data frame for plotting
+  index <- survDf$time > tUpper
+  truncatedDf <- survDf
+  truncatedDf$event[index] <- 0
+  truncatedDf$time[index] <- tUpper
+  
+  # Prepare KM plot
+  fit <- survival::survfit(survival::Surv(time, event) ~ treatment, data = truncatedDf)
+  myplot <- survminer::ggsurvplot(fit, data = truncatedDf, censor = FALSE,
+                                  break.time.by = breakTime,
+                                  legend = "right",
+                                  legend.title = "",
+                                  legend.labs = groups,
+                                  xlim = c(tLower, tTarget),
+                                  xlab = xl,
+                                  conf.int = KMCI,
+                                  break.y.by = 0.2)
+  myplot$plot <- myplot$plot + geom_vline(xintercept = tTarget, linetype="dotted") +theme_bw(base_size = fontsize)
+  if(includeEbar){
+    myplot$plot <- myplot$plot + annotate("errorbar", x = 8,
+                                          y = mean(c(yu, yl)),
+                                          ymin = yu,
+                                          ymax = yl,
+                                          colour = "black")
+  }
+  
+  if(showExp){
+    
+    
+    
+    dfExp <- truncatedDf[truncatedDf$treatment == expGroup, ]
+    
+    expUpper <- min(expUpper, max(dfExp$time))
+    
+    fitExp <- survival::survfit(survival::Surv(time, event) ~ 1, data = dfExp)
+    Plower <- summary(fitExp, times = expLower)$surv
+    index <- dfExp$time > expLower 
+    eventTruncated <- dfExp$event
+    eventTruncated[dfExp$time > expUpper] <- 0
+    eventTruncated <- eventTruncated[index]
+    timeTruncated <- dfExp$time[index]
+    timeTruncated[timeTruncated > expUpper] <- expUpper
+    
+    expFit <- survival::survreg(survival::Surv(time = timeTruncated-expLower, event = eventTruncated) ~ 1, dist = "exponential")
+    
+    
+    
+    lambda <- exp(-expFit$coefficients)
+    
+    myfun <- function(x) exp(-lambda*(x-expLower))*Plower
+    
+    
+    
+    myplot$plot <- myplot$plot + 
+      stat_function(fun = myfun, xlim = c(expLower, expUpper), lwd = 1.5, alpha = 0.9) +
+      stat_function(fun = myfun, xlim = c(expUpper, tTarget), linetype = "dashed")
+    
+    tVals <- seq(from = expLower, to = tTarget, length = 100)
+    mP <- summary(fitExp, times = expLower)$surv
+    sP <- summary(fitExp, times = expLower)$std.err
+    
+    mLogLambda <- summary(expFit)$table[1]
+    sLogLambda <- summary(expFit)$table[2]
+    
+    expMatrix <- matrix(0, 1000, 100)
+    
+    for(i in 1:1000){
+      randomP <- rnorm(1, mP, sP)
+      randomLambda <- exp(-rnorm(1, mLogLambda, sLogLambda ))
+      expMatrix[i, ] <- exp(-randomLambda*(tVals-expLower))*randomP
+    }
+    
+    if(includeExpRibbon){
+      
+      
+      ribbon_data <- data.frame(x =tVals,
+                                ymax = apply(expMatrix, 2, quantile, probs = 0.975),
+                                ymin = apply(expMatrix, 2, quantile, probs = 0.025),
+                                surv =tVals)
+      
+      myplot$plot <- myplot$plot +
+        geom_ribbon(data = ribbon_data,
+                    aes(x = x, ymin = ymin, ymax = ymax),
+                    fill = "gray", alpha = 0.5)
+      
+    }
+   
+    
+    
+  }
+  
+  
+  myplot$plot
+}
+
+ 
+```
+
+
+
+# Survival data
+
+```{r make surivival summary data}
+nTreatments <- length(levels(params$survivalDF$treatment))
+sdf <- makeSurvSummaryTable(params$survivalDF)
+knitr::kable(sdf, caption = "Summary statistics for the provided survival data")
+```
+
+
+```{r basic KM plot}
+fit <- survival::survfit(survival::Surv(time, event) ~ treatment, data = params$survivalDF)
+      myplot<- survminer::ggsurvplot(fit, data = params$survivalDF, censor = TRUE,
+                                      legend = "right",
+                                      legend.title = "",
+                            conf.int = TRUE,
+                            legend.labs = levels(params$survivalDF$treatment),
+                            xlim = c(0, params$targetTime),
+                            xlab = paste0("Time (", params$timeUnit, ")"),
+                            break.time.by = params$targetTime/8)
+      myplot$plot +
+        geom_vline(xintercept = params$targetTime, linetype="dotted") 
+```
+
+```{r make KM table}
+knitr::kable(makeSurvivalTable(params$survivalDF,
+                               params$breakTime,
+                               params$truncationTime,
+                               params$timeUnit,
+                               dp = 2),
+             caption = "The survivor column is the proportion surviving after the end of the corresponding time interval. The hazard column is the proportion who do not survive to the end of the time interval, out of those who survived to the beginning of the time interval.")
+```
+
+
+<!-- Group 1 -->
+
+`r  if(params$reportGroup1){paste0('# Results for treatment group: "', levels(params$survivalDF$treatment)[1], '"')}`
+
+`r  if(params$reportGroup1){"## Individual judgements"}`
+
+
+```{r group 1 individual judgements, eval = params$reportGroup1}
+knitr::kable(params$individual[[1]])
+```
+
+
+```{r plot group 1 individual judgements, eval = params$reportGroup1}
+if(params$inputMethod == "quartiles"){
+  p1 <- plotQuartiles(vals = params$individual[[1]][2:4, ],
+                              lower = params$individual[[1]][1, ],
+                              upper = params$individual[[1]][5, ],
+                              expertnames = colnames(params$individual[[1]]),
+                              xlabel = "Surivivor proportion")
+}
+
+if(params$inputMethod == "tertiles"){
+  p1 <- plotTertiles(vals = params$individual[[1]][2:4, ],
+                              lower = params$individual[[1]][1, ],
+                              upper = params$individual[[1]][5, ],
+                              expertnames = colnames(params$individual[[1]]),
+                              xlabel = "Surivivor proportion")
+}
+print(p1 + theme_bw()+ coord_flip())
+```
+
+
+`r  if(params$reportGroup1 & params$reportScenarioTest){"## Scenario Testing"}`
+
+```{r scenario testing group 1, eval = (params$reportGroup1 & params$reportScenarioTest) }
+KMextrapolate(tLower = 0,
+                                tUpper = min(params$truncationTime,
+                                             max(params$survivalDF$time)),
+                                yl =0 ,
+                                yu = 1,
+                                showExp = TRUE,
+                                expLower= params$expRange[1],
+                                expUpper = params$expRange[2],
+                                expGroup = levels(params$survivalDF$treatment)[1],
+                                tTarget = params$targetTime,
+                                survDf = params$survivalDF,
+                                breakTime = params$breakTime,
+                    groups = levels(params$survivalDF$treatment),
+                    xl = paste0("Time (", params$timeUnit, ")"),
+                                includeEbar = FALSE,
+                                includeExpRibbon = TRUE,
+                                KMCI = TRUE)
+```
+
+
+
+`r  if(params$reportGroup1){"## RIO distribution"}`
+
+```{asis, echo = params$reportGroup1}
+The elicited RIO probabilities were as follows
+```
+
+
+
+```{r , eval = params$reportGroup1}
+captionTextGroup1 <- paste0("The probability density function and cumulative distribution function fitted to RIO's probabilities for the Quantity of Interest: 
+                            the proportion suriving for at least time ", params$targetTime, " ",
+                            params$timeUnit, ' in the treatment group "',
+                            levels(params$survivalDF$treatment)[1], '".')
+expert <- 1
+sf <- 3
+mydf <- data.frame( params$allfits[[1]]$vals[expert, ], params$allfits[[1]]$probs[expert, ])
+colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
+knitr::kable(mydf)
+```
+
+```{r, eval = params$reportGroup1, fig.cap = captionTextGroup1, fig.show='hold', out.width = '45%'}
+plotfit(params$allfits[[1]], xlab = "survival proportion", ylab = "density", d = params$dist1)
+makeCDFPlot(lower = 0, upper = 1, v = params$allfits[[1]]$vals[1, ],
+            p = params$allfits[[1]]$probs[1, ], dist = params$dist1,
+            showFittedCDF = TRUE,  fit = params$allfits[[1]],
+            xlab = "survival proportion", ylab = "cumulative probability")
+```
+
+
+```{r,  eval = params$reportGroup1}
+tableCaption1 <-  paste0("Percentiles from the distribution fitted to RIO's probabilities for the Quantity of Interest: the proportion suriving for at least time ", params$targetTime, " ",
+                            params$timeUnit, ' in the treatment group "',
+                            levels(params$survivalDF$treatment)[1], '".')
+fb1 <- feedback(params$allfits[[1]],
+                quantiles = c(0.01, 0.1, 0.5, 0.9, 0.99))$fitted.quantiles[, params$dist1]
+fb1 <- matrix(fb1, nrow = 1)
+colnames(fb1) <- paste0(c(1, 10, 50, 90, 99), "%")
+knitr::kable(fb1, caption = tableCaption1)
+```
+
+
+<!-- Group 2 -->
+
+`r  if(params$reportGroup2){paste0('# Results for treatment group: "', levels(params$survivalDF$treatment)[2], '"')}`
+
+`r  if(params$reportGroup2){"## Individual judgements"}`
+
+
+```{r, eval = params$reportGroup2}
+knitr::kable(params$individual[[2]])
+```
+
+```{r, eval = params$reportGroup2}
+if(params$inputMethod == "quartiles"){
+  p2 <- plotQuartiles(vals = params$individual[[2]][2:4, ],
+                              lower = params$individual[[2]][1, ],
+                              upper = params$individual[[2]][5, ],
+                              expertnames = colnames(params$individual[[2]]),
+                              xlabel = "Surivivor proportion")
+}
+
+if(params$inputMethod == "tertiles"){
+  p2 <- plotTertiles(vals = params$individual[[2]][2:4, ],
+                              lower = params$individual[[2]][1, ],
+                              upper = params$individual[[2]][5, ],
+                              expertnames = colnames(params$individual[[2]]),
+                              xlabel = "Surivivor proportion")
+}
+print(p2 + theme_bw()+ coord_flip())
+```
+
+`r  if(params$reportGroup2 & params$reportScenarioTest){"## Scenario Testing"}`
+
+```{r scenario testing group 2, eval = (params$reportGroup2 & params$reportScenarioTest) }
+KMextrapolate(tLower = 0,
+                                tUpper = min(params$truncationTime,
+                                             max(params$survivalDF$time)),
+                                yl =0 ,
+                                yu = 1,
+                                showExp = TRUE,
+                                expLower= params$expRange[1],
+                                expUpper = params$expRange[2],
+                                expGroup = levels(params$survivalDF$treatment)[2],
+                                tTarget = params$targetTime,
+                                survDf = params$survivalDF,
+                                breakTime = params$breakTime,
+                    groups = levels(params$survivalDF$treatment),
+                    xl = paste0("Time (", params$timeUnit, ")"),
+                                includeEbar = FALSE,
+                                includeExpRibbon = TRUE,
+                                KMCI = TRUE)
+```
+
+
+
+`r  if(params$reportGroup2){"## RIO distribution"}`
+
+```{asis, echo = params$reportGroup2}
+The elicited RIO probabilities were  as follows
+```
+
+
+
+```{r, eval = params$reportGroup2}
+captionTextGroup2 <- paste0("The probability density function and cumulative distribution function fitted to RIO's probabilities for the Quantity of Interest: 
+                            the proportion suriving for at least time ", params$targetTime, " ",
+                            params$timeUnit, ' in the treatment group "',
+                            levels(params$survivalDF$treatment)[2], '".')
+expert <- 1
+sf <- 3
+mydf <- data.frame( params$allfits[[2]]$vals[expert, ], params$allfits[[1]]$probs[expert, ])
+colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
+knitr::kable(mydf)
+```
+
+```{r RIO group 2, eval = params$reportGroup2, fig.cap = captionTextGroup2, fig.show = 'hold', out.width = '45%'}
+plotfit(params$allfits[[2]], xlab = "survival proportion", ylab = "density", d = params$dist2)
+makeCDFPlot(lower = 0, upper = 1, v = params$allfits[[2]]$vals[1, ],
+            p = params$allfits[[2]]$probs[1, ], dist = params$dist2,
+            showFittedCDF = TRUE, fit = params$allfits[[2]],
+            xlab = "survival proportion", ylab = "cumulative probability")
+```
+
+```{r,  eval = params$reportGroup2}
+tableCaption2 <-  paste0("Percentiles from the distribution fitted to RIO's probabilities for the Quantity of Interest: the proportion suriving for at least time ", params$targetTime, " ",
+                            params$timeUnit, ' in the treatment group "',
+                            levels(params$survivalDF$treatment)[2], '".')
+fb2 <- feedback(params$allfits[[2]],
+                quantiles = c(0.01, 0.1, 0.5, 0.9, 0.99))$fitted.quantiles[, params$dist2]
+fb2 <- matrix(fb2, nrow = 1)
+colnames(fb2) <- paste0(c(1, 10, 50, 90, 99), "%")
+knitr::kable(fb2, caption = tableCaption2)
+```
+
+`r  if(params$reportExtrapolation){"# Extrapolation results"}`
+
+```{r extrapolation results, eval = params$reportExtrapolation}
+ myplot <- KMextrapolate(tLower = 0,
+                              tUpper = params$truncationTime,
+                              yl =0 ,
+                              yu = 1,
+                              showExp = FALSE,
+                              expLower= NULL,
+                              expUpper = NULL,
+                              expGroup = NULL,
+                              tTarget = params$targetTime,
+                              survDf = params$survivalDF,
+                              breakTime = params$breakTime,
+                              groups = levels(params$survivalDF$treatment),
+                              xl = paste0("Time (", params$timeUnit, ")"),
+                              includeEbar = FALSE,
+                              includeExpRibbon = FALSE,
+                              KMCI = TRUE)
+if(params$reportGroup1){
+      
+      fq1<- feedback(params$allfits[[1]],
+                     quantiles=c(0.025, 0.5, 0.975))$fitted.quantiles[, params$dist1]
+     
+      p1 <- myplot + annotate("errorbar", x = 1.005*params$targetTime,
+                             y = fq1[2],
+                             ymin = fq1[1],
+                             ymax = fq1[3],
+                             colour = "#F8766D")}
+
+if(params$reportGroup2){      
+     
+        fq2<- feedback(params$allfits[[2]],
+                       quantiles=c(0.025,0.5,
+                                   0.975))$fitted.quantiles[, params$dist2]
+        p1 <- p1 +
+        annotate("errorbar", x = 0.995*params$targetTime,
+                 y = fq2[2],
+                 ymin = fq2[1],
+                 ymax = fq2[3],
+                 colour = "#00BFC4")
+}
+print(p1)
+```
+
+
+`r  if(params$reportDistributions){"# Appendix: all fitted distributions"}`
+`r  if(params$reportDistributions){paste0('## Treatment group: "', levels(params$survivalDF$treatment)[1], '"')}`
+
+```{r, echo = FALSE}
+fit <- params$allfits[[1]]
+bin.left <- NA
+bin.right <- NA
+chips <- NA
+roulette <- FALSE
+filename <- system.file("shinyAppFiles", "distributionsChild.Rmd", package="SHELF")
+```
+
+```{r child=filename, eval = params$reportDistributions }
+```
+
+`r  if(params$reportDistributions & params$reportGroup2 ){paste0('## Treatment group: "', levels(params$survivalDF$treatment)[2], '"')}`
+
+```{r, echo = FALSE, eval =  params$reportGroup2}
+fit <- params$allfits[[2]]
+bin.left <- NA
+bin.right <- NA
+chips <- NA
+roulette <- FALSE
+filename <- system.file("shinyAppFiles", "distributionsChild.Rmd", package="SHELF")
+```
+
+```{r child=filename, eval =  params$reportGroup2}
+```

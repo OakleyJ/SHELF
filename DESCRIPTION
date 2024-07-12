@@ -1,7 +1,7 @@
 Type: Package
 Package: SHELF
 Title: Tools to Support the Sheffield Elicitation Framework
-Version: 1.10.0
+Version: 1.10.0.9000
 Date: 2024-05-07
 Author: Jeremy Oakley
 Maintainer: Jeremy Oakley <j.oakley@sheffield.ac.uk>
@@ -37,6 +37,8 @@ Imports:
     shinyMatrix,
     sn,
     stats,
+    survival,
+    survminer,
     tidyr,
     utils
 Suggests: 
@@ -47,4 +49,4 @@ Suggests:
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
