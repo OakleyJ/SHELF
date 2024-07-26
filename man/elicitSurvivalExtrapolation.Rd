@@ -16,6 +16,16 @@ Judgements for two treatment groups can be elicited in the same session.
 
 \dontrun{
 
+# make a suitable csv file using a built in data set from the survival package
+sdf <- survival::veteran[, c("time", "status", "trt")]
+colnames(sdf) <- c("time", "event", "treatment")
+sdf$treatment <- factor(sdf$treatment, labels = c("standard", "test"))
+
+# write the data frame sdf to a .csv file in the current working directory
+write.csv(sdf, file = "testFile.csv", row.names = FALSE)
+
+# Run the app and upload testFile.csv in the first tab, and change unit of time to "days"
+
 elicitSurvivalExtrapolation()
 
 }

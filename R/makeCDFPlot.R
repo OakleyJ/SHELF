@@ -81,6 +81,12 @@ makeCDFPlot <- function(lower, v, p, upper, fontsize = 12,
   # Add in CDF
   
   if(showFittedCDF){
+    
+    if(dist == "best"){
+      dist <- fit$best.fitting[ex, 1]
+    }
+    
+    
     if(dist == "hist"){
       dist.title <- "Histogram fit"
       p1 <- p1 + annotate("segment", x = c(lower, v),

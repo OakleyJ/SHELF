@@ -47,9 +47,9 @@ The"treatment" column should be included even if there is only one treatment gro
 }
 \value{
 A list containing the elements
-\item{KMplot} a ggplot2 plot object
-\item{interval} an approximate 95% credible interval for the surival proportion
-at the target extrapolation time.
+\item{KMplot}{a ggplot2 plot object;}
+\item{interval}{an approximate 95% credible interval for the survival proportion
+at the target extrapolation time.}
 }
 \description{
 Provides a plot and approximate 95% credible interval for an 

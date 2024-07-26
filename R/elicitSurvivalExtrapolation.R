@@ -11,6 +11,16 @@
 #' 
 #' \dontrun{
 #' 
+#' # make a suitable csv file using a built in data set from the survival package
+#' sdf <- survival::veteran[, c("time", "status", "trt")]
+#' colnames(sdf) <- c("time", "event", "treatment")
+#' sdf$treatment <- factor(sdf$treatment, labels = c("standard", "test"))
+#' 
+#' # write the data frame sdf to a .csv file in the current working directory
+#' write.csv(sdf, file = "testFile.csv", row.names = FALSE)
+#' 
+#' # Run the app and upload testFile.csv in the first tab, and change unit of time to "days"
+#' 
 #' elicitSurvivalExtrapolation()
 #' 
 #' }
@@ -92,7 +102,8 @@ elicitSurvivalExtrapolation<- function(){
                                textInput("indAxis", label = h5("Axis limits"), 
                                          value = "0, 1"),
                                hr(style = "border-top: 1px solid #000000;"),
-                               h5("Scenario testing (next tab)"),
+                               h5("Scenario testing"),
+                               helpText("Use next tab before displaying here"),
                                checkboxInput("showScenario", 
                                             label = h5("Show scenario interval"))
                                
@@ -348,19 +359,16 @@ elicitSurvivalExtrapolation<- function(){
     
     output$KMplot <- renderPlot({
       req(survivalDF(), expRange(), input$scenarioGroup,
-          input$targetTime, input$breakTime,
+          input$targetTime, 
           input$truncationTime)
       scenario <- survivalScenario(tLower = 0,
                                 tUpper = min(input$truncationTime,
                                              max(survivalDF()$time)),
-                                yl =0 ,
-                                yu = 1,
                                 expLower= expRange()[1],
                                 expUpper = expRange()[2],
                                 expGroup = input$scenarioGroup,
                                 tTarget = input$targetTime,
                                 survDf = survivalDF(),
-                                breakTime = input$breakTime,
                     groups = levels(survivalDF()$treatment),
                     xl = paste0("Time (", input$timeUnit, ")"),
                     showPlot = FALSE,
@@ -372,7 +380,7 @@ elicitSurvivalExtrapolation<- function(){
     
     scenarioIntervalGp1 <- reactive({ 
       req(survivalDF(), expRange(),input$scenarioGroup,
-          input$targetTime, input$breakTime,
+          input$targetTime,
           input$truncationTime)
       scenarioTestInterval(tLower = 0,
                                        tUpper = input$truncationTime,
@@ -385,7 +393,7 @@ elicitSurvivalExtrapolation<- function(){
     
     scenarioIntervalGp2 <- reactive({ 
       req(survivalDF(), expRange(),input$scenarioGroup,
-          input$targetTime, input$breakTime,
+          input$targetTime,
           input$truncationTime)
       interval <- NULL
       if(length(levels(survivalDF()$treatment)) > 1){
@@ -550,16 +558,20 @@ elicitSurvivalExtrapolation<- function(){
       req(p1)
       
       if(input$showScenario == TRUE){
-       
+
         if(input$treatmentGroup == levels(survivalDF()$treatment)[1]){
-          req(scenarioIntervalGp1())
+          interval1 <- tryCatch(eval(scenarioIntervalGp1()), error = function(e){NULL})
+          if(!is.null(interval1)){
         p1 <- p1 + geom_vline(xintercept = scenarioIntervalGp1(), 
                               linetype = "dashed")
+          }
         }
         if(input$treatmentGroup != levels(survivalDF()$treatment)[1]){
-          req(scenarioIntervalGp2())
+          interval2 <- tryCatch(eval(scenarioIntervalGp1()), error = function(e){NULL})
+          if(!is.null(interval2)){
           p1 <- p1 + geom_vline(xintercept = scenarioIntervalGp2(), 
                                 linetype = "dashed")
+          }
         }
         
       }
@@ -944,19 +956,16 @@ elicitSurvivalExtrapolation<- function(){
     # Extrapolation plot tab ----
     
     output$extrapolationPlot <- renderPlot({
-      req(survivalDF(), expRange(),input$scenarioGroup,
-          input$targetTime, input$breakTime, myfit1() )
+      req(survivalDF(),
+          input$targetTime, myfit1() )
       myplot <- KMextrapolate(tLower = 0,
                               tUpper = input$truncationTime,
                               yl =0 ,
                               yu = 1,
                               showExp = FALSE,
-                              expLower= expRange()[1],
-                              expUpper = expRange()[2],
-                              expGroup = input$scenarioGroup,
                               tTarget = input$targetTime,
+                              breakTime = input$targetTime/4,
                               survDf = survivalDF(),
-                              breakTime = input$breakTime,
                               groups = levels(survivalDF()$treatment),
                               xl = paste0("Time (", input$timeUnit, ")"),
                               includeEbar = FALSE,
@@ -964,8 +973,14 @@ elicitSurvivalExtrapolation<- function(){
                               KMCI = TRUE,
                               fontsize = input$fs)
       
+      if(input$RIOdist1 == "best"){
+        fqDist1 <- myfit1()$best.fitting[1, 1]
+      }else{
+        fqDist1 <- input$RIOdist1
+      }
+      
       fq1<- feedback(myfit1(),
-                     quantiles=c(0.025, 0.5, 0.975))$fitted.quantiles[, input$RIOdist1]
+                     quantiles=c(0.025, 0.5, 0.975))$fitted.quantiles[, fqDist1]
      
       if(length(levels(survivalDF()$treatment)) == 1){
         jitter <- 1
@@ -984,9 +999,16 @@ elicitSurvivalExtrapolation<- function(){
                              width = 0.02*input$targetTime) 
       
       if(length(levels(survivalDF()$treatment)) > 1){
+        
+        if(input$RIOdist2 == "best"){
+          fqDist2 <- myfit2()$best.fitting[1, 1]
+        }else{
+          fqDist2 <- input$RIOdist2
+        }
+        
         fq2<- feedback(myfit2(),
                        quantiles=c(0.025,0.5,
-                                   0.975))$fitted.quantiles[, input$RIOdist2]
+                                   0.975))$fitted.quantiles[, fqDist2]
         p1 <- p1 +
         annotate("errorbar", x = 0.995*input$targetTime,
                  y = fq2[2],
@@ -1134,9 +1156,9 @@ elicitSurvivalExtrapolation<- function(){
     
     output$report <- downloadHandler(
       filename = function(){switch(input$outFormat,
-                                   html_document = "distributions-report.html",
-                                   pdf_document = "distributions-report.pdf",
-                                   word_document = "distributions-report.docx")},
+                                   html_document = "extrapolation-report.html",
+                                   pdf_document = "extrapolation-report.pdf",
+                                   word_document = "extrapolation-report.docx")},
       content = function(file) {
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
@@ -1271,12 +1293,12 @@ KMextrapolate <- function(tLower = 0,
                           showExp = FALSE,
                           expLower,
                           expUpper,
-                          expGroup = "quit",
+                          expGroup,
                           tTarget,
                           survDf,
-                          breakTime = 2,
-                          groups = c("continue smoking", "quit smoking"),
-                          xl = "Time (years)",
+                          breakTime = NULL,
+                          groups,
+                          xl,
                           includeEbar = TRUE,
                           includeExpRibbon = TRUE,
                           KMCI = FALSE,
