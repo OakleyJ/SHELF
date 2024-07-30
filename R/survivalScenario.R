@@ -36,7 +36,7 @@
 #' expGroup = "standard")
 #' }
 #' @import survival
-#'@importFrom survminer ggsurvplot
+#' @importFrom survminer ggsurvplot
 #' @export
 
 survivalScenario <- function(tLower = 0,

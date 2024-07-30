@@ -24,6 +24,7 @@ BugReports: https://github.com/OakleyJ/SHELF/issues
 Depends: 
     R (>= 3.5.0)
 Imports: 
+    flexsurv,
     ggExtra,
     ggplot2,
     ggridges,
