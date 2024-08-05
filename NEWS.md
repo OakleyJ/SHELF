@@ -1,3 +1,9 @@
+SHELF v1.10.0.9000 (2024-07-26)
+==============================
+
+* New app elicitSurvivalExtrapolation() and supporting functions survivalScenario(), survivalModelExtrapolations() for eliciting extrapolated survival probabilities.
+
+
 SHELF v1.10.0 (2024-05-07) 
 ==============================
 

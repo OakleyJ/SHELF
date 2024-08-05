@@ -6,9 +6,12 @@
 \usage{
 survivalModelExtrapolations(
   survDf,
+  tOffset = 0,
   tEnd,
   group,
   tTruncate = NULL,
+  dists = c("exp", "weibull", "gamma", "gompertz", "llogis", "lnorm", "gengamma"),
+  nModels = length(dists),
   showPlot = TRUE
 )
 }
@@ -18,6 +21,10 @@ three columns: "time", "event" and "treatment" (in that order).
 Values in the "event" column should be 0 for a censored observation, and 1 otherwise.
 The"treatment" column should be included even if there is only one treatment group.'}
 
+\item{tOffset}{discard observations with time less than this value, and fit survival 
+distributions to \code{survDf$time - tOffset}. Default is \code{c("exp", "weibull",
+"gamma", "gompertz", "llogis", "lnorm", "gengamma")}; can choose a subset of this.}
+
 \item{tEnd}{the maximum time point for extrapolation}
 
 \item{group}{character variable to select treatment group: one of the levels in the
@@ -25,20 +32,27 @@ factor variable survDf$treatment}
 
 \item{tTruncate}{optional argument: time point at which to censor all observations}
 
+\item{nModels}{how many fitted models to plot, up to a maximum of 7, chosen by lowest AIC
+value}
+
 \item{showPlot}{whether to display the plot}
+
+\item{character}{vector of distributions to fit. Default is length(dists)}
 }
 \value{
 A list containing the elements
 \item{KMplot}{a ggplot2 plot object;}
 \item{tMaxRange}{the time point at which there is the greatest difference between the largest
-and smallest extrapolated survival probability.}
+and smallest extrapolated survival probability;}
+\item{modelAIC}{the AIC for each fitted model.}
 }
 \description{
 Fits seven parametric models to an individual patient survival data set, 
 displays extrapolations, and report the time point at which there is the
-widest range in estimated extrapolated survival probabilities. This is intended
-to support elicitation for survival extrapolation, in particular, to inform 
-the choice extrapolation time.
+widest range in estimated extrapolated survival probabilities. This function is intended
+as an informal exploratory tool to support elicitation for survival extrapolation,
+specifically, to inform the choice of target extrapolation time. The fitted models 
+are exponential, weibull, gamma, gompertz, log logistic, log normal and geneneralised gamma.
 }
 \examples{
 \dontrun{
@@ -48,6 +62,6 @@ sdf <- survival::veteran[, c("time", "status", "trt")]
 colnames(sdf) <- c("time", "event", "treatment")
 sdf$treatment <- factor(sdf$treatment, labels = c("standard", "test"))
 
-survivalModelExtrapolations(sdf, tEnd = 100, group = "test", tTruncate = 100)
+survivalModelExtrapolations(sdf, tEnd = 1000, group = "test", tTruncate = 100)
 }
 }
