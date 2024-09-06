@@ -3,7 +3,7 @@
 #' Takes elicited marginal distributions and elicited concordance probabilities: pairwise
 #' probabilities of two uncertain quantities being greater than their medians, and generates
 #' a correlated sample, assuming the elicited marginal distributions and a multivariate
-#' normal copula
+#' normal copula. A vignette explaining this method is available at [https://oakleyj.github.io/SHELF/Multivariate-normal-copula.html](https://oakleyj.github.io/SHELF/Multivariate-normal-copula.html)
 #'
 #'
 #' @param ... A list of objects of class \code{elicitation}.
@@ -38,6 +38,7 @@
 #' copulaSample(myfit1, myfit2, myfit3, cp=quad.probs, n=100, d=NULL)
 #' }
 #' @export
+#' @md
 
 copulaSample <- function(..., cp, n, d = NULL, ex = 1) {
   elicitation.fits <- list(...)

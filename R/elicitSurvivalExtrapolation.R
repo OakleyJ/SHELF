@@ -703,9 +703,9 @@ elicitSurvivalExtrapolation<- function(){
     
     
     
-    # Hack to avoid CRAN check NOTE (can delete, but kept to remind me of the hack!)
+    # Hack to avoid CRAN check NOTE
     
-   # X1 <- X2 <- xpos <- ypos <- hjustvar <- vjustvar <- annotateText <- NULL
+    X1 <- X2 <- xpos <- ypos <- hjustvar <- vjustvar <- annotateText <- NULL
     
     
     p1 <- reactive({
@@ -1303,6 +1303,9 @@ KMextrapolate <- function(tLower = 0,
                           includeExpRibbon = TRUE,
                           KMCI = FALSE,
                           fontsize = 16){
+  
+  x <- ymin <- ymax <- NULL # hack to avoid R CMD check NOTE
+  
   # Truncate data frame for plotting
   index <- survDf$time > tUpper
   truncatedDf <- survDf

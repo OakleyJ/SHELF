@@ -1,8 +1,9 @@
-SHELF v1.10.0.9000 (2024-07-26)
+SHELF v1.11.0 (2024-09-03)
 ==============================
 
 * New app elicitSurvivalExtrapolation() and supporting functions survivalScenario(), survivalModelExtrapolations() for eliciting extrapolated survival probabilities.
 
+* vignette multivariate-normal-copula removed.
 
 SHELF v1.10.0 (2024-05-07) 
 ==============================

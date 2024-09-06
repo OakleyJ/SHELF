@@ -50,6 +50,9 @@ survivalScenario <- function(tLower = 0,
                           xl = "Time",
                           fontsize = 12,
                           showPlot = TRUE){
+  
+  x <- ymin <- ymax <- NULL # hack to avoid R CMD check NOTE
+  
   # Truncate data frame for plotting
   index <- survDf$time > tUpper
   truncatedDf <- survDf

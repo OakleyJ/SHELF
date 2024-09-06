@@ -6,7 +6,7 @@
 \alias{SHELF-package}
 \title{SHELF: Tools to Support the Sheffield Elicitation Framework}
 \description{
-Implements various methods for eliciting a probability distribution for a single parameter from an expert or a group of experts. The expert provides a small number of probability judgements, corresponding to points on his or her cumulative distribution function. A range of parametric distributions can then be fitted and displayed, with feedback provided in the form of fitted probabilities and percentiles. For multiple experts, a weighted linear pool can be calculated. Also includes functions for eliciting beliefs about population distributions, eliciting multivariate distributions using a Gaussian copula, eliciting a Dirichlet distribution, and eliciting distributions for variance parameters in a random effects meta-analysis model. R Shiny apps for most of the methods are included.
+Implements various methods for eliciting a probability distribution for a single parameter from an expert or a group of experts. The expert provides a small number of probability judgements, corresponding to points on his or her cumulative distribution function. A range of parametric distributions can then be fitted and displayed, with feedback provided in the form of fitted probabilities and percentiles. For multiple experts, a weighted linear pool can be calculated. Also includes functions for eliciting beliefs about population distributions; eliciting multivariate distributions using a Gaussian copula; eliciting a Dirichlet distribution; eliciting distributions for variance parameters in a random effects meta-analysis model; survival extrapolation. R Shiny apps for most of the methods are included.
 }
 \seealso{
 Useful links:
@@ -14,6 +14,10 @@ Useful links:
   \item \url{https://github.com/OakleyJ/SHELF}
   \item Report bugs at \url{https://github.com/OakleyJ/SHELF/issues}
 }
+
+}
+\author{
+\strong{Maintainer}: Jeremy Oakley \email{j.oakley@sheffield.ac.uk}
 
 }
 \keyword{internal}

@@ -1,9 +1,10 @@
 #' Compare Multiple Fitted Models for Survival Extrapolation
 #' 
-#' Fits seven parametric models to an individual patient survival data set, 
+#' Fits seven parametric models to an individual patient survival data set (using the \code{flexsurv}
+#' package), 
 #' displays extrapolations, and report the time point at which there is the
-#' widest range in estimated extrapolated survival probabilities. This function is intended
-#' as an informal exploratory tool to support elicitation for survival extrapolation,
+#' widest range in estimated extrapolated survival probabilities. This function is intended to be used
+#' only as an informal exploratory tool to support elicitation for survival extrapolation,
 #' specifically, to inform the choice of target extrapolation time. The fitted models 
 #' are exponential, weibull, gamma, gompertz, log logistic, log normal and geneneralised gamma.
  
@@ -13,15 +14,16 @@
 #' Values in the "event" column should be 0 for a censored observation, and 1 otherwise.
 #' The"treatment" column should be included even if there is only one treatment group.'
 #' @param tOffset discard observations with time less than this value, and fit survival 
-#' distributions to \code{survDf$time - tOffset}. Default is \code{c("exp", "weibull",
-#' "gamma", "gompertz", "llogis", "lnorm", "gengamma")}; can choose a subset of this. 
+#' distributions to \code{survDf$time - tOffset}.  
 #' @param tEnd the maximum time point for extrapolation
 #' @param group character variable to select treatment group: one of the levels in the
 #' factor variable survDf$treatment
 #' @param tTruncate optional argument: time point at which to censor all observations
-#' @param character vector of distributions to fit. Default is length(dists)
+#' @param dists character vector of distributions to fit. Default is \code{c("exp", "weibull",
+#' "gamma", "gompertz", "llogis", "lnorm", "gengamma")} corresponding to the distributions listed
+#' above; can choose a subset of this.
 #' @param nModels how many fitted models to plot, up to a maximum of 7, chosen by lowest AIC
-#' value
+#' value. Default is \code{length(dists)}.
 #' @param showPlot whether to display the plot 
 #' @return A list containing the elements
 #' \item{KMplot}{a ggplot2 plot object;}
@@ -53,6 +55,8 @@ survivalModelExtrapolations <- function(survDf, tOffset = 0,
                                                   "gengamma"),
                                         nModels = length(dists),
                                 showPlot = TRUE){
+  
+  sdf <- NULL # hack to avoid R CMD check NOTE
   
   if(!is.null(tTruncate)){
     index <- survDf$time > tTruncate
