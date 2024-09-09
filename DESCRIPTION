@@ -1,8 +1,8 @@
 Type: Package
 Package: SHELF
 Title: Tools to Support the Sheffield Elicitation Framework
-Version: 1.11.0
-Date: 2024-09-06
+Version: 1.11.0.9000
+Date: 2024-09-09
 Authors@R: person(given = "Jeremy",
                     family = "Oakley",
                     role = c("aut", "cre"),

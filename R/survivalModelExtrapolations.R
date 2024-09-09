@@ -89,7 +89,7 @@ survivalModelExtrapolations <- function(survDf, tOffset = 0,
   fit <- survival::survfit(survival::Surv(time, event) ~ 1,
                            data=survDf[survDf$treatment==group, ])
   mP <- summary(fit, times = tOffset)$surv
-  myplot <- survminer::ggsurvplot(fit, data=sdf[survDf$treatment=="standard",],
+  myplot <- survminer::ggsurvplot(fit, data=survDf[survDf$treatment=="standard",],
                                   censor = FALSE,
                                   legend = "right",
                                   legend.title = "",
