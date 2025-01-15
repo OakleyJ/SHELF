@@ -45,7 +45,8 @@ A list containing the elements
 \item{KMplot}{a ggplot2 plot object;}
 \item{tMaxRange}{the time point at which there is the greatest difference between the largest
 and smallest extrapolated survival probability (if more than one distribution fitted);}
-\item{modelAIC}{the AIC for each fitted model.}
+\item{modelAIC}{the AIC for each fitted model.} 
+\item{lclExtrapolate; uclExtrapolate}{pointwise 95 percent confidence interval for extrapolated survivor functions}
 }
 \description{
 Fits seven parametric models to an individual patient survival data set (using the \code{flexsurv}

@@ -1460,6 +1460,7 @@ makeSurvivalTable <- function(survDF, breakTime, truncationTime, timeUnit, dp = 
   pt <- matrix(round(summary(sv, times = sTimes)$surv , dp),
                nrow = nTimes, ncol = nTreatments)
   wt  <- pt
+  wt[1, ] <- 1 - wt[1, ]
   if(nrow(wt) > 1){
     wt[-1, ] <- 1 - round(pt[2:nTimes, ]/pt[1:(nTimes - 1), ], dp)
     }

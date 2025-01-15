@@ -30,6 +30,7 @@
 #' \item{tMaxRange}{the time point at which there is the greatest difference between the largest
 #' and smallest extrapolated survival probability (if more than one distribution fitted);}
 #' \item{modelAIC}{the AIC for each fitted model.} 
+#' \item{lclExtrapolate; uclExtrapolate}{pointwise 95 percent confidence interval for extrapolated survivor functions}
 #' @examples
 #' \dontrun{
 #' 
@@ -74,11 +75,18 @@ survivalModelExtrapolations <- function(survDf, tOffset = 0,
   sExtrapolate <- matrix(0, 100, length(dists) )
   allAIC <- rep(0, length(dists))
   
+  lclExtrapolate <- uclExtrapolate <- matrix(0, 100, length(dists))
+  
+  colnames(lclExtrapolate) <- colnames(uclExtrapolate) <- dists
+  
   for(i in 1:length(dists)){
     mf <- flexsurv::flexsurvreg(survival::Surv(time - tOffset, event)~1,
                       data=survDfReduced[survDfReduced$treatment==group,],
                       dist=dists[i])
-    sExtrapolate[, i] <- summary(mf, t = tExtrapolate - tOffset)[[1]][, "est"]
+    exSummary <- summary(mf, t = tExtrapolate - tOffset)[[1]]
+    sExtrapolate[, i] <- exSummary[, "est"]
+    lclExtrapolate[, i] <- exSummary[, "lcl"]
+    uclExtrapolate[, i] <- exSummary[, "ucl"]
     allAIC[i] <- mf$AIC
   }
   
@@ -127,6 +135,8 @@ survivalModelExtrapolations <- function(survDf, tOffset = 0,
   names(modelAIC) <- dists[AICrank]
   
   list(KMplot = myplot$plot, tMaxRange  = tExtrapolate[index],
-       modelAIC = modelAIC)
+       modelAIC = modelAIC,
+       lclExtrapolate = lclExtrapolate,
+       uclExtrapolate = uclExtrapolate)
   
 }
