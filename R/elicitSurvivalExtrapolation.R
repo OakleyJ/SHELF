@@ -429,35 +429,48 @@ elicitSurvivalExtrapolation<- function(){
     })
     
     
-    # scenarioIntervalGp1 <- reactive({ 
-    #   req(survivalDF(), expRange(),input$scenarioGroup,
-    #       input$targetTime,
-    #       input$truncationTime)
-    #   scenarioTestInterval(tLower = 0,
-    #                                    tUpper = input$truncationTime,
-    #                                    expLower = expRange()[1],
-    #                                    expUpper = expRange()[2],
-    #                                    expGroup = levels(survivalDF()$treatment)[1],
-    #                                    tTarget = input$targetTime,
-    #                                    survDf = survivalDF())
-    #   })
+     scenarioIntervalGp1 <- reactive({ 
+       req(survivalDF(), expRange(),input$scenarioGroup,
+           input$targetTime,
+           input$truncationTime)
+       sce <- survivalScenario(tLower = 0,
+                               tUpper = min(input$truncationTime,
+                                            max(survivalDF()$time)),
+                               expLower= expRange()[1],
+                               expUpper = expRange()[2],
+                               expGroup = levels(survivalDF()$treatment)[1],
+                               tTarget = input$targetTime,
+                               survDf = survivalDF(),
+                               groups = levels(survivalDF()$treatment),
+                               xl = paste0("Time (", input$timeUnit, ")"),
+                               showPlot = FALSE,
+                               fontsize = input$fs,
+                               useWeights = caseWeight_value())
+       sce$interval
+       })
     
-    # scenarioIntervalGp2 <- reactive({ 
-    #   req(survivalDF(), expRange(),input$scenarioGroup,
-    #       input$targetTime,
-    #       input$truncationTime)
-    #   interval <- NULL
-    #   if(length(levels(survivalDF()$treatment)) > 1){
-    #   interval <- scenarioTestInterval(tLower = 0,
-    #                        tUpper = input$truncationTime,
-    #                        expLower = expRange()[1],
-    #                        expUpper = expRange()[2],
-    #                        expGroup = levels(survivalDF()$treatment)[2],
-    #                        tTarget = input$targetTime,
-    #                        survDf = survivalDF())
-    #   }
-    #   interval
-    # })
+     scenarioIntervalGp2 <- reactive({ 
+       req(survivalDF(), expRange(),input$scenarioGroup,
+           input$targetTime,
+           input$truncationTime)
+       interval <- NULL
+       if(length(levels(survivalDF()$treatment)) > 1){
+       interval <- survivalScenario(tLower = 0,
+                                    tUpper = min(input$truncationTime,
+                                                 max(survivalDF()$time)),
+                                    expLower= expRange()[1],
+                                    expUpper = expRange()[2],
+                                    expGroup = levels(survivalDF()$treatment)[2],
+                                    tTarget = input$targetTime,
+                                    survDf = survivalDF(),
+                                    groups = levels(survivalDF()$treatment),
+                                    xl = paste0("Time (", input$timeUnit, ")"),
+                                    showPlot = FALSE,
+                                    fontsize = input$fs,
+                                    useWeights = caseWeight_value())$interval
+       }
+       interval
+     })
     
     output$reportInterval <- renderUI({
 
