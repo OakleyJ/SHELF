@@ -64,7 +64,9 @@ elicitSurvivalExtrapolation<- function(){
                                     Values in the "event" column should be 0 for
                                     a censored observation, and 1 otherwise. The
                                     "treatment" column should be included even 
-                                    if there is only one treatment group.'),
+                                    if there is only one treatment group. If the 
+                                    data include case weights for each observation,
+                                    include a fourth column "weights"'),
                            plotOutput("KMbasic"),
                            tableOutput("survivalSummary"),
                          
@@ -197,38 +199,38 @@ elicitSurvivalExtrapolation<- function(){
                 tabPanel("Extrapolation plot",
                          plotOutput("extrapolationPlot")
                          
-                ),
-                tabPanel("Joint distribution",
-                         uiOutput("bivariate")
-                         
-                ),
-                tabPanel("Report",
-                         wellPanel(
-                           h5("Report content"),
-                          
-                         checkboxInput("reportData", "KM plot and summary data",
-                                       value = TRUE, width = NULL),
-                         checkboxInput("reportTable", "Survivor and hazard table",
-                                       value = TRUE, width = NULL),
-                         uiOutput("reportGroup1"),
-                         uiOutput("reportGroup2"),
-                         checkboxInput("reportIndividual", "Individual judgements",
-                                       value = TRUE, width = NULL),
-                         checkboxInput("reportScenarioTest", "Scenario Test results",
-                                       value = TRUE, width = NULL),
-                         checkboxInput("reportExtrapolation", "Plot extrapolation",
-                                       value = TRUE, width = NULL),
-                         checkboxInput("reportDistributions", "All fitted distributions",
-                                       value = TRUE, width = NULL),
-                         selectInput("outFormat", label = "Report format",
-                                     choices = list('html' = "html_document",
-                                                    'pdf' = "pdf_document",
-                                                    'Word' = "word_document"),
-                                     width = "30%"),
-                         downloadButton("report", "Download report")
-                         
-                         )
-                )
+                )#,
+                # tabPanel("Joint distribution",
+                #          uiOutput("bivariate")
+                #          
+                # ),
+                # tabPanel("Report",
+                #          wellPanel(
+                #            h5("Report content"),
+                #           
+                #          checkboxInput("reportData", "KM plot and summary data",
+                #                        value = TRUE, width = NULL),
+                #          checkboxInput("reportTable", "Survivor and hazard table",
+                #                        value = TRUE, width = NULL),
+                #          uiOutput("reportGroup1"),
+                #          uiOutput("reportGroup2"),
+                #          checkboxInput("reportIndividual", "Individual judgements",
+                #                        value = TRUE, width = NULL),
+                #          checkboxInput("reportScenarioTest", "Scenario Test results",
+                #                        value = TRUE, width = NULL),
+                #          checkboxInput("reportExtrapolation", "Plot extrapolation",
+                #                        value = TRUE, width = NULL),
+                #          checkboxInput("reportDistributions", "All fitted distributions",
+                #                        value = TRUE, width = NULL),
+                #          selectInput("outFormat", label = "Report format",
+                #                      choices = list('html' = "html_document",
+                #                                     'pdf' = "pdf_document",
+                #                                     'Word' = "word_document"),
+                #                      width = "30%"),
+                #          downloadButton("report", "Download report")
+                #          
+                #          )
+                # )
            
             
       )
@@ -272,8 +274,14 @@ elicitSurvivalExtrapolation<- function(){
       truncatedDf$event[index] <- 0
       truncatedDf$time[index] <- input$truncationTime
       
+      if(caseWeight_value() == TRUE){
+        fit <- survival::survfit(survival::Surv(time, event) ~ treatment,
+                                 weights = weights,
+                                 data = truncatedDf)}else{
+        fit <- survival::survfit(survival::Surv(time, event) ~ treatment, data = truncatedDf)
+                                 }
      
-      fit <- survival::survfit(survival::Surv(time, event) ~ treatment, data = truncatedDf)
+      
       myplot<- survminer::ggsurvplot(fit, data = truncatedDf, censor = TRUE,
                                       legend = "right",
                                       legend.title = "",
@@ -320,9 +328,9 @@ elicitSurvivalExtrapolation<- function(){
 
     caseWeight_value <- reactive({
       if (is.null(input$useWeights)) {
-        FALSE
+        return(FALSE)
       } else {
-        input$useWeights
+        return(input$useWeights)
       }
     })
         
@@ -348,7 +356,8 @@ elicitSurvivalExtrapolation<- function(){
       req(survivalDF(), input$breakTime,
           input$truncationTime)
       makeSurvivalTable(survivalDF(), input$breakTime,
-                        input$truncationTime, input$timeUnit, dp = 2)
+                        input$truncationTime, input$timeUnit, dp = 2,
+                        useWeights = caseWeight_value())
       
     })
     
@@ -390,7 +399,8 @@ elicitSurvivalExtrapolation<- function(){
                                    groups = levels(survivalDF()$treatment),
                                    xl = paste0("Time (", input$timeUnit, ")"),
                                    showPlot = FALSE,
-                                   fontsize = input$fs)
+                                   fontsize = input$fs,
+                              useWeights = caseWeight_value())
       scenario$plot <- sce$KMplot
       scenario$interval <- sce$interval
 
@@ -1015,7 +1025,8 @@ elicitSurvivalExtrapolation<- function(){
                               includeEbar = FALSE,
                               includeExpRibbon = TRUE,
                               KMCI = TRUE,
-                              fontsize = input$fs)
+                              fontsize = input$fs,
+                              useWeights = caseWeight_value())
       
       if(input$RIOdist1 == "best"){
         fqDist1 <- myfit1()$best.fitting[1, 1]
@@ -1346,7 +1357,8 @@ KMextrapolate <- function(tLower = 0,
                           includeEbar = TRUE,
                           includeExpRibbon = TRUE,
                           KMCI = FALSE,
-                          fontsize = 16){
+                          fontsize = 16,
+                          useWeights = FALSE){
   
   x <- ymin <- ymax <- NULL # hack to avoid R CMD check NOTE
   
@@ -1357,7 +1369,12 @@ KMextrapolate <- function(tLower = 0,
   truncatedDf$time[index] <- tUpper
   
   # Prepare KM plot
-  fit <- survival::survfit(survival::Surv(time, event) ~ treatment, data = truncatedDf)
+  if(useWeights == TRUE){
+    fit <- survival::survfit(survival::Surv(time, event) ~ treatment,
+                             weights = weights, data = truncatedDf)}else{
+    fit <- survival::survfit(survival::Surv(time, event) ~ treatment,
+                             data = truncatedDf)  
+                             }
   myplot <- survminer::ggsurvplot(fit, data = truncatedDf, censor = FALSE,
                                   break.time.by = breakTime,
                                   legend = "right",
@@ -1384,7 +1401,13 @@ KMextrapolate <- function(tLower = 0,
     
     expUpper <- min(expUpper, max(dfExp$time))
     
-    fitExp <- survival::survfit(survival::Surv(time, event) ~ 1, data = dfExp)
+    if(useWeights == TRUE){
+      fitExp <- survival::survfit(survival::Surv(time, event) ~ 1,
+                                  weights = weights, data = dfExp)}else{
+      fitExp <- survival::survfit(survival::Surv(time, event) ~ 1, data = dfExp) 
+                               }
+    
+    
     Plower <- summary(fitExp, times = expLower)$surv
     index <- dfExp$time > expLower 
     eventTruncated <- dfExp$event
@@ -1393,7 +1416,18 @@ KMextrapolate <- function(tLower = 0,
     timeTruncated <- dfExp$time[index]
     timeTruncated[timeTruncated > expUpper] <- expUpper
     
-    expFit <- survival::survreg(survival::Surv(time = timeTruncated-expLower, event = eventTruncated) ~ 1, dist = "exponential")
+    
+    if(useWeights == TRUE){
+      expFit <- survival::survreg(survival::Surv(time = timeTruncated-expLower,
+                                                 event = eventTruncated) ~ 1,
+                                  weights = dfExp$weights[index],
+                                  dist = "exponential", 
+                                  robust = TRUE)}else{
+      expFit <- survival::survreg(survival::Surv(time = timeTruncated-expLower,
+                                                 event = eventTruncated) ~ 1,
+                                  dist = "exponential")
+                                  }
+    
     
     
     
@@ -1414,9 +1448,9 @@ KMextrapolate <- function(tLower = 0,
     mLogLambda <- summary(expFit)$table[1]
     sLogLambda <- summary(expFit)$table[2]
     
-    expMatrix <- matrix(0, 1000, 100)
+    expMatrix <- matrix(0, 10000, 100)
     
-    for(i in 1:1000){
+    for(i in 1:10000){
       randomP <- rnorm(1, mP, sP)
       randomLambda <- exp(-rnorm(1, mLogLambda, sLogLambda ))
       expMatrix[i, ] <- exp(-randomLambda*(tVals-expLower))*randomP
