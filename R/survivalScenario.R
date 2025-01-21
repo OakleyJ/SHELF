@@ -11,12 +11,15 @@
 #' @param expUpper end time for using data to estimate constant hazard;
 #' data after this time will be censored.
 #' @param tTarget target extrapolation time.
-#' @param survDf data frame with individual patient data. Require to bea .csv file with
-#' three columns: "time", "event" and "treatment" (in that order).
+#' @param survDf data frame with individual patient data. Require to be a .csv file with
+#' three columns: "time", "event" and "treatment" (in that order). For weighted observations (e.g. 
+#' using propensity scores), include a fourth column "weights".
 #' Values in the "event" column should be 0 for a censored observation, and 1 otherwise.
-#' The"treatment" column should be included even if there is only one treatment group.'
+#' The "treatment" column should be included even if there is only one treatment group.'
 #' @param groups character vector of names of the treatment group. Extracted from survDF by default.
 #' @param expGroup selected treatment group for extrapolating
+#' @param useWeights set to TRUE if survDf includes column of weights, as described in specification 
+#' of survDf. This column is passed on to survival::survreg() and survival::survfit() as the case weights.
 #' @param xl x-axis label
 #' @param fontsize plot fontsize
 #' @param showPlot whether to display the plot
@@ -47,6 +50,7 @@ survivalScenario <- function(tLower = 0,
                           survDf,
                           groups = levels(survDf$treatment),
                           expGroup = levels(survDf$treatment)[1],
+                          useWeights = FALSE,
                           xl = "Time",
                           fontsize = 12,
                           showPlot = TRUE){
@@ -59,8 +63,19 @@ survivalScenario <- function(tLower = 0,
   truncatedDf$event[index] <- 0
   truncatedDf$time[index] <- tUpper
   
+ 
+  
   # Prepare KM plot
-  fit <- survival::survfit(survival::Surv(time, event) ~ treatment, data = truncatedDf)
+  
+
+  if(useWeights == TRUE){
+    fit <- survival::survfit(survival::Surv(time, event) ~ treatment,
+                             weights = weights, data = truncatedDf)
+  }else{
+    fit <- survival::survfit(survival::Surv(time, event) ~ treatment,
+                             data = truncatedDf)
+  }
+  
   myplot <- survminer::ggsurvplot(fit, data = truncatedDf, censor = FALSE,
                                   legend = "right",
                                   legend.title = "",
@@ -80,7 +95,15 @@ survivalScenario <- function(tLower = 0,
     
   # extract S(t) and Var(S(t)) for t = expLower (beginning of constant hazard period)
   dfExp <- truncatedDf[truncatedDf$treatment == expGroup, ]
-  fitExp <- survival::survfit(survival::Surv(time, event) ~ 1, data = dfExp)
+  
+  
+  if(useWeights == TRUE){
+    fitExp <- survival::survfit(survival::Surv(time, event) ~ 1,
+                                weights = weights,
+                                data = dfExp)}else{
+    fitExp <- survival::survfit(survival::Surv(time, event) ~ 1, 
+                                                              data = dfExp)
+    }
   Plower <- summary(fitExp, times = expLower)$surv
   mP <- summary(fitExp, times = expLower)$surv
   sP <- summary(fitExp, times = expLower)$std.err
@@ -98,9 +121,21 @@ survivalScenario <- function(tLower = 0,
   
   timeTruncated <- dfExp$time[index]
   timeTruncated[timeTruncated > expUpper] <- expUpper
+  
+  if(useWeights == TRUE){
+    expFit <- survival::survreg(survival::Surv(time = timeTruncated-expLower,
+                                               event = eventTruncated) ~ 1, 
+                                weights = dfExp$weights[index],
+                                dist = "exponential",
+                                robust = TRUE)
     
-  expFit <- survival::survreg(survival::Surv(time = timeTruncated-expLower,
-                                             event = eventTruncated) ~ 1, dist = "exponential")
+  }else{
+    expFit <- survival::survreg(survival::Surv(time = timeTruncated-expLower,
+                                               event = eventTruncated) ~ 1, 
+                                dist = "exponential")
+  }
+    
+ 
     
     
     

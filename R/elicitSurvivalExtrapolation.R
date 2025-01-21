@@ -51,6 +51,7 @@ elicitSurvivalExtrapolation<- function(){
                                uiOutput("targetTime"),
                                uiOutput("truncationTime"),
                                uiOutput("timeUnit"),
+                               uiOutput("caseWeights"),
                                uiOutput("fontSize")
                               
                          
@@ -243,8 +244,9 @@ elicitSurvivalExtrapolation<- function(){
       req(input$file)
       inFile <- input$file
       sdf <- utils::read.csv(inFile$datapath)
+      
      
-      colnames(sdf) <- c("time", "event", "treatment")
+      colnames(sdf)[1:3] <- c("time", "event", "treatment")
       sdf$treatment <- as.factor(sdf$treatment)
       
       if(length(levels(sdf$treatment)) > 2){
@@ -309,6 +311,21 @@ elicitSurvivalExtrapolation<- function(){
                   selected = "years")
     })
     
+    output$caseWeights <- renderUI({
+      req(survivalDF())
+      if("weights" %in% colnames(survivalDF())){
+        checkboxInput("useWeights", "Use case weights", value = TRUE)
+      }
+      })
+
+    caseWeight_value <- reactive({
+      if (is.null(input$useWeights)) {
+        FALSE
+      } else {
+        input$useWeights
+      }
+    })
+        
     output$fontSize <- renderUI({
       req(survivalDF())
       numericInput("fs", label = "Font size (all plots)", value = 16)
@@ -356,74 +373,101 @@ elicitSurvivalExtrapolation<- function(){
                error = function(e){NULL})
     })
     
+    scenario <- reactiveValues()
     
-    output$KMplot <- renderPlot({
+    observe({
       req(survivalDF(), expRange(), input$scenarioGroup,
           input$targetTime, 
           input$truncationTime)
-      scenario <- survivalScenario(tLower = 0,
-                                tUpper = min(input$truncationTime,
-                                             max(survivalDF()$time)),
-                                expLower= expRange()[1],
-                                expUpper = expRange()[2],
-                                expGroup = input$scenarioGroup,
-                                tTarget = input$targetTime,
-                                survDf = survivalDF(),
-                    groups = levels(survivalDF()$treatment),
-                    xl = paste0("Time (", input$timeUnit, ")"),
-                    showPlot = FALSE,
-                                fontsize = input$fs)
-      scenario$KMplot
-     
+      sce <- survivalScenario(tLower = 0,
+                                   tUpper = min(input$truncationTime,
+                                                max(survivalDF()$time)),
+                                   expLower= expRange()[1],
+                                   expUpper = expRange()[2],
+                                   expGroup = input$scenarioGroup,
+                                   tTarget = input$targetTime,
+                                   survDf = survivalDF(),
+                                   groups = levels(survivalDF()$treatment),
+                                   xl = paste0("Time (", input$timeUnit, ")"),
+                                   showPlot = FALSE,
+                                   fontsize = input$fs)
+      scenario$plot <- sce$KMplot
+      scenario$interval <- sce$interval
+
+    })
+    
+    output$KMplot <- renderPlot({
+      # req(survivalDF(), expRange(), input$scenarioGroup,
+      #     input$targetTime, 
+      #     input$truncationTime)
+      # scenario <- survivalScenario(tLower = 0,
+      #                           tUpper = min(input$truncationTime,
+      #                                        max(survivalDF()$time)),
+      #                           expLower= expRange()[1],
+      #                           expUpper = expRange()[2],
+      #                           expGroup = input$scenarioGroup,
+      #                           tTarget = input$targetTime,
+      #                           survDf = survivalDF(),
+      #               groups = levels(survivalDF()$treatment),
+      #               xl = paste0("Time (", input$timeUnit, ")"),
+      #               showPlot = FALSE,
+      #                           fontsize = input$fs)
+      # scenario$KMplot
+     req(scenario$plot)
+      scenario$plot
+      
     })
     
     
-    scenarioIntervalGp1 <- reactive({ 
-      req(survivalDF(), expRange(),input$scenarioGroup,
-          input$targetTime,
-          input$truncationTime)
-      scenarioTestInterval(tLower = 0,
-                                       tUpper = input$truncationTime,
-                                       expLower = expRange()[1],
-                                       expUpper = expRange()[2],
-                                       expGroup = levels(survivalDF()$treatment)[1],
-                                       tTarget = input$targetTime,
-                                       survDf = survivalDF())
-      })
+    # scenarioIntervalGp1 <- reactive({ 
+    #   req(survivalDF(), expRange(),input$scenarioGroup,
+    #       input$targetTime,
+    #       input$truncationTime)
+    #   scenarioTestInterval(tLower = 0,
+    #                                    tUpper = input$truncationTime,
+    #                                    expLower = expRange()[1],
+    #                                    expUpper = expRange()[2],
+    #                                    expGroup = levels(survivalDF()$treatment)[1],
+    #                                    tTarget = input$targetTime,
+    #                                    survDf = survivalDF())
+    #   })
     
-    scenarioIntervalGp2 <- reactive({ 
-      req(survivalDF(), expRange(),input$scenarioGroup,
-          input$targetTime,
-          input$truncationTime)
-      interval <- NULL
-      if(length(levels(survivalDF()$treatment)) > 1){
-      interval <- scenarioTestInterval(tLower = 0,
-                           tUpper = input$truncationTime,
-                           expLower = expRange()[1],
-                           expUpper = expRange()[2],
-                           expGroup = levels(survivalDF()$treatment)[2],
-                           tTarget = input$targetTime,
-                           survDf = survivalDF())
-      }
-      interval
-    })
+    # scenarioIntervalGp2 <- reactive({ 
+    #   req(survivalDF(), expRange(),input$scenarioGroup,
+    #       input$targetTime,
+    #       input$truncationTime)
+    #   interval <- NULL
+    #   if(length(levels(survivalDF()$treatment)) > 1){
+    #   interval <- scenarioTestInterval(tLower = 0,
+    #                        tUpper = input$truncationTime,
+    #                        expLower = expRange()[1],
+    #                        expUpper = expRange()[2],
+    #                        expGroup = levels(survivalDF()$treatment)[2],
+    #                        tTarget = input$targetTime,
+    #                        survDf = survivalDF())
+    #   }
+    #   interval
+    # })
     
     output$reportInterval <- renderUI({
 
-      req(input$scenarioGroup, survivalDF())
-      txt <- NULL
-      if(input$scenarioGroup == levels(survivalDF()$treatment)[1]){
-        req(scenarioIntervalGp1())
-        txt <- paste0("(", signif(scenarioIntervalGp1()[1], 2)
-               , ", ", signif(scenarioIntervalGp1()[2], 2), ")" )
-      }
-      
-      if(input$scenarioGroup != levels(survivalDF()$treatment)[1]){
-        req(scenarioIntervalGp2())
-        txt <- paste0("(", signif(scenarioIntervalGp2()[1], 2), ", ",
-               signif(scenarioIntervalGp2()[2], 2), ")" )
-      }
-      req(txt)
+      # req(input$scenarioGroup, survivalDF())
+      # txt <- NULL
+      # if(input$scenarioGroup == levels(survivalDF()$treatment)[1]){
+      #   req(scenarioIntervalGp1())
+      #   txt <- paste0("(", signif(scenarioIntervalGp1()[1], 2)
+      #          , ", ", signif(scenarioIntervalGp1()[2], 2), ")" )
+      # }
+      # 
+      # if(input$scenarioGroup != levels(survivalDF()$treatment)[1]){
+      #   req(scenarioIntervalGp2())
+      #   txt <- paste0("(", signif(scenarioIntervalGp2()[1], 2), ", ",
+      #          signif(scenarioIntervalGp2()[2], 2), ")" )
+      # }
+      req(scenario$interval)
+
+      txt <- paste0("(", signif(scenario$interval[1], 2),
+                    ", ", signif(scenario$interval[2], 2), ")" )
       HTML(paste(hr(),
                  h5(paste0("Approximate 95% credible interval at the target time: ",
                            txt))))
@@ -1403,93 +1447,93 @@ KMextrapolate <- function(tLower = 0,
 
 # Helper function survivalTable ----
 
-scenarioTestInterval <- function(tLower = 0,
-                          tUpper,
-                        
-                          expLower,
-                          expUpper,
-                          expGroup,
-                          tTarget,
-                          survDf){
-  # Truncate data frame for plotting
-  index <- survDf$time > tUpper
-  truncatedDf <- survDf
-  truncatedDf$event[index] <- 0
-  truncatedDf$time[index] <- tUpper
-  
-  # Prepare KM plot
+# scenarioTestInterval <- function(tLower = 0,
+#                           tUpper,
+#                         
+#                           expLower,
+#                           expUpper,
+#                           expGroup,
+#                           tTarget,
+#                           survDf){
+#   # Truncate data frame for plotting
+#   index <- survDf$time > tUpper
+#   truncatedDf <- survDf
+#   truncatedDf$event[index] <- 0
+#   truncatedDf$time[index] <- tUpper
+#   
+#   # Prepare KM plot
+# 
+#     dfExp <- truncatedDf[truncatedDf$treatment == expGroup, ]
+#     fitExp <- survival::survfit(survival::Surv(time, event) ~ 1, data = dfExp)
+#     Plower <- summary(fitExp, times = expLower)$surv
+#     index <- dfExp$time > expLower 
+#     eventTruncated <- dfExp$event
+#     eventTruncated[dfExp$time > expUpper] <- 0
+#     eventTruncated <- eventTruncated[index]
+#     timeTruncated <- dfExp$time[index]
+#     timeTruncated[timeTruncated > expUpper] <- expUpper
+#     
+#     expFit <- survival::survreg(survival::Surv(time = timeTruncated-expLower, event = eventTruncated) ~ 1, dist = "exponential")
+#     lambda <- exp(-expFit$coefficients)
+#     
+#     mP <- summary(fitExp, times = expLower)$surv
+#     sP <- summary(fitExp, times = expLower)$std.err
+#     
+#     mLogLambda <- summary(expFit)$table[1]
+#     sLogLambda <- summary(expFit)$table[2]
+#     
+#     
+#       randomP <- rnorm(10000, mP, sP)
+#       randomLambda <- exp(-rnorm(10000, mLogLambda, sLogLambda ))
+#       tSample <- exp(-randomLambda*(tTarget-expLower))*randomP
+#    
+#     quantile(tSample, c(0.025, 0.975))
+#    
+#       
+# }
 
-    dfExp <- truncatedDf[truncatedDf$treatment == expGroup, ]
-    fitExp <- survival::survfit(survival::Surv(time, event) ~ 1, data = dfExp)
-    Plower <- summary(fitExp, times = expLower)$surv
-    index <- dfExp$time > expLower 
-    eventTruncated <- dfExp$event
-    eventTruncated[dfExp$time > expUpper] <- 0
-    eventTruncated <- eventTruncated[index]
-    timeTruncated <- dfExp$time[index]
-    timeTruncated[timeTruncated > expUpper] <- expUpper
-    
-    expFit <- survival::survreg(survival::Surv(time = timeTruncated-expLower, event = eventTruncated) ~ 1, dist = "exponential")
-    lambda <- exp(-expFit$coefficients)
-    
-    mP <- summary(fitExp, times = expLower)$surv
-    sP <- summary(fitExp, times = expLower)$std.err
-    
-    mLogLambda <- summary(expFit)$table[1]
-    sLogLambda <- summary(expFit)$table[2]
-    
-    
-      randomP <- rnorm(10000, mP, sP)
-      randomLambda <- exp(-rnorm(10000, mLogLambda, sLogLambda ))
-      tSample <- exp(-randomLambda*(tTarget-expLower))*randomP
-   
-    quantile(tSample, c(0.025, 0.975))
-   
-      
-}
 
-
-makeSurvivalTable <- function(survDF, breakTime, truncationTime, timeUnit, dp = 2){
-  sv <- survival::survfit(survival::Surv(time, event) ~ treatment, data = survDF)
-  truncationTime <- min(truncationTime, min(tapply(survDF$time, survDF$treatment, max)))
-  sTimes <- seq(from = breakTime, to = truncationTime, by = breakTime)
-  nTimes <- length(sTimes)
-  nTreatments <- length(levels(survDF$treatment))
-  tNames <- levels(survDF$treatment)
-  
-  pt <- matrix(round(summary(sv, times = sTimes)$surv , dp),
-               nrow = nTimes, ncol = nTreatments)
-  wt  <- pt
-  wt[1, ] <- 1 - wt[1, ]
-  if(nrow(wt) > 1){
-    wt[-1, ] <- 1 - round(pt[2:nTimes, ]/pt[1:(nTimes - 1), ], dp)
-    }
-  
-  ciLower <- matrix(round(summary(sv, times = sTimes)$lower , dp),
-                    nrow = nTimes, ncol = nTreatments)
-  ciUpper <- matrix(round(summary(sv, times = sTimes)$upper , dp),
-                    nrow = nTimes, ncol = nTreatments)
-  ci95 <-  matrix (paste0("(", ciLower, ", ", ciUpper,")"),
-                   nrow = nTimes, ncol = nTreatments)
-  sTable <- data.frame(paste0("[", c(0, sTimes[1:(nTimes -1)]), ",", sTimes, ")"),
-                       pt[, 1], ci95[, 1],  wt[, 1])
-  colnames(sTable) <- c(paste0("time interval (", timeUnit,")"),
-                        paste0("survivor (", tNames[1], ")"),
-                        paste0("survivor 95% CI (", tNames[1], ")"),
-                        paste0("hazard (", tNames[1], ")"))
-  
-  if(nTreatments > 1){
-    for(i in 2:nTreatments){
-      dfTemp <-  data.frame(pt[, i], ci95[, i],  wt[, i])
-      colnames(dfTemp) <- c(paste0("survivor (", tNames[i], ")"),
-                            paste0("survivor 95% CI (", tNames[i], ")"),
-                            paste0("hazard (", tNames[i], ")"))
-      sTable <- cbind(sTable, dfTemp)
-    }
-  }
-  
-  sTable
-}
+# makeSurvivalTable <- function(survDF, breakTime, truncationTime, timeUnit, dp = 2){
+#   sv <- survival::survfit(survival::Surv(time, event) ~ treatment, data = survDF)
+#   truncationTime <- min(truncationTime, min(tapply(survDF$time, survDF$treatment, max)))
+#   sTimes <- seq(from = breakTime, to = truncationTime, by = breakTime)
+#   nTimes <- length(sTimes)
+#   nTreatments <- length(levels(survDF$treatment))
+#   tNames <- levels(survDF$treatment)
+#   
+#   pt <- matrix(round(summary(sv, times = sTimes)$surv , dp),
+#                nrow = nTimes, ncol = nTreatments)
+#   wt  <- pt
+#   wt[1, ] <- 1 - wt[1, ]
+#   if(nrow(wt) > 1){
+#     wt[-1, ] <- 1 - round(pt[2:nTimes, ]/pt[1:(nTimes - 1), ], dp)
+#     }
+#   
+#   ciLower <- matrix(round(summary(sv, times = sTimes)$lower , dp),
+#                     nrow = nTimes, ncol = nTreatments)
+#   ciUpper <- matrix(round(summary(sv, times = sTimes)$upper , dp),
+#                     nrow = nTimes, ncol = nTreatments)
+#   ci95 <-  matrix (paste0("(", ciLower, ", ", ciUpper,")"),
+#                    nrow = nTimes, ncol = nTreatments)
+#   sTable <- data.frame(paste0("[", c(0, sTimes[1:(nTimes -1)]), ",", sTimes, ")"),
+#                        pt[, 1], ci95[, 1],  wt[, 1])
+#   colnames(sTable) <- c(paste0("time interval (", timeUnit,")"),
+#                         paste0("survivor (", tNames[1], ")"),
+#                         paste0("survivor 95% CI (", tNames[1], ")"),
+#                         paste0("hazard (", tNames[1], ")"))
+#   
+#   if(nTreatments > 1){
+#     for(i in 2:nTreatments){
+#       dfTemp <-  data.frame(pt[, i], ci95[, i],  wt[, i])
+#       colnames(dfTemp) <- c(paste0("survivor (", tNames[i], ")"),
+#                             paste0("survivor 95% CI (", tNames[i], ")"),
+#                             paste0("hazard (", tNames[i], ")"))
+#       sTable <- cbind(sTable, dfTemp)
+#     }
+#   }
+#   
+#   sTable
+# }
 
 makeSurvSummaryTable <- function(survDF, sf = 3){
   
