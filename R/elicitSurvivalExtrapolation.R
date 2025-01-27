@@ -199,38 +199,38 @@ elicitSurvivalExtrapolation<- function(){
                 tabPanel("Extrapolation plot",
                          plotOutput("extrapolationPlot")
                          
-                )#,
+                ),
                 # tabPanel("Joint distribution",
                 #          uiOutput("bivariate")
                 #          
                 # ),
-                # tabPanel("Report",
-                #          wellPanel(
-                #            h5("Report content"),
-                #           
-                #          checkboxInput("reportData", "KM plot and summary data",
-                #                        value = TRUE, width = NULL),
-                #          checkboxInput("reportTable", "Survivor and hazard table",
-                #                        value = TRUE, width = NULL),
-                #          uiOutput("reportGroup1"),
-                #          uiOutput("reportGroup2"),
-                #          checkboxInput("reportIndividual", "Individual judgements",
-                #                        value = TRUE, width = NULL),
-                #          checkboxInput("reportScenarioTest", "Scenario Test results",
-                #                        value = TRUE, width = NULL),
-                #          checkboxInput("reportExtrapolation", "Plot extrapolation",
-                #                        value = TRUE, width = NULL),
-                #          checkboxInput("reportDistributions", "All fitted distributions",
-                #                        value = TRUE, width = NULL),
-                #          selectInput("outFormat", label = "Report format",
-                #                      choices = list('html' = "html_document",
-                #                                     'pdf' = "pdf_document",
-                #                                     'Word' = "word_document"),
-                #                      width = "30%"),
-                #          downloadButton("report", "Download report")
-                #          
-                #          )
-                # )
+                tabPanel("Report",
+                         wellPanel(
+                           h5("Report content"),
+
+                         checkboxInput("reportData", "KM plot and summary data",
+                                       value = TRUE, width = NULL),
+                         checkboxInput("reportTable", "Survivor and hazard table",
+                                       value = TRUE, width = NULL),
+                         uiOutput("reportGroup1"),
+                         uiOutput("reportGroup2"),
+                         checkboxInput("reportIndividual", "Individual judgements",
+                                       value = TRUE, width = NULL),
+                         checkboxInput("reportScenarioTest", "Scenario Test results",
+                                       value = TRUE, width = NULL),
+                         checkboxInput("reportExtrapolation", "Plot extrapolation",
+                                       value = TRUE, width = NULL),
+                         checkboxInput("reportDistributions", "All fitted distributions",
+                                       value = TRUE, width = NULL),
+                         selectInput("outFormat", label = "Report format",
+                                     choices = list('html' = "html_document",
+                                                    'pdf' = "pdf_document",
+                                                    'Word' = "word_document"),
+                                     width = "30%"),
+                         downloadButton("report", "Download report")
+
+                         )
+                )
            
             
       )
@@ -288,7 +288,8 @@ elicitSurvivalExtrapolation<- function(){
                             conf.int = TRUE,
                             legend.labs = levels(truncatedDf$treatment),
                             xlim = c(0, input$targetTime),
-                            xlab = paste0("Time (", input$timeUnit, ")"),
+                            xlab = paste0("Time t (", input$timeUnit, ")"),
+                            ylab = "S(t)",
                             break.time.by = input$targetTime/8)
       myplot$plot +
         geom_vline(xintercept = input$targetTime, linetype="dotted") +
@@ -297,7 +298,8 @@ elicitSurvivalExtrapolation<- function(){
     
     output$survivalSummary <-renderTable({
       req(survivalDF())
-      makeSurvSummaryTable(survivalDF())}, 
+      makeSurvSummaryTable(survivalDF(), 
+                           useWeights = caseWeight_value())}, 
       rownames = TRUE)
     
     output$targetTime <- renderUI({
@@ -397,7 +399,7 @@ elicitSurvivalExtrapolation<- function(){
                                    tTarget = input$targetTime,
                                    survDf = survivalDF(),
                                    groups = levels(survivalDF()$treatment),
-                                   xl = paste0("Time (", input$timeUnit, ")"),
+                                   xl = paste0("Time t (", input$timeUnit, ")"),
                                    showPlot = FALSE,
                                    fontsize = input$fs,
                               useWeights = caseWeight_value())
@@ -588,14 +590,14 @@ elicitSurvivalExtrapolation<- function(){
                               lower = input$myvals1[1, ],
                               upper = input$myvals1[5, ],
                               expertnames = colnames(input$myvals1),
-                              xlabel = "Surivivor proportion")
+                              xlabel = paste0("S(T=",input$targetTime,")"))
         }
         if(input$elicMethod == "tertiles"){
           p1 <- plotTertiles(vals = input$myvals1[2:4, ],
                               lower = input$myvals1[1, ],
                               upper = input$myvals1[5, ],
                               expertnames = colnames(input$myvals1),
-                             xlabel = "Surivivor proportion")
+                             xlabel = paste0("S(T=",input$targetTime,")"))
         }
         
        
@@ -610,14 +612,14 @@ elicitSurvivalExtrapolation<- function(){
                         lower = input$myvals2[1, ],
                         upper = input$myvals2[5, ],
                         expertnames = colnames(input$myvals2),
-                        xlabel = "Surivivor proportion")
+                        xlabel = paste0("S(T=",input$targetTime,")"))
           }
           if(input$elicMethod == "tertiles"){
             p1 <- plotTertiles(vals = input$myvals2[2:4, ],
                                 lower = input$myvals2[1, ],
                                 upper = input$myvals2[5, ],
                                 expertnames = colnames(input$myvals2),
-                               xlabel = "Surivivor proportion")
+                               xlabel = paste0("S(T=",input$targetTime,")"))
           }
          
         }
@@ -853,7 +855,8 @@ elicitSurvivalExtrapolation<- function(){
               xl = xaxis1()[1], xu = xaxis1()[2], 
               fs = input$fs,
               returnPlot = TRUE,
-              showPlot = FALSE)
+              showPlot = FALSE,
+              ylab = expression(f[S(T)](x)))
     })
     
     pdfPlot2 <- reactive({
@@ -863,7 +866,8 @@ elicitSurvivalExtrapolation<- function(){
               xl = xaxis2()[1], xu = xaxis2()[2], 
               fs = input$fs,
               returnPlot = TRUE,
-              showPlot = FALSE)
+              showPlot = FALSE,
+              ylab = expression(f[S(T)](x)))
     })
     
     
@@ -898,7 +902,9 @@ elicitSurvivalExtrapolation<- function(){
                   dist = input$RIOdist1,
                   showFittedCDF = TRUE,
                   fontsize = input$fs,
-                  xaxisLower = xaxis1()[1], xaxisUpper = xaxis1()[2])
+                  xaxisLower = xaxis1()[1], xaxisUpper = xaxis1()[2],
+                  ylab = expression(P(S(T) <= x)))
+      
     })
     
     cdfPlot2 <- reactive({
@@ -911,7 +917,8 @@ elicitSurvivalExtrapolation<- function(){
                   dist = input$RIOdist2,
                   showFittedCDF = TRUE,
                   fontsize = input$fs,
-                  xaxisLower = xaxis2()[1], xaxisUpper = xaxis2()[2])
+                  xaxisLower = xaxis2()[1], xaxisUpper = xaxis2()[2],
+                  ylab = expression(P(S(T) <= x)))
     })
     
     
@@ -1269,7 +1276,8 @@ elicitSurvivalExtrapolation<- function(){
                        inputMethod = input$elicMethod,
                        reportScenarioTest = input$reportScenarioTest,
                        expRange = expRange(),
-                       reportExtrapolation = input$reportExtrapolation)
+                       reportExtrapolation = input$reportExtrapolation,
+                       useWeights = caseWeight_value())
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
         # from the code in this app).
@@ -1582,7 +1590,7 @@ KMextrapolate <- function(tLower = 0,
 #   sTable
 # }
 
-makeSurvSummaryTable <- function(survDF, sf = 3){
+makeSurvSummaryTable <- function(survDF, sf = 3, useWeights = FALSE){
   
   nTreatments <- length(levels(survDF$treatment))
   
@@ -1590,7 +1598,14 @@ makeSurvSummaryTable <- function(survDF, sf = 3){
   rownames(sTable) <- levels(survDF$treatment)
   colnames(sTable) <- c("n", "events", "minimum", "median", "maximum")
   
-  sv <- survival::survfit(survival::Surv(time, event) ~ treatment, data = survDF)
+  if(useWeights == FALSE){
+  sv <- survival::survfit(survival::Surv(time, event) ~ treatment,
+                          data = survDF)}else{
+                            sv <- survival::survfit(survival::Surv(time, event) ~ treatment,
+                                                    weights = weights,
+                                                    data = survDF)
+                            
+                          }
   table_output <- summary(sv)$table
   
   # Need to keep array format with column names if only one treatment group:

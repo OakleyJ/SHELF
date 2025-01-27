@@ -25,6 +25,7 @@ params:
   reportScenarioTest: NA
   expRange: NA
   reportExtrapolation: NA
+  useWeights: NA
 ---
 
 ```{r global_options, include=FALSE}

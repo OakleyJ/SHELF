@@ -5,7 +5,7 @@
 \title{Tabulate Summary Data for Survival Extrapolation}
 \usage{
 makeSurvivalTable(
-  survDF,
+  survDf,
   breakTime,
   truncationTime,
   timeUnit,
@@ -14,7 +14,7 @@ makeSurvivalTable(
 )
 }
 \arguments{
-\item{survDF}{}
+\item{survDf}{}
 
 \item{breakTime}{}
 
@@ -24,9 +24,21 @@ makeSurvivalTable(
 
 \item{dp}{}
 }
+\value{
+a data frame with survivor function estimates, 95% confidence intervals,
+and within interval hazard estimates for each time interval.
+}
 \description{
 Tabulates the Kaplan Meier survivor function and within interval hazard at discrete equally spaced time points t_1,...,t_n
 "Within interval hazard" is defined as (1-S(t_{n+1})) / S_(t_n), using the Kaplan Meier estimate of S().
 The table is intended to be included on a summary sheet provided to experts when eliciting judgements about
 extrapolated survival probabilities.
+}
+\examples{
+\dontrun{
+sdf <- survival::veteran[, c("time", "status", "trt")]
+colnames(sdf) <- c("time", "event", "treatment")
+sdf$treatment <- factor(sdf$treatment, labels = c("standard", "test"))
+makeSurvivalTable(sdf, breakTime = 50, truncationTime = 250, timeUnit = "months")
+}
 }

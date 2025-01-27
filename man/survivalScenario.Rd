@@ -31,11 +31,11 @@ data after this time will be censored.}
 
 \item{tTarget}{target extrapolation time.}
 
-\item{survDf}{data frame with individual patient data. Require to be a .csv file with
-three columns: "time", "event" and "treatment" (in that order). For weighted observations (e.g. 
+\item{survDf}{data frame with individual patient data. Needs three columns with names
+"time", "event" and "treatment" (in that order). For weighted observations (e.g. 
 using propensity scores), include a fourth column "weights".
 Values in the "event" column should be 0 for a censored observation, and 1 otherwise.
-The "treatment" column should be included even if there is only one treatment group.'}
+The "treatment" column should be included even if there is only one treatment group.}
 
 \item{groups}{character vector of names of the treatment group. Extracted from survDF by default.}
 
