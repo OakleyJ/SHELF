@@ -77,7 +77,8 @@ survivalModelExtrapolations <- function(survDf, tOffset = 0,
   
   lclExtrapolate <- uclExtrapolate <- matrix(0, 100, length(dists))
   
-  colnames(lclExtrapolate) <- colnames(uclExtrapolate) <- dists
+  colnames(lclExtrapolate) <- colnames(uclExtrapolate) <- 
+    colnames(sExtrapolate) <- dists
   
   for(i in 1:length(dists)){
     mf <- flexsurv::flexsurvreg(survival::Surv(time - tOffset, event)~1,
@@ -136,7 +137,10 @@ survivalModelExtrapolations <- function(survDf, tOffset = 0,
   
   list(KMplot = myplot$plot, tMaxRange  = tExtrapolate[index],
        modelAIC = modelAIC,
+       tExtrapolate = tExtrapolate,
+       mExtrapolate = sExtrapolate,
        lclExtrapolate = lclExtrapolate,
-       uclExtrapolate = uclExtrapolate)
+       uclExtrapolate = uclExtrapolate
+       )
   
 }

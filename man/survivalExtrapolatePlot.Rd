@@ -74,7 +74,8 @@ of survDf. This column is passed on to survival::survfit() as the case weights.}
 a ggplot object, if returnPlot is TRUE
 }
 \description{
-Plot survival data and elicited extrapolated intervals
+Show Kaplan-Meier plot of available data, and credible
+interval for extrapolated survivor function value S(T)
 }
 \examples{
 \dontrun{

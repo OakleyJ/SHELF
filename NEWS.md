@@ -1,3 +1,13 @@
+SHELF v1.12.0 (2025-03-01)
+==============================
+
+* bug fixed in survivalModelExtrapolations()
+
+* additional supporting functions for elicitSurvivalExtrapolation() available as standalone functions: 
+surivivalExtrapolatePlot() and makeSurvivalTable()
+
+* functions for survival extrapolation updated to handle weighted observations
+
 SHELF v1.11.0 (2024-09-03)
 ==============================
 

@@ -1,5 +1,8 @@
-
 #' Plot survival data and elicited extrapolated intervals
+#'
+#' Show Kaplan-Meier plot of available data, and credible
+#' interval for extrapolated survivor function value S(T)
+#'
 #'
 #' @param survDf data frame with individual patient data. Needs three columns with names
 #' "time", "event" and "treatment" (in that order). For weighted observations (e.g. 
