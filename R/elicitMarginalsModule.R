@@ -46,7 +46,7 @@ elicitMarginals <- function(input, output, session, fs){
   output$enterThetaLabels <- renderUI({
     ns <- session$ns
 
-    default_labels <- paste(LETTERS[1:input$nTheta], collapse = ", ")
+    default_labels <- NA #paste(LETTERS[1:input$nTheta], collapse = ", ")
 
     # Try to prepopulate with labels if available from uploaded CSV
     csv_labels <- isolate({

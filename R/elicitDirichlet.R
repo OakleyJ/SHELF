@@ -117,7 +117,9 @@ server = function(input, output) {
   theta_params_from_csv <- reactive({
     req(input$theta_file)
 
-    df <- read.csv(input$theta_file$datapath, header = FALSE, stringsAsFactors = FALSE)
+    suppressWarnings({
+      df <- read.csv(input$theta_file$datapath, header = FALSE, stringsAsFactors = FALSE)
+    })
 
     validate(
       need(nrow(df) >= 1 && ncol(df) >= 2, "CSV must have at least two columns: nTheta and labels")
