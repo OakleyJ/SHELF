@@ -114,18 +114,19 @@ server = function(input, output) {
   
   Category <- fx <- x <- parameters <- NULL
   
-  nTheta_from_csv <- reactive({
+  theta_params_from_csv <- reactive({
     req(input$theta_file)
-    validate(need(input$theta_file$datapath != "", "Please upload a CSV file."))
 
-    # Now read the file safely
-    tryCatch({
-      df <- read.csv(input$theta_file$datapath, header = FALSE)
-      as.integer(df[[1]][1])
-    }, error = function(e) {
-      showNotification("Error reading CSV file: ensure it contains a single number.", type = "error")
-      return(NULL)
-    })
+    df <- read.csv(input$theta_file$datapath, header = FALSE, stringsAsFactors = FALSE)
+
+    validate(
+      need(nrow(df) >= 1 && ncol(df) >= 2, "CSV must have at least two columns: nTheta and labels")
+    )
+
+    nTheta <- as.integer(df[1, 1])
+    thetaLabels <- trimws(as.character(unlist(df[1, 2:ncol(df)])))
+
+    list(nTheta = nTheta, thetaLabels = thetaLabels)
   })
 
   fittedDirichlet <- reactive({
@@ -139,8 +140,12 @@ server = function(input, output) {
 
   theta <- callModule(elicitMarginals, "marginals", marginalFs)
   
-  observeEvent(nTheta_from_csv(), {
-    updateNumericInput(getDefaultReactiveDomain(), "marginals-nTheta", value = nTheta_from_csv())
+  observeEvent(theta_params_from_csv(), {
+    domain <- getDefaultReactiveDomain()
+    vals <- theta_params_from_csv()
+
+    updateNumericInput(domain, "marginals-nTheta", value = vals$nTheta)
+    updateTextInput(domain, "marginals-thetaLabels", value = paste(vals$thetaLabels, collapse = ", "))
   })
 
   output$DirichletPlot <- renderPlot({
