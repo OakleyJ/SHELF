@@ -50,6 +50,7 @@ elicitDirichlet <- function(){
   hr(),
   
   tabsetPanel(
+    fileInput("theta_file", "Upload number of categories (CSV)", accept = ".csv"),
     tabPanel("Elicit marginals",
              elicitMarginalsInput("marginals")
     ),
@@ -113,6 +114,20 @@ server = function(input, output) {
   
   Category <- fx <- x <- parameters <- NULL
   
+  nTheta_from_csv <- reactive({
+    req(input$theta_file)
+    validate(need(input$theta_file$datapath != "", "Please upload a CSV file."))
+
+    # Now read the file safely
+    tryCatch({
+      df <- read.csv(input$theta_file$datapath, header = FALSE)
+      as.integer(df[[1]][1])
+    }, error = function(e) {
+      showNotification("Error reading CSV file: ensure it contains a single number.", type = "error")
+      return(NULL)
+    })
+  })
+
   fittedDirichlet <- reactive({
     fitDirichlet(theta$allFits(), categories = theta$categoryLabels(),
                  n.fitted = input$nFitted,
@@ -124,7 +139,10 @@ server = function(input, output) {
 
   theta <- callModule(elicitMarginals, "marginals", marginalFs)
   
-  
+  observeEvent(nTheta_from_csv(), {
+    updateNumericInput(getDefaultReactiveDomain(), "marginals-nTheta", value = nTheta_from_csv())
+  })
+
   output$DirichletPlot <- renderPlot({
     if(all(theta$allValid() == TRUE)){
     fitDirichlet(theta$allFits(), categories = theta$categoryLabels(),

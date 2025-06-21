@@ -7,7 +7,7 @@ elicitMarginalsInput <- function(id) {
     sidebarLayout(
       sidebarPanel(
         numericInput(ns("nTheta"), h5("Number of categories"),
-                     value = 3, min = 3, step = 1),
+                     value = NA, min = 3, step = 1),
         uiOutput(ns("enterThetaLabels")),
         textInput(ns("probs"), label = h5("Cumulative probabilities"), 
                   value = "0.25, 0.5, 0.75"),
