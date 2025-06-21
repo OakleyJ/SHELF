@@ -29,28 +29,13 @@ elicitDirichlet <- function(){
   
   # Application title
   titlePanel("SHELF: eliciting a Dirichlet distribution"),
-  wellPanel(
-    fluidRow(
-      column(3, selectInput("outFormat", label = "Report format",
-                            choices = list('html' = "html_document",
-                                           'pdf' = "pdf_document",
-                                           'Word' = "word_document"))
-      ),
-      column(3, offset = 1, 
-             numericInput("fs", label = "Font size", value = 12)
-      )),
-    fluidRow(
-      column(3, downloadButton("report", "Download report")
-      ),
-      column(2, offset = 1, actionButton("exit", "Quit")
-      )
-    )
-    
-  ),
-  hr(),
-  
+  div(),
   tabsetPanel(
-    fileInput("theta_file", "Upload number of categories (CSV)", accept = ".csv"),
+    br(),
+    fileInput("theta_file", "Upload Elicitation Questions and Inputs", accept = ".csv"),
+    hr()
+  ),
+  tabsetPanel(
     tabPanel("Elicit marginals",
              elicitMarginalsInput("marginals")
     ),
@@ -103,8 +88,26 @@ elicitDirichlet <- function(){
                                      package="SHELF")))
     
     
-  )
-  
+  ),
+  wellPanel(
+    fluidRow(
+      column(3, selectInput("outFormat", label = "Report format",
+                            choices = list('html' = "html_document",
+                                           'pdf' = "pdf_document",
+                                           'Word' = "word_document"))
+      ),
+      column(3, offset = 1, 
+             numericInput("fs", label = "Font size", value = 12)
+      )),
+    fluidRow(
+      column(3, downloadButton("report", "Download report")
+      ),
+      column(2, offset = 1, actionButton("exit", "Quit")
+      )
+    )
+    
+  ),
+  hr()
 ),
 
 
