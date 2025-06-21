@@ -125,8 +125,8 @@ server = function(input, output) {
       need(nrow(df) >= 1 && ncol(df) >= 2, "CSV must have at least two columns: nTheta and labels")
     )
 
-    nTheta <- as.integer(df[1, 1])
-    thetaLabels <- trimws(as.character(unlist(df[1, 2:ncol(df)])))
+    nTheta <- as.integer(df[2, 2])
+    thetaLabels <- trimws(as.character(unlist(df[3, 2:ncol(df)])))
 
     list(nTheta = nTheta, thetaLabels = thetaLabels)
   })
