@@ -49,11 +49,11 @@
 <polyline points='683.80,542.30 683.80,24.85 ' style='stroke-width: 1.16; stroke: #FFFFFF; stroke-linecap: butt;' />
 <polyline points='79.40,518.78 79.40,401.18 103.57,401.18 200.28,401.18 200.28,48.38 230.50,48.38 230.50,283.58 290.94,283.58 290.94,482.60 605.23,482.60 683.80,482.60 683.80,518.78 ' style='stroke-width: 2.13; stroke-linecap: butt;' />
 <polygon points='79.40,518.78 79.40,401.18 103.57,401.18 103.57,518.78 79.40,518.78 79.40,518.78 ' style='stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #FF0000; fill-opacity: 0.50;' />
-<polyline points='79.40,518.78 79.40,401.18 103.57,401.18 ' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt;' />
-<polyline points='103.57,518.78 79.40,518.78 79.40,518.78 ' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt;' />
+<polyline points='79.40,518.78 79.40,401.18 103.57,401.18 ' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt;' />
+<polyline points='103.57,518.78 79.40,518.78 79.40,518.78 ' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt;' />
 <polygon points='605.23,482.60 683.80,482.60 683.80,518.78 683.80,518.78 683.80,518.78 605.23,518.78 ' style='stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #FF0000; fill-opacity: 0.50;' />
-<polyline points='605.23,482.60 683.80,482.60 683.80,518.78 ' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt;' />
-<polyline points='683.80,518.78 683.80,518.78 605.23,518.78 ' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt;' />
+<polyline points='605.23,482.60 683.80,482.60 683.80,518.78 ' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt;' />
+<polyline points='683.80,518.78 683.80,518.78 605.23,518.78 ' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt;' />
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
 <text x='43.80' y='522.09' text-anchor='end' style='font-size: 9.60px; fill: #4D4D4D; font-family: sans;' textLength='18.69px' lengthAdjust='spacingAndGlyphs'>0.00</text>

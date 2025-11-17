@@ -1,3 +1,8 @@
+SHELF v1.12.1 (2025-11-17)
+==============================
+
+* bug fixed in survivalModelExtrapolations() when using tOffset argument
+
 SHELF v1.12.0 (2025-03-01)
 ==============================
 

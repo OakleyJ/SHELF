@@ -46,7 +46,9 @@ A list containing the elements
 \item{tMaxRange}{the time point at which there is the greatest difference between the largest
 and smallest extrapolated survival probability (if more than one distribution fitted);}
 \item{modelAIC}{the AIC for each fitted model.} 
-\item{lclExtrapolate; uclExtrapolate}{pointwise 95 percent confidence interval for extrapolated survivor functions}
+\item{lclExtrapolate; uclExtrapolate}{pointwise 95 percent confidence interval for extrapolated survivor functions.
+Note that if \code{tOffset > 0 }, these intervals do not account for uncertainty in 
+the survivor function at time t = tOffset.}
 }
 \description{
 Fits seven parametric models to an individual patient survival data set (using the \code{flexsurv}

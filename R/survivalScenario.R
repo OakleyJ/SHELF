@@ -1,7 +1,7 @@
 #' Scenario Testing for Survival Extrapolation
 #' 
-#' Provides a plot and approximate 95% credible interval for an 
-#' extrapolated surival time, based on a assumption of constant hazard 
+#' Provides a plot and approximate 95 percent credible interval for an 
+#' extrapolated survival time, based on a assumption of constant hazard 
 #' after some specified time. Intended to be used as part of the SHELF protocol
 #' for elicitation for survival extrapolation.
 #' 

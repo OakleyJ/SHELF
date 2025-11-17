@@ -30,7 +30,9 @@
 #' \item{tMaxRange}{the time point at which there is the greatest difference between the largest
 #' and smallest extrapolated survival probability (if more than one distribution fitted);}
 #' \item{modelAIC}{the AIC for each fitted model.} 
-#' \item{lclExtrapolate; uclExtrapolate}{pointwise 95 percent confidence interval for extrapolated survivor functions}
+#' \item{lclExtrapolate; uclExtrapolate}{pointwise 95 percent confidence interval for extrapolated survivor functions.
+#' Note that if \code{tOffset > 0 }, these intervals do not account for uncertainty in 
+#' the survivor function at time t = tOffset.}
 #' @examples
 #' \dontrun{
 #' 
@@ -135,12 +137,14 @@ survivalModelExtrapolations <- function(survDf, tOffset = 0,
   modelAIC  <- allAIC[AICrank]
   names(modelAIC) <- dists[AICrank]
   
+ 
+  
   list(KMplot = myplot$plot, tMaxRange  = tExtrapolate[index],
        modelAIC = modelAIC,
-       tExtrapolate = tExtrapolate,
-       mExtrapolate = sExtrapolate,
-       lclExtrapolate = lclExtrapolate,
-       uclExtrapolate = uclExtrapolate
+       tExtrapolate = tExtrapolate[tExtrapolate>= tOffset ],
+       mExtrapolate = mP * sExtrapolate[tExtrapolate>= tOffset, ],
+       lclExtrapolate = mP *  lclExtrapolate[tExtrapolate>= tOffset, ],
+       uclExtrapolate = mP * uclExtrapolate[tExtrapolate>= tOffset, ]
        )
   
 }
