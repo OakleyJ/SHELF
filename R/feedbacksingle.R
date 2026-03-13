@@ -29,7 +29,8 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 	if(!is.na(fit$ssq[ex, "skewnormal"])){
 	Mq[, "skewnormal"] <- sn::qsn(quantiles, xi = fit$Skewnormal[ex,1],
 	                              omega = fit$Skewnormal[ex,2],
-	                              alpha = fit$Skewnormal[ex,3])
+	                              alpha = fit$Skewnormal[ex,3],
+	                              solver = "RFB")
 	}
 	
 

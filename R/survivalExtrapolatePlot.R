@@ -101,17 +101,32 @@ survivalExtrapolatePlot <- function(survDf,
                              data = truncatedDf)
   }
   
-  myplot <- survminer::ggsurvplot(fit, data = truncatedDf, censor = FALSE,
-                                  break.time.by = breakTime,
-                                  legend = "right",
-                                  legend.title = "",
-                                  legend.labs = groups,
-                                  xlim = c(0, tTarget),
-                                  xlab = xl,
-                                  conf.int = TRUE,
-                                  break.y.by = 0.2)
-  myplot$plot <- myplot$plot + geom_vline(xintercept = tTarget, linetype="dotted") +
-    theme_bw(base_size = fontsize) + labs(y = "S(t)")
+  
+  if(length(levels(survDf$treatment))>1){
+    myplot<- suppressWarnings(survminer::ggsurvplot(fit, data = truncatedDf, censor = FALSE,
+                                                    break.time.by = breakTime,
+                                                    legend = "right",
+                                                    legend.title = "",
+                                                    legend.labs = groups,
+                                                    xlim = c(0, tTarget),
+                                                    xlab = xl,
+                                                    conf.int = TRUE,
+                                                    break.y.by = 0.2))
+    myplot$plot <- myplot$plot + geom_vline(xintercept = tTarget, linetype="dotted") +
+      theme_bw(base_size = fontsize) + labs(y = "S(t)") 
+    }else{
+        myplot<- suppressWarnings(survminer::ggsurvplot(fit, data = truncatedDf, censor = FALSE,
+                                                        break.time.by = breakTime,
+                                                        legend = "none",
+                                                        xlim = c(0, tTarget),
+                                                        xlab = xl,
+                                                        break.y.by = 0.2))
+        myplot$plot <- myplot$plot + geom_vline(xintercept = tTarget, linetype="dotted") +
+          theme_bw(base_size = fontsize) +  labs(y = "S(t)") + theme(legend.position = "none") 
+        
+      }
+  
+ 
   
   # Extract feedback quantiles
   

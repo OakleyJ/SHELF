@@ -4,6 +4,7 @@ output:
   html_document:
     toc: yes
     toc_float: yes
+    self_contained: true
   pdf_document: default
   word_document: default
 date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
@@ -95,22 +96,32 @@ knitr::kable(sdf, caption = "Summary statistics for the provided survival data")
 
 
 ```{r basic KM plot}
+
+index <- params$survivalDF$time > params$truncationTime
+truncatedDf <- params$survivalDF
+truncatedDf$event[index] <- 0
+truncatedDf$time[index] <- params$truncationTime
+
+
  if(params$useWeights == TRUE){
         fit <- survival::survfit(survival::Surv(time, event) ~ treatment,
                                  weights = weights,
-                                 data = params$survivalDF)}else{
-        fit <- survival::survfit(survival::Surv(time, event) ~ treatment, data = params$survivalDF)
+                                 data = truncatedDf)}else{
+        fit <- survival::survfit(survival::Surv(time, event) ~ treatment, data = truncatedDf)
                                  }
                                 
                                  
-      myplot<- survminer::ggsurvplot(fit, data = params$survivalDF, censor = TRUE,
+      myplot<- survminer::ggsurvplot(fit, data = truncatedDf, censor = TRUE,
                                       legend = "right",
                                       legend.title = "",
                             conf.int = TRUE,
-                            legend.labs = levels(params$survivalDF$treatment),
+                            legend.labs = levels(truncatedDf$treatment),
                             xlim = c(0, params$targetTime),
                             xlab = paste0("Time (", params$timeUnit, ")"),
                             break.time.by = params$targetTime/8)
+      if(length(levels(truncatedDf$treatment))==1){
+        myplot$plot <- myplot$plot +  theme(legend.position = "none") 
+      }
       myplot$plot +
         geom_vline(xintercept = params$targetTime, linetype="dotted") 
 ```
@@ -129,6 +140,9 @@ knitr::kable(makeSurvivalTable(params$survivalDF,
 <!-- Group 1 -->
 
 `r  if(params$reportGroup1){paste0('# Results for treatment group: "', levels(params$survivalDF$treatment)[1], '"')}`
+
+`r  if(params$reportGroup1){paste0('**Quantity of Interest definition**: the proportion surviving for at least ', params$targetTime, ' ', params$timeUnit, ' in the treatment group "',levels(params$survivalDF$treatment)[1], '".')}`
+
 
 `r  if(params$reportGroup1){"## Individual judgements"}`
 
@@ -190,9 +204,9 @@ The elicited RIO probabilities were as follows
 
 ```{r , eval = params$reportGroup1}
 captionTextGroup1 <- paste0("The probability density function and cumulative distribution function fitted to RIO's probabilities for the Quantity of Interest: 
-                            the proportion suriving for at least time ", params$targetTime, " ",
-                            params$timeUnit, ' in the treatment group "',
-                            levels(params$survivalDF$treatment)[1], '".')
+                            the proportion surviving for at least ", params$targetTime, " ",
+                            params$timeUnit, " in the treatment group ",
+                            levels(params$survivalDF$treatment)[1], ".")
 expert <- 1
 sf <- 3
 mydf <- data.frame( params$allfits[[1]]$vals[expert, ], params$allfits[[1]]$probs[expert, ])
@@ -200,7 +214,7 @@ colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
 knitr::kable(mydf)
 ```
 
-```{r, eval = params$reportGroup1, fig.cap = captionTextGroup1, fig.show='hold', out.width = '45%'}
+```{r, eval = params$reportGroup1, fig.cap=captionTextGroup1,  fig.show='hold', out.width = '45%'}
 plotfit(params$allfits[[1]], xlab = "survival proportion", ylab = "density", d = params$dist1)
 makeCDFPlot(lower = 0, upper = 1, v = params$allfits[[1]]$vals[1, ],
             p = params$allfits[[1]]$probs[1, ], dist = params$dist1,
@@ -224,6 +238,9 @@ knitr::kable(fb1, caption = tableCaption1)
 <!-- Group 2 -->
 
 `r  if(params$reportGroup2){paste0('# Results for treatment group: "', levels(params$survivalDF$treatment)[2], '"')}`
+
+`r  if(params$reportGroup1){paste0('**Quantity of Interest definition**: the proportion surviving for at least ', params$targetTime, ' ', params$timeUnit, ' in the treatment group "',levels(params$survivalDF$treatment)[2], '".')}`
+
 
 `r  if(params$reportGroup2){"## Individual judgements"}`
 
@@ -281,9 +298,9 @@ The elicited RIO probabilities were  as follows
 
 ```{r, eval = params$reportGroup2}
 captionTextGroup2 <- paste0("The probability density function and cumulative distribution function fitted to RIO's probabilities for the Quantity of Interest: 
-                            the proportion suriving for at least time ", params$targetTime, " ",
-                            params$timeUnit, ' in the treatment group "',
-                            levels(params$survivalDF$treatment)[2], '".')
+                            the proportion surviving for at least ", params$targetTime, " ",
+                            params$timeUnit, " in the treatment group ",
+                            levels(params$survivalDF$treatment)[2], ".")
 expert <- 1
 sf <- 3
 mydf <- data.frame( params$allfits[[2]]$vals[expert, ], params$allfits[[1]]$probs[expert, ])

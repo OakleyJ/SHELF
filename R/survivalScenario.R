@@ -76,18 +76,28 @@ survivalScenario <- function(tLower = 0,
                              data = truncatedDf)
   }
   
-  myplot <- survminer::ggsurvplot(fit, data = truncatedDf, censor = FALSE,
-                                  legend = "right",
-                                  legend.title = "",
-                                  legend.labs = groups,
-                                  xlim = c(tLower, tTarget),
-                                  conf.int = TRUE, conf.type = "plain",
-                                  breaks = c(tLower, expLower, expUpper, tTarget),
-                                  name = xl)
+  if(length(levels(survDf$treatment))>1){
+    myplot<- suppressWarnings(survminer::ggsurvplot(fit, data = truncatedDf, censor = FALSE,
+                                                    legend = "right",
+                                                    legend.title = "",
+                                                    legend.labs = groups,
+                                                    xlim = c(tLower, tTarget),
+                                                    conf.int = TRUE, conf.type = "plain",
+                                                    breaks = c(tLower, expLower, expUpper, tTarget),
+                                                    name = xl))
+    myplot$plot <- myplot$plot + geom_vline(xintercept = tTarget, linetype="dotted") +
+      theme_bw(base_size = fontsize) }else{
+        myplot<- suppressWarnings(survminer::ggsurvplot(fit, data = truncatedDf, censor = FALSE,
+                                                        legend = "none",
+                                                        xlim = c(tLower, tTarget), conf.type = "plain",
+                                                        breaks = c(tLower, expLower, expUpper, tTarget),
+                                                        name = xl))
+        myplot$plot <-myplot$plot + geom_vline(xintercept = tTarget, linetype="dotted") +
+          theme_bw(base_size = fontsize) +  theme(legend.position = "none") 
+        
+      }
   
-  myplot$plot <- myplot$plot + geom_vline(xintercept = tTarget, linetype="dotted") +
-    theme_bw(base_size = fontsize) 
-    
+
  
     suppressMessages( myplot$plot <-  myplot$plot + 
                         scale_x_continuous(breaks = c(tLower, expLower, expUpper, tTarget)))
@@ -95,7 +105,6 @@ survivalScenario <- function(tLower = 0,
     
   # extract S(t) and Var(S(t)) for t = expLower (beginning of constant hazard period)
   dfExp <- truncatedDf[truncatedDf$treatment == expGroup, ]
-  
   
   if(useWeights == TRUE){
     fitExp <- survival::survfit(survival::Surv(time, event) ~ 1,
