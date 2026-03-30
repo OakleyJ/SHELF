@@ -21,6 +21,8 @@
 #' @param xlab x-axis label in plot
 #' @param ylab y-axis label in plot
 #' @param fs font size used in plot
+#' @param xl x-axis lower limit
+#' @param xu x-axis upper limit
 
 
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
@@ -44,7 +46,10 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
                             dLP = "best", dRIO = "best",
                             xlab = "x",
                             ylab = expression(f[X](x)),
-                            fs = 12){
+                            CI = 0.95,
+                            fs = 12,
+                            xl = NA,
+                            xu = NA){
   
   if(inherits(groupFit, "character")){
     groupFit <- readSHELFcsv(groupFit)
@@ -57,9 +62,10 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
     dRIO <- RIOFit$best.fit[1, 1]
   }
   
-  if(type == "quartiles"){
+  if(type == "quartiles" | type == "MIQR"){
     individualQuartiles <- feedback(groupFit, 
-                                    quantiles = c(0.25, 0.5, 0.75))$fitted.quantiles
+                                    quantiles = c(0.25, 0.5, 0.75),
+                                    d = "hist")$fitted.quantiles
     RIOQuartiles <- feedback(RIOFit, 
                              quantiles = c(0.25,
                                            0.5,
@@ -72,15 +78,27 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
     lAll <- c(groupFit$limits[, "lower"], lmin,  RIOFit$limits[, "lower"])
     umax <- max(c(groupFit$limits[, "upper"], RIOFit$limits[, "upper"]))
     uAll <- c(c(groupFit$limits[, "upper"], umax, RIOFit$limits[, "upper"]))
-    
+    if(type == "quartiles"){
     p1 <- plotQuartiles(vals = quartileVals, 
                   lower = lAll, upper = uAll,
                   expertnames = c(expertnames,  "Linear pool", "RIO"))
+    }
+    if(type == "MIQR"){
+      dfq <- data.frame(t(quartileVals))
+      dfq$IQR <- dfq[,3] - dfq[,1]
+      row.names(dfq) <- c(expertnames,  "Linear pool", "RIO")
+      p1 <- ggplot(dfq, aes(x = X0.5, y = IQR, label = row.names(dfq)))+
+        geom_point()+
+        ggrepel::geom_label_repel()+
+        labs(x = "median", y = "Interquartile range")
+      
+    }
     
   }
-  if(type == "tertiles"){
+  if(type == "tertiles" | type == "MITR"){
     individualTertiles <- feedback(groupFit, 
-                                   quantiles = c(0.33, 0.5, 0.67))$fitted.quantiles
+                                   quantiles = c(0.33, 0.5, 0.67), 
+                                   d = "hist")$fitted.quantiles
     RIOTertiles <- feedback(RIOFit, 
                              quantiles = c(0.33,
                                            0.5,
@@ -95,10 +113,24 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
     umax <- max(c(groupFit$limits[, "upper"], RIOFit$limits[, "upper"]))
     uAll <- c(c(groupFit$limits[, "upper"], umax, RIOFit$limits[, "upper"]))
     
+    if(type == "tertiles"){
     p1 <- plotTertiles(vals = tertileVals, 
                  lower = lAll, upper = uAll,
-                 expertnames = c(expertnames,  "Linear pool", "RIO"))
+                 expertnames = c(expertnames,  "Linear pool", "RIO"))}
+    if(type == "MITR"){
+      dft <- data.frame(t(tertileVals))
+      dft$ITR <- dft[,3] - dft[,1]
+      row.names(dft) <- c(expertnames,  "Linear pool", "RIO")
+      p1 <- ggplot(dft, aes(x = X0.5, y = ITR, label = row.names(dft)))+
+        geom_point()+
+        ggrepel::geom_label_repel()+
+        labs(x = "median", y = "Intertertile range")
+      
+    }
   }
+  
+ 
+  
   if(type == "density"){
     pRIO <- plotfit(RIOFit, returnPlot = TRUE, d = dRIO,
                     showPlot = FALSE)
@@ -141,12 +173,15 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
       scale_linetype_manual(values = linetypes,
                             breaks = c(expertnames, "Linear pool", "RIO" )) +
       scale_size_manual(values = sizes,
-                        breaks = c(expertnames, "Linear pool", "RIO" ))
+                        breaks = c(expertnames, "Linear pool", "RIO" )) + labs(x = xlab, y = ylab)
     
     
   }
-  p1 <- p1 + labs(x = xlab, y = ylab) + theme_grey(base_size = fs)
+  p1 <- p1  + theme_grey(base_size = fs)
   
+  if(!is.na(xl) & !is.na(xu)){
+    p1 <- p1 + xlim(xl, xu)
+  }
   p1  
   
 }

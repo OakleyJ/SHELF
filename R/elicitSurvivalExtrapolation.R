@@ -31,7 +31,14 @@
 elicitSurvivalExtrapolation<- function(){
   runApp(list(
   ui = shinyUI(fluidPage(
-    
+    # code to disable mouse wheel input for numericInput
+    tags$head(
+      tags$script(HTML("
+      $(document).on('wheel', 'input[type=number]', function (e) {
+        $(this).blur();
+      });
+    "))
+    ),
     # Application title
     titlePanel("SHELF: survival extrapolation"),
     
@@ -147,49 +154,62 @@ elicitSurvivalExtrapolation<- function(){
                 ),
                 
                 tabPanel("RIO judgements",
-                         sidebarLayout(
-                           sidebarPanel(
-                             wellPanel(
-                               uiOutput("RIOJudgementTreatmentGroup"),
-                               numericInput("nRIOprobs", "Number of probs",
-                                            value = 20),
-                               checkboxInput("generateX", "Auto-generate X1, X2, X3 values",
-                                             value = FALSE)),
-                             wellPanel(
-                               uiOutput("RIOJudgementLimits1"),
-                               uiOutput("RIOJudgementLimits2"),
-                               uiOutput("RIOJudgementX1Gp1"),
-                               uiOutput("RIOJudgementP1Gp1"),
-                               uiOutput("RIOJudgementX1Gp2"),
-                               uiOutput("RIOJudgementP1Gp2"),
-                               checkboxInput("show_X2", "Elicit next probability (X2)", value = FALSE),
-                               conditionalPanel(
-                                 condition = "input.show_X2 == true",
-                                 uiOutput("RIOJudgementX2Gp1"),
-                                 uiOutput("RIOJudgementP2Gp1"),
-                                 uiOutput("RIOJudgementX2Gp2"),
-                                 uiOutput("RIOJudgementP2Gp2"),
-                                 checkboxInput("show_X3", "Elicit next probability (X3)", value = FALSE)
-                               ),
-                               conditionalPanel(
-                                 condition = "input.show_X3 == true",
-                                 uiOutput("RIOJudgementX3Gp1"),
-                                 uiOutput("RIOJudgementP3Gp1"),
-                                 uiOutput("RIOJudgementX3Gp2"),
-                                 uiOutput("RIOJudgementP3Gp2")
-                               )
-                               
-                             )
+                         wellPanel(
+                         fluidRow(
+                           column(4, uiOutput("RIOJudgementTreatmentGroup")),
+                           column(4,  numericInput("nRIOprobs", "Number of probs",
+                                                   value = 20)),
+                           column(4, checkboxInput("generateX", "Randomly suggest X1, X2, X3 values (can be modified).",
+                                                   value = FALSE))
+                           )),
+                         wellPanel(
+                           fluidRow(
+                           column(8, h4("Quantity of Interest (QoI):"),
+                                  textOutput("RIOJudgementDefn")),
+                           column(4, uiOutput("RIOJudgementLimits1"),
+                                  uiOutput("RIOJudgementLimits2"))
+                           
+                           )
                            ),
-                           mainPanel(
-                             h4("Quantity of Interest (QoI):"),
-                             textOutput("RIOJudgementDefn"),
-                             hr(),
-                             plotOutput("RIOJudgementsPlot")
+                         wellPanel(
+                           fluidRow(
+                           
+                             column(4, 
+                             helpText("Choose X1 between L and U."),
+                             uiOutput("RIOJudgementX1Gp1"),
+                             uiOutput("RIOJudgementP1Gp1"),
+                             uiOutput("RIOJudgementX1Gp2"),
+                             uiOutput("RIOJudgementP1Gp2"),
+                             checkboxInput("show_X2", "Elicit next probability (X2)", value = FALSE)),
+                             column(4,
+                             conditionalPanel(
+                               condition = "input.show_X2 == true",
+                               helpText("Choose X2 between X1 and U."),
+                               uiOutput("RIOJudgementX2Gp1"),
+                               uiOutput("RIOJudgementP2Gp1"),
+                               uiOutput("RIOJudgementX2Gp2"),
+                               uiOutput("RIOJudgementP2Gp2"),
+                               checkboxInput("show_X3", "Elicit next probability (X3)", value = FALSE)
+                             )),
+                             column(4,
+                             conditionalPanel(
+                               condition = "input.show_X3 == true",
+                               helpText("Choose X3 between X1 and X2."),
+                               uiOutput("RIOJudgementX3Gp1"),
+                               uiOutput("RIOJudgementP3Gp1"),
+                               uiOutput("RIOJudgementX3Gp2"),
+                               uiOutput("RIOJudgementP3Gp2")
+                             )
+                             )
+                             
                            )
-                           )
+                           ),
+                         plotOutput("RIOJudgementsPlot"),
+                                                  hr(),
+                         actionButton("reset", "Reset")
                 ),
-            
+                        
+                        
                 
                 tabPanel("RIO distribution",
                          sidebarLayout(
@@ -232,6 +252,37 @@ elicitSurvivalExtrapolation<- function(){
                             
                            )
                            
+                         )
+                ),
+                tabPanel("Compare group/RIO",
+                         sidebarLayout(
+                           sidebarPanel(
+                             wellPanel(
+                               # Add the treatment group selector to match the rest of the app logic
+                               uiOutput("compareRIOgroup"),
+                               selectInput("LPdist", label = h5("Linear pool distribution"), 
+                                           choices = list(Histogram = "hist", Normal = "normal", 
+                                                          'Student-t' = "t", 'Skew normal' = "skewnormal",
+                                                          Gamma = "gamma", 'Log normal' = "lognormal",
+                                                          'Log Student-t' = "logt", Beta = "beta",
+                                                          'Mirror gamma' = "mirrorgamma",
+                                                          'Mirror log normal' = "mirrorlognormal",
+                                                          'Mirror log Student-t' = "mirrorlogt",
+                                                          'Best fitting' = "best"),
+                                           selected = "beta"),
+                               selectInput("compareGroupRioPlotType", label = h5("Plot type"),
+                                           choices = list(Quartiles = "quartiles",
+                                                          Tertiles = "tertiles",
+                                                          Density = "density",
+                                                          'Median & IQR' = "MIQR",
+                                                          'Median & ITR' = "MITR"))
+                             )
+                           ),
+                           mainPanel(
+                             helpText("Plots comparing the individual elicited judgements, a linear pool 
+                      obtained from the individual judgements, and the RIO distribution."),
+                             plotOutput("compareRIO")
+                           )
                          )
                 ),
                 
@@ -287,7 +338,7 @@ elicitSurvivalExtrapolation<- function(){
   )
   ),
    
-  server = function(input, output) {
+  server = function(input, output, session) {
     
     # File uploading ----
     
@@ -741,14 +792,14 @@ elicitSurvivalExtrapolation<- function(){
     output$RIOJudgementLimits1 <- renderUI({
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 1",
-        textInput("RIOlimits1", label = h5("Plausible Limits"), 
+        textInput("RIOlimits1", label = h5("Plausible Limits (L, U)"), 
                   value = "0, 1")
       )
     })
     output$RIOJudgementLimits2 <- renderUI({
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 2",
-        textInput("RIOlimits2", label = h5("Plausible Limits"), 
+        textInput("RIOlimits2", label = h5("Plausible Limits (L, U)"), 
                   value = "0, 1")
       )
     })
@@ -823,14 +874,14 @@ elicitSurvivalExtrapolation<- function(){
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 1",
         numericInput("RIOP1Gp1", label = h5("P(X<= X1)"), 
-                     value = NA)
+                     value = NA, min = 0, max = 1, step = 1/input$nRIOprobs)
       )
     })
     output$RIOJudgementP1Gp2 <- renderUI({
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 2",
         numericInput("RIOP1Gp2", label = h5("P(X<= X1)"), 
-                     value = NA)
+                     value = NA, min = 0, max = 1, step = 1/input$nRIOprobs)
       )
     })
     
@@ -852,14 +903,14 @@ elicitSurvivalExtrapolation<- function(){
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 1",
         numericInput("RIOP2Gp1", label = h5("P(X>= X2)"), 
-                     value = NA)
+                     value = NA, min = 0, max = 1, step = 1/input$nRIOprobs)
       )
     })
     output$RIOJudgementP2Gp2 <- renderUI({
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 2",
         numericInput("RIOP2Gp2", label = h5("P(X>= X2)"), 
-                     value = NA)
+                     value = NA, min = 0, max = 1, step = 1/input$nRIOprobs)
       )
     })
     
@@ -882,321 +933,71 @@ elicitSurvivalExtrapolation<- function(){
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 1",
         numericInput("RIOP3Gp1", label = h5("P(X1 <= X<= X3)"), 
-                     value = NA)
+                     value = NA, min = 0, max = 1, step = 1/input$nRIOprobs)
       )
     })
     output$RIOJudgementP3Gp2 <- renderUI({
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 2",
         numericInput("RIOP3Gp2", label = h5("P(X1<= X<= X3)"), 
-                     value = NA)
+                     value = NA, min = 0, max = 1, step = 1/input$nRIOprobs)
       )
     })
     
     
-   
-    
-    RIOJudgementsPlot1 <- reactive({
-      req(RIOLimits1(), input$nRIOprobs)
-      
-      L <- RIOLimits1()[1]
-      U <- RIOLimits1()[2]
-      
-      if(is.null(input$RIOX1Gp1)){X1 <- NA}else{
-        X1 <- input$RIOX1Gp1
-      }
-      if(is.null(input$RIOP1Gp1)){P1 <- NA}else{
-        P1 <- input$RIOP1Gp1
-      }
-      
-      if(is.null(input$RIOX2Gp1)){X2 <- NA}else{
-        X2 <- input$RIOX2Gp1
-      }
-      if(is.null(input$RIOP2Gp1)){P2 <- NA}else{
-        P2 <- input$RIOP2Gp1
-      }
-      if(is.null(input$RIOX3Gp1)){X3 <- NA}else{
-        X3 <- input$RIOX3Gp1
-      }
-      if(is.null(input$RIOP3Gp1)){P3 <- NA}else{
-        P3 <- input$RIOP3Gp1
-      }
-
-      # Define vertical lines
-      breaks <- RIOLimits1()
-      if(!is.na(X1)) breaks <- c(breaks, X1)
-      if(input$show_X2 && !is.na(X2)) breaks <- c(breaks, X2)
-      if(input$show_X3 && !is.na(X3)) breaks <- c(breaks, X3)
-      breaks <- sort(unique(breaks))
-      
-      counter_data <- data.frame(x = numeric(), y = numeric())
-      label_data <- data.frame(x = numeric(), y = numeric(), label = character())
-      
-      # Logic for Pool Remainder: 
-      # Pool exists if X3 hasn't been fully specified yet.
-      p_assigned_to_pool <- 0
-      if(!is.na(P1)) p_assigned_to_pool <- p_assigned_to_pool + P1
-      if(input$show_X2 && !is.na(P2)) p_assigned_to_pool <- p_assigned_to_pool + P2
-      
-      # If X3 is shown and filled, the remainder is 0 because the whole range is now partitioned
-      full_partition <- input$show_X3 && !is.na(X3) && !is.na(P3)
-      p_rem <- if(full_partition) 0 else max(0, 1 - p_assigned_to_pool)
-      
-      # --- Pool of Remaining Discs ---
-      n_rem <- round(p_rem * input$nRIOprobs)
-      pool_data <- data.frame()
-      if(n_rem > 0) {
-        x_range <- U - L
-        pool_x_mid <- mean(c(L, U))
-        cols <- ceiling(input$nRIOprobs/2) 
-        rows <- 2 
-        gap <- (U-L)/(cols + 1)
-        pool_data <- expand.grid(x = seq(from  = gap, to = U-gap, by = gap), row = 1:rows)[1:n_rem, ]
-        #pool_data <- expand.grid(col = 1:cols, row = 1:rows)[1:n_rem, ]
-        #pool_data$x <- pool_x_mid - (x_range*0.2) + (pool_data$col * (x_range*0.4/(cols+1)))
-        pool_data$y <- 24.5 + pool_data$row * 1.5
-      }
-
-      # Helper function for stacks
-      add_stack <- function(df, x1, x2, p, labs) {
-        n <- round(p * input$nRIOprobs)
-        mid_x <- (x1 + x2) / 2
-        if(n > 0 & n < 11) {
-          new_df <- data.frame(x = rep(mid_x, n),
-                               y = seq(1, by = 2, length.out = n))
-          df <- rbind(df, new_df)
-          labs <- rbind(labs, data.frame(x = mid_x, y = 22,
-                                         label = paste0(round(p*100), "%")))
-        }
-        if(n > 11){
-          ncol <- ceiling(n / 10)
-          gap <- (x2 - x1) / (ncol + 1)
-          new_df <- expand.grid(x = seq(x1 + gap, by = gap, length.out = ncol),
-                                y = seq(1, by = 2, length.out = n) )[1:n, ]
-          df <- rbind(df, new_df)
-          labs <- rbind(labs, data.frame(x = mid_x, y = 22, label = paste0(round(p*100), "%")))
-        }
-        
-        return(list(df = df, labs = labs))
-      }
-      
-      # --- Process specified intervals ---
-      # 1. [L, X1]
-      if(!is.na(X1) && !is.na(P1)) {
-        res <- add_stack(counter_data, 
-                         L, X1, P1, label_data)
-        counter_data <- res$df; label_data <- res$labs
-      }
-      
-      # 2. [X2, U]
-      if(input$show_X2 && !is.na(X2) && !is.na(P2)) {
-        res <- add_stack(counter_data, X2, U,
-                         P2, label_data)
-        counter_data <- res$df; label_data <- res$labs
-      }
-      
-      # 3. Handle X3 splits
-      if(full_partition) {
-        # Interval [X1, X3] 
-        res <- add_stack(counter_data, X1, X3,
-                         P3, label_data)
-        counter_data <- res$df; label_data <- res$labs
-        
-        # Interval [X3, X2] is 1 - P1 - P2 - P3
-        p_mid_high <- 1 - P1 - P2 - P3
-        res <- add_stack(counter_data, X3, X2, p_mid_high, label_data)
-        counter_data <- res$df; label_data <- res$labs
-      }
-      
-      p <- ggplot() +
-        geom_segment(aes(x = breaks, xend = breaks, y = 0, yend = 23), color = "black", size = 1) +
-        geom_hline(yintercept = 0, color = "black", size = 1.2) +
-        geom_point(data = counter_data, aes(x = x, y = y), color = "steelblue", size = 8) +
-        geom_text(data = label_data, aes(x = x, y = y, label = label), fontface = "bold", size = 5) +
-        # Pool UI
-        annotate("rect", xmin = L,
-                 xmax = U, ymin = 24, ymax = 29.5, 
-                 fill = "grey98", color = "grey80", linetype = "dashed") +
-        annotate("text", x = mean(c(L, U)), y = 30.5,
-                 label = paste0("Unallocated probs: ", n_rem), fontface = "italic") +
-        scale_x_continuous(breaks = breaks, limits = c(L, U)) +
-        scale_y_continuous(limits = c(-1, 32), expand = c(0,0)) +
-        theme_minimal() +
-        theme(panel.grid = element_blank(),
-              axis.text.y = element_blank(),
-              axis.title.y = element_blank(),
-              axis.text.x = element_text(face = "bold", size = 12),
-              axis.title.x = element_text(face = "bold", size = 14,
-                                          margin = margin(t = 20))) +
-        labs(x = "Value X")
-      
-      if(nrow(pool_data) > 0) {
-        p <- p + geom_point(data = pool_data, aes(x = x, y = y), color = "grey75", size = 6)
-      }
-      
-      p
-    })
-
-    RIOJudgementsPlot2 <- reactive({
-      req(RIOLimits2(), input$nRIOprobs)
-      
-      L <- RIOLimits2()[1]
-      U <- RIOLimits2()[2]
-      
-      if(is.null(input$RIOX1Gp2)){X1 <- NA}else{
-        X1 <- input$RIOX1Gp2
-      }
-      if(is.null(input$RIOP1Gp2)){P1 <- NA}else{
-        P1 <- input$RIOP1Gp2
-      }
-      
-      if(is.null(input$RIOX2Gp2)){X2 <- NA}else{
-        X2 <- input$RIOX2Gp2
-      }
-      if(is.null(input$RIOP2Gp2)){P2 <- NA}else{
-        P2 <- input$RIOP2Gp2
-      }
-      if(is.null(input$RIOX3Gp2)){X3 <- NA}else{
-        X3 <- input$RIOX3Gp2
-      }
-      if(is.null(input$RIOP3Gp2)){P3 <- NA}else{
-        P3 <- input$RIOP3Gp2
-      }
-      
-      # Define vertical lines
-      breaks <- RIOLimits1()
-      if(!is.na(X1)) breaks <- c(breaks, X1)
-      if(input$show_X2 && !is.na(X2)) breaks <- c(breaks, X2)
-      if(input$show_X3 && !is.na(X3)) breaks <- c(breaks, X3)
-      breaks <- sort(unique(breaks))
-      
-      counter_data <- data.frame(x = numeric(), y = numeric())
-      label_data <- data.frame(x = numeric(), y = numeric(), label = character())
-      
-      # Logic for Pool Remainder: 
-      # Pool exists if X3 hasn't been fully specified yet.
-      p_assigned_to_pool <- 0
-      if(!is.na(P1)) p_assigned_to_pool <- p_assigned_to_pool + P1
-      if(input$show_X2 && !is.na(P2)) p_assigned_to_pool <- p_assigned_to_pool + P2
-      
-      # If X3 is shown and filled, the remainder is 0 because the whole range is now partitioned
-      full_partition <- input$show_X3 && !is.na(X3) && !is.na(P3)
-      p_rem <- if(full_partition) 0 else max(0, 1 - p_assigned_to_pool)
-      
-      # --- Pool of Remaining Discs ---
-      n_rem <- round(p_rem * input$nRIOprobs)
-      pool_data <- data.frame()
-      if(n_rem > 0) {
-        x_range <- U - L
-        pool_x_mid <- mean(c(L, U))
-        cols <- ceiling(input$nRIOprobs/2) 
-        rows <- 2 
-        gap <- (U-L)/(cols + 1)
-        pool_data <- expand.grid(x = seq(from  = gap, to = U-gap, by = gap), row = 1:rows)[1:n_rem, ]
-        #pool_data <- expand.grid(col = 1:cols, row = 1:rows)[1:n_rem, ]
-        #pool_data$x <- pool_x_mid - (x_range*0.2) + (pool_data$col * (x_range*0.4/(cols+1)))
-        pool_data$y <- 24.5 + pool_data$row * 1.5
-      }
-      
-      # Helper function for stacks
-      add_stack <- function(df, x1, x2, p, labs) {
-        n <- round(p * input$nRIOprobs)
-        mid_x <- (x1 + x2) / 2
-        if(n > 0 & n < 11) {
-          new_df <- data.frame(x = rep(mid_x, n),
-                               y = seq(1, by = 2, length.out = n))
-          df <- rbind(df, new_df)
-          labs <- rbind(labs, data.frame(x = mid_x, y = 22,
-                                         label = paste0(round(p*100), "%")))
-        }
-        if(n > 11){
-          ncol <- ceiling(n / 10)
-          gap <- (x2 - x1) / (ncol + 1)
-          new_df <- expand.grid(x = seq(x1 + gap, by = gap, length.out = ncol),
-                                y = seq(1, by = 2, length.out = n) )[1:n, ]
-          df <- rbind(df, new_df)
-          labs <- rbind(labs, data.frame(x = mid_x, y = 22, label = paste0(round(p*100), "%")))
-        }
-        
-        return(list(df = df, labs = labs))
-      }
-      
-      # --- Process specified intervals ---
-      # 1. [L, X1]
-      if(!is.na(X1) && !is.na(P1)) {
-        res <- add_stack(counter_data, 
-                         L, X1, P1, label_data)
-        counter_data <- res$df; label_data <- res$labs
-      }
-      
-      # 2. [X2, U]
-      if(input$show_X2 && !is.na(X2) && !is.na(P2)) {
-        res <- add_stack(counter_data, X2, U,
-                         P2, label_data)
-        counter_data <- res$df; label_data <- res$labs
-      }
-      
-      # 3. Handle X3 splits
-      if(full_partition) {
-        # Interval [X1, X3] 
-        res <- add_stack(counter_data, X1, X3,
-                         P3, label_data)
-        counter_data <- res$df; label_data <- res$labs
-        
-        # Interval [X3, X2] is 1 - P1 - P2 - P3
-        p_mid_high <- 1 - P1 - P2 - P3
-        res <- add_stack(counter_data, X3, X2, p_mid_high, label_data)
-        counter_data <- res$df; label_data <- res$labs
-      }
-      
-      p <- ggplot() +
-        geom_segment(aes(x = breaks, xend = breaks, y = 0, yend = 23), color = "black", size = 1) +
-        geom_hline(yintercept = 0, color = "black", size = 1.2) +
-        geom_point(data = counter_data, aes(x = x, y = y), color = "steelblue", size = 8) +
-        geom_text(data = label_data, aes(x = x, y = y, label = label), fontface = "bold", size = 5) +
-        # Pool UI
-        annotate("rect", xmin = L,
-                 xmax = U, ymin = 24, ymax = 29.5, 
-                 fill = "grey98", color = "grey80", linetype = "dashed") +
-        annotate("text", x = mean(c(L, U)), y = 30.5,
-                 label = paste0("Unallocated probs: ", n_rem), fontface = "italic") +
-        scale_x_continuous(breaks = breaks, limits = c(L, U)) +
-        scale_y_continuous(limits = c(-1, 32), expand = c(0,0)) +
-        theme_minimal() +
-        theme(panel.grid = element_blank(),
-              axis.text.y = element_blank(),
-              axis.title.y = element_blank(),
-              axis.text.x = element_text(face = "bold", size = 12),
-              axis.title.x = element_text(face = "bold", size = 14,
-                                          margin = margin(t = 20))) +
-        labs(x = "Value X")
-      
-      if(nrow(pool_data) > 0) {
-        p <- p + geom_point(data = pool_data, aes(x = x, y = y), color = "grey75", size = 6)
-      }
-      
-      p
-    })
-    
-
-    
     output$RIOJudgementsPlot <- renderPlot({
       req(survivalDF(), input$RIOJudgementTreatmentGroup)
-      
-      
+
       if(input$RIOJudgementTreatmentGroup == levels(survivalDF()$treatment)[1]){
-        req(RIOJudgementsPlot1())
-        print(RIOJudgementsPlot1())
+        req(RIOLimits1(), input$nRIOprobs)
+        p1 <- RIOJudgementsPlot(L = RIOLimits1()[1],
+                                U = RIOLimits1()[2],
+                                nRIOprobs = input$nRIOprobs,
+                                X1 = input$RIOX1Gp1,
+                                X2 = input$RIOX2Gp1,
+                                X3 = input$RIOX3Gp1,
+                                P1 = input$RIOP1Gp1,
+                                P2 = input$RIOP2Gp1,
+                                P3 = input$RIOP3Gp1,
+                                show_X2 = input$show_X2,
+                                show_X3 = input$show_X3,
+                                fs = input$fs)
       }
       
       if(input$RIOJudgementTreatmentGroup != levels(survivalDF()$treatment)[1]){
-        req(RIOJudgementsPlot2())
-        print(RIOJudgementsPlot2())
+        req(RIOLimits2(), input$nRIOprobs)
+        p1 <- RIOJudgementsPlot(L = RIOLimits2()[1],
+                                U = RIOLimits2()[2],
+                                nRIOprobs = input$nRIOprobs,
+                                X1 = input$RIOX1Gp2,
+                                X2 = input$RIOX2Gp2,
+                                X3 = input$RIOX3Gp2,
+                                P1 = input$RIOP1Gp2,
+                                P2 = input$RIOP2Gp2,
+                                P3 = input$RIOP3Gp2,
+                                show_X2 = input$show_X2,
+                                show_X3 = input$show_X3,
+                                fs = input$fs)
       }
       
-      
+      p1
       
     })
+    
+    observeEvent(input$reset, {
+      updateCheckboxInput(session, "generateX", value = FALSE)
+      updateCheckboxInput(session, "show_X2", value = FALSE)
+      updateCheckboxInput(session, "show_X3", value = FALSE)
+      updateNumericInput(session, "nRIOprobs", value = 20)
+      updateNumericInput(session, "RIOP1Gp1", value = NA)
+      updateNumericInput(session, "RIOP2Gp1", value = NA)
+      updateNumericInput(session, "RIOP2Gp1", value = NA)
+      updateNumericInput(session, "RIOP2Gp2", value = NA)
+      updateNumericInput(session, "RIOP3Gp1", value = NA)
+      updateNumericInput(session, "RIOP3Gp", value = NA)
+      
+      
+    }) 
     
    # RIO distribution tab ----
     
@@ -1596,6 +1397,64 @@ elicitSurvivalExtrapolation<- function(){
       req(probabilityValues())
       #paste0("P(QoI <= ", input$RIOfeedbackProbability,") = ", probabilityValues())
       paste0(" = ", probabilityValues())
+    })
+    
+    # Compare group/RIO tab ----
+    
+    output$compareRIOgroup <- renderUI({
+      selectInput("compareRIOgroup", "Treatment group", 
+                  choices = levels(survivalDF()$treatment))
+    })
+    
+   
+    lpfit_survival <- reactive({
+      req(input$compareRIOgroup, survivalDF())
+      
+      if(input$compareRIOgroup == levels(survivalDF()$treatment)[1]){
+        req(input$myvals1)
+        vals <- input$myvals1
+      } else {
+        req(input$myvals2)
+        vals <- input$myvals2
+      }
+
+      if(input$elicMethod == "quartiles"){
+        p <- c(0.25, 0.5, 0.75)
+      } else {
+        p <- c(0.33, 0.5, 0.66)
+      }
+      fitdist(vals = vals[2:4, ], lower = vals[1, ], upper = vals[5, ], probs = p,
+              expertnames = colnames(vals))
+    })
+    
+   
+    output$compareRIO <- renderPlot({
+      req(lpfit_survival()) 
+      
+      if(input$compareRIOgroup == levels(survivalDF()$treatment)[1]){
+        req(myfit1())
+        p1 <- compareGroupRIO(lpfit_survival(), 
+                        myfit1(), # Assumes myfit() returns the fitted RIO object for the current group
+                        type = input$compareGroupRioPlotType,
+                        dLP = input$LPdist,
+                        dRIO = input$RIOdist1,
+                        fs = input$fs,
+                        xl = xaxis1()[1], xu = xaxis1()[2])
+      }
+      
+      if(input$compareRIOgroup == levels(survivalDF()$treatment)[2]){
+        req(myfit2())
+        p1 <- compareGroupRIO(lpfit_survival(), 
+                        myfit2(), # Assumes myfit() returns the fitted RIO object for the current group
+                        type = input$compareGroupRioPlotType,
+                        dLP = input$LPdist,
+                        dRIO = input$RIOdist2,
+                        fs = input$fs,
+                        xl = xaxis2()[1], xu = xaxis2()[2])
+      }
+      p1
+   
+      
     })
    
     # Extrapolation plot tab ----
