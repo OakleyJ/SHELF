@@ -28,7 +28,7 @@ elicitSHELF<- function(){
     ),
     
     # Application title
-    titlePanel("SHELF"),
+    titlePanel("SHELF elicitation: individual and group judgements"),
     
    # sidebarLayout(
   mainPanel(tags$style(type="text/css",
@@ -219,6 +219,20 @@ elicitSHELF<- function(){
                          )
                          
                          
+                ),
+                tabPanel("Report",
+                         wellPanel(
+                           
+                           checkboxInput("reportDistributions", "Include all fitted distributions",
+                                         value = TRUE, width = NULL),
+                           selectInput("outFormat", label = "Report format",
+                                       choices = list('html' = "html_document",
+                                                      'pdf' = "pdf_document",
+                                                      'Word' = "word_document"),
+                                       width = "30%"),
+                           downloadButton("report", "Download report")
+                           
+                         )
                 )
                          )
                 )
@@ -707,6 +721,45 @@ elicitSHELF<- function(){
       
     })
    
+    # Report tab ----
+    
+    output$report <- downloadHandler(
+      filename = function(){switch(input$outFormat,
+                                   html_document = "extrapolation-report.html",
+                                   pdf_document = "extrapolation-report.pdf",
+                                   word_document = "extrapolation-report.docx")},
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it, in
+        # case we don't have write permissions to the current working dir (which
+        # can happen when deployed).
+        tempReport <- file.path(tempdir(), "elicitationShinySummarySHELF.Rmd")
+        file.copy(system.file("shinyAppFiles", "elicitationShinySummarySHELF.Rmd",
+                              package="SHELF"),
+                  tempReport, overwrite = TRUE)
+        
+        # Set up parameters to pass to Rmd document
+        
+       
+        params <- list(QoI = input$QoI,
+                       myfit = myfit(), myQuantiles = input$myQuantiles,
+                       reportDistributions = input$reportDistributions,
+                       dist = input$RIOdist,
+                       elicMethod = input$elicMethod,
+                       compareGroupRioPlotType = input$compareGroupRioPlotType,
+                       LPdist = input$LPdist,
+                       xLimits = xaxis()
+                       )
+        # Knit the document, passing in the `params` list, and eval it in a
+        # child of the global environment (this isolates the code in the document
+        # from the code in this app).
+        rmarkdown::render(tempReport, output_file = file,
+                          params = params,
+                          output_format = input$outFormat,
+                          output_options = list(self_contained = TRUE),
+                          envir = new.env(parent = globalenv())
+        )
+      }
+    )
  
   }
   ), launch.browser = TRUE)

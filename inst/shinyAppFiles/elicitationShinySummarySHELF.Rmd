@@ -1,0 +1,136 @@
+---
+title: "SHELF Elicitation: Individual and Group Judgements"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    self_contained: true
+  pdf_document: default
+  word_document: default
+date: "`r format(Sys.time(), '%d %B %Y, %H:%M')`"
+fontsize: 11pt
+params:
+  QoI: NA
+  myfit: NA
+  myQuantiles: NA
+  reportDistributions: NA
+  dist: NA
+  inputMethod: NA
+  compareGroupRioPlotType: NA
+  LPdist: NA
+  xLimits: NA
+  elicMethod: NA
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE,
+                      fig.pos = 'h',
+                      fig.align = 'center')
+```
+
+```{r non-html outputs, eval = !knitr::is_html_output()}
+knitr::opts_chunk$set(fig.height = 3,
+                      fig.width = 4)
+```
+
+## QoI definition
+
+`r paste0(params$QoI)` ($X$ in the following.)
+
+## Individual judgements
+
+
+```{r  individual judgements}
+knitr::kable(params$myQuantiles)
+```
+
+
+```{r plot individual judgements}
+if(params$elicMethod == "quartiles"){
+  p1 <- plotQuartiles(vals = params$myQuantiles[2:4, ],
+                              lower = params$myQuantiles[1, ],
+                              upper = params$myQuantiles[5, ],
+                              expertnames = colnames(params$myQuantiles),
+                              xlabel = "X")
+}
+
+if(params$elicMethod == "tertiles"){
+   p1 <- plotQuartiles(vals = params$myQuantiles[2:4, ],
+                              lower = params$myQuantiles[1, ],
+                              upper = params$myQuantiles[5, ],
+                              expertnames = colnames(params$myQuantiles),
+                              xlabel = "X")
+}
+print(p1)
+```
+
+
+
+
+
+## RIO distribution
+
+
+```{r , eval = params$reportGroup1}
+captionText <- "The probability density function and cumulative distribution function fitted to RIO's probabilities for the Quantity of Interest"
+expert <- 1
+sf <- 3
+mydf <- data.frame( params$myfit$vals[expert, ], params$myfit$probs[expert, ])
+colnames(mydf) <- c( "$x$", "$P(X\\le x)$")
+knitr::kable(mydf, caption = "Elicited probabilties")
+```
+
+```{r, eval = params$reportGroup1, fig.cap=captionText,  fig.show='hold', out.width = '45%'}
+plotfit(params$myfit, xlab = "X", ylab = "density", d = params$dist, 
+        xl= params$xLimits[1],
+        xu = params$xLimits[2])
+makeCDFPlot(lower = params$xLimits[1], upper = params$xLimits[2], v = params$myfit$vals[1, ],
+            p = params$myfit$probs[1, ], dist = params$dist,
+            showFittedCDF = TRUE,  fit = params$myfit,
+            xlab = "x", ylab = expression(P(X<=x)))
+```
+
+
+```{r}
+tableCaption1 <-  "Percentiles from the fitted distribution"
+fb1 <- feedback(params$myfit,
+                quantiles = c(0.01, 0.1, 0.5, 0.9, 0.99))$fitted.quantiles[, params$dist]
+fb1 <- matrix(fb1, nrow = 1)
+colnames(fb1) <- paste0(c(1, 10, 50, 90, 99), "%")
+knitr::kable(fb1, caption = tableCaption1)
+```
+
+
+
+```{r, fig.cap="Comparison between RIO and individual judgements"}
+if(params$elicMethod == "quartiles"){p <- c(0.25, 0.5, 0.75)}else{
+        p <- c(0.33, 0.5, 0.66)
+}
+lpfit <- fitdist(vals = params$myQuantiles[2:4, ],
+                       lower = params$myQuantiles[1, ],
+                       upper = params$myQuantiles[5, ],
+                       probs = p,
+             expertnames = colnames(params$myQuantiles))
+compareGroupRIO(lpfit, params$myfit,
+                      type = params$compareGroupRioPlotType,
+                      dLP = params$LPdist,
+                      dRIO = params$dist)
+```
+
+
+
+`r  if(params$reportDistributions){"## Appendix: all fitted distributions"}`
+
+
+```{r, echo = FALSE}
+fit <- params$myfit
+bin.left <- NA
+bin.right <- NA
+chips <- NA
+roulette <- FALSE
+filename <- system.file("shinyAppFiles", "distributionsChild.Rmd", package="SHELF")
+```
+
+
+```{r child=filename, eval = params$reportDistributions }
+```
