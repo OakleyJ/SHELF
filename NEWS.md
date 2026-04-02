@@ -1,3 +1,14 @@
+SHELF v1.13.0 (2026-04-02)
+==============================
+
+* new tabs in survivalModelExtrapolations() for eliciting RIO judgements and comparing RIO to individual judgements
+
+* new app elicitSHELF() for implementing the main SHELF protocol (individual and RIO judgements) in one app
+
+* both survivalModelExtrapolations() and elicitSHELF() include new visualisation for eliciting RIO judgemetns, based on roulette
+
+* solver argument changed in sn::qsn() to make feedback more robust 
+
 SHELF v1.12.1 (2025-11-17)
 ==============================
 

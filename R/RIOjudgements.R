@@ -6,6 +6,11 @@ RIOJudgementsPlot <- function(L, U, nRIOprobs = 20, X1 = NA, X2 = NA, X3 = NA,
                               show_X3 = FALSE,
                               fs = 12){
   
+  # Hack to avoid CRAN check NOTE
+  
+  x <- y <- label <- NULL
+  
+  
   # shiny apps may send input values as NULL - switch to NA
   if(is.null(X1)){X1 <- NA}
   if(is.null(P1)){P1 <- NA}
@@ -42,7 +47,7 @@ RIOJudgementsPlot <- function(L, U, nRIOprobs = 20, X1 = NA, X2 = NA, X3 = NA,
              fill = "grey98", color = "grey80", linetype = "dashed")+
     annotate("text", x = mean(c(L, U)), y = 30.5,
              label = paste0("Unallocated probs: ", n_rem), fontface = "italic") +
-    scale_x_continuous(breaks = breaks, label = axisLabels, limits = c(L, U)) +
+    scale_x_continuous(breaks = breaks, labels = axisLabels, limits = c(L, U)) +
     scale_y_continuous(limits = c(-1, 32), expand = c(0,0)) +
     theme_minimal(base_size = fs) +
     theme(panel.grid = element_blank(),
@@ -176,7 +181,7 @@ RIOJudgementsPlot <- function(L, U, nRIOprobs = 20, X1 = NA, X2 = NA, X3 = NA,
              fill = "grey98", color = "grey80", linetype = "dashed") +
     annotate("text", x = mean(c(L, U)), y = 30.5,
              label = paste0("Unallocated probs: ", n_rem)) +
-    scale_x_continuous(breaks = breaks, label = axisLabels, limits = c(L, U)) +
+    scale_x_continuous(breaks = breaks, labels = axisLabels, limits = c(L, U)) +
     scale_y_continuous(limits = c(-1, 32), expand = c(0,0)) +
     theme_minimal(base_size = fs) +
     theme(panel.grid = element_blank(),

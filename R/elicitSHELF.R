@@ -97,7 +97,7 @@ elicitSHELF<- function(){
                            fluidRow(
                              column(4,  numericInput("nRIOprobs", "Number of probs",
                                                      value = 20)),
-                             column(4, checkboxInput("generateX", "Randomly suggest X1, X2, X3 values (can be modified).",
+                             column(4, checkboxInput("generateX", "Randomly suggest X1, X2, X3 values (can be modified; rounding recommended).",
                                                      value = FALSE))
                            ),
                            fluidRow(
@@ -448,9 +448,9 @@ elicitSHELF<- function(){
         }
         
         return(signif(qlinearpool(lpfit(),
-                                  q=c(runif(1, 0.2, 0.3),
+                                  q=c(runif(1, 0.1, 0.35),
                                       runif(1, 0.4, 0.6),
-                                      runif(1, 0.7, 0.8)),
+                                      runif(1, 0.65, 0.9)),
                                   d = "beta"),
                       2))
         
@@ -511,6 +511,20 @@ elicitSHELF<- function(){
                               show_X3 = input$show_X3,
                               fs = input$fs)
       })
+    
+    observeEvent(input$reset, {
+      
+        updateNumericInput(session, "RIOP1", value = NA)
+        updateNumericInput(session, "RIOP2", value = NA)
+        updateNumericInput(session, "RIOP3", value = NA)
+        updateCheckboxInput(session, "generateX", value = FALSE)
+        updateNumericInput(session, "RIOX1", value = NA)
+        updateNumericInput(session, "RIOX2", value = NA)
+        updateNumericInput(session, "RIOX3", value = NA)
+        updateCheckboxInput(session, "show_X2", value = FALSE)
+        updateCheckboxInput(session, "show_X3", value = FALSE)
+     
+    }) 
 
   
     

@@ -12,7 +12,9 @@ compareGroupRIO(
   dRIO = "best",
   xlab = "x",
   ylab = expression(f[X](x)),
-  fs = 12
+  fs = 12,
+  xl = NA,
+  xu = NA
 )
 }
 \arguments{
@@ -36,6 +38,10 @@ Options are "normal", "t", "gamma", "lognormal", "logt","beta", "mirrorgamma",
 \item{ylab}{y-axis label in plot}
 
 \item{fs}{font size used in plot}
+
+\item{xl}{x-axis lower limit}
+
+\item{xu}{x-axis upper limit}
 }
 \description{
 Produce one of three plots to compare the individual elicited judgements with the final

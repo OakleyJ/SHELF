@@ -23,6 +23,7 @@
 #' @param fs font size used in plot
 #' @param xl x-axis lower limit
 #' @param xu x-axis upper limit
+#' @importFrom ggrepel geom_label_repel
 
 
 #' @author Jeremy Oakley <j.oakley@@sheffield.ac.uk>
@@ -46,10 +47,14 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
                             dLP = "best", dRIO = "best",
                             xlab = "x",
                             ylab = expression(f[X](x)),
-                            CI = 0.95,
                             fs = 12,
                             xl = NA,
                             xu = NA){
+  
+  # Hack to avoid CRAN check NOTE
+  
+  X0.5 <- ITR <- InQR <- NULL
+  
   
   if(inherits(groupFit, "character")){
     groupFit <- readSHELFcsv(groupFit)
@@ -65,7 +70,7 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
   if(type == "quartiles" | type == "MIQR"){
     individualQuartiles <- feedback(groupFit, 
                                     quantiles = c(0.25, 0.5, 0.75),
-                                    d = "hist")$fitted.quantiles
+                                    dist = "hist")$fitted.quantiles
     RIOQuartiles <- feedback(RIOFit, 
                              quantiles = c(0.25,
                                            0.5,
@@ -85,9 +90,9 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
     }
     if(type == "MIQR"){
       dfq <- data.frame(t(quartileVals))
-      dfq$IQR <- dfq[,3] - dfq[,1]
+      dfq$InQR <- dfq[,3] - dfq[,1]
       row.names(dfq) <- c(expertnames,  "Linear pool", "RIO")
-      p1 <- ggplot(dfq, aes(x = X0.5, y = IQR, label = row.names(dfq)))+
+      p1 <- ggplot(dfq, aes(x = X0.5, y = InQR, label = row.names(dfq)))+
         geom_point()+
         ggrepel::geom_label_repel()+
         labs(x = "median", y = "Interquartile range")
@@ -98,7 +103,7 @@ compareGroupRIO <- function(groupFit, RIOFit, type = "density",
   if(type == "tertiles" | type == "MITR"){
     individualTertiles <- feedback(groupFit, 
                                    quantiles = c(0.33, 0.5, 0.67), 
-                                   d = "hist")$fitted.quantiles
+                                   dist = "hist")$fitted.quantiles
     RIOTertiles <- feedback(RIOFit, 
                              quantiles = c(0.33,
                                            0.5,

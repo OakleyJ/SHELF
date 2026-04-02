@@ -1,8 +1,8 @@
 Type: Package
 Package: SHELF
 Title: Tools to Support the Sheffield Elicitation Framework
-Version: 1.12.1
-Date: 2025-11-17
+Version: 1.13.0
+Date: 2026-04-02
 Authors@R: person(given = "Jeremy",
                     family = "Oakley",
                     role = c("aut", "cre"),
@@ -29,6 +29,7 @@ Imports:
     flexsurv,
     ggExtra,
     ggplot2,
+    ggrepel,
     ggridges,
     graphics,
     grDevices,

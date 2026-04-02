@@ -7,26 +7,15 @@
 elicitSHELF()
 }
 \description{
-Opens up a web browser in which you can implement the SHELF protocol for survival extrapolation.
-Start with uploading a .csv file of individual patient survival data (time, event to indicate censoring, and
-treatment group). Then elicit individual judgements, perform scenario testing as required, and elicit a RIO distribution.
-Judgements for two treatment groups can be elicited in the same session.
+Opens up a web browser in which you can implement the general SHELF protocol of individual elicitation
+followed by group discussion and elicitation of a single set of Rational Impartial Observer (RIO) probabilities
 }
 \examples{
 
 \dontrun{
 
-# make a suitable csv file using a built in data set from the survival package
-sdf <- survival::veteran[, c("time", "status", "trt")]
-colnames(sdf) <- c("time", "event", "treatment")
-sdf$treatment <- factor(sdf$treatment, labels = c("standard", "test"))
 
-# write the data frame sdf to a .csv file in the current working directory
-write.csv(sdf, file = "testFile.csv", row.names = FALSE)
-
-# Run the app and upload testFile.csv in the first tab, and change unit of time to "days"
-
-elicitSurvivalExtrapolation()
+elicitSHELF()
 
 }
 }

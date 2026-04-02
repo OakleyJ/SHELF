@@ -159,8 +159,7 @@ elicitSurvivalExtrapolation<- function(){
                            column(4, uiOutput("RIOJudgementTreatmentGroup")),
                            column(4,  numericInput("nRIOprobs", "Number of probs",
                                                    value = 20)),
-                           column(4, checkboxInput("generateX", "Randomly suggest X1, X2, X3 values (can be modified).",
-                                                   value = FALSE))
+                           column(4, uiOutput("generateX"))
                            )),
                          wellPanel(
                            fluidRow(
@@ -814,8 +813,29 @@ elicitSurvivalExtrapolation<- function(){
                error = function(e){NULL})
     })
     
+    
+    output$generateX <- renderUI({
+      req(input$RIOJudgementTreatmentGroup, survivalDF())
+
+      if(input$RIOJudgementTreatmentGroup == levels(survivalDF()$treatment)[1]){
+        current_val <- if(!is.null(input$generateXGp1)) input$generateXGp1 else FALSE
+        widget <- checkboxInput("generateXGp1", "Randomly suggest X1, X2, X3 values (can be modified; rounding recommended).",
+                              value = current_val)
+      }
+      if(length(levels(survivalDF()$treatment))>1){
+      if(input$RIOJudgementTreatmentGroup == levels(survivalDF()$treatment)[2]){
+        current_val <- if(!is.null(input$generateXGp2)) input$generateXGp2 else FALSE
+        widget<- checkboxInput("generateXGp2", "Randomly suggest X1, X2, X3 values (can be modified; rounding recommended).",
+                      value = current_val)
+      }
+      }
+      widget
+    })
+    
+   
     XGp1Defaults <-reactive({
-      if(input$generateX && !is.null(input$myvals1)){
+      if(is.null(input$generateXGp1)){return(c(NA, NA, NA))}else{
+      if(input$generateXGp1 && !is.null(input$myvals1)){
         if(input$elicMethod == "quartiles"){p <- c(0.25, 0.5, 0.75)}else{
           p <- c(0.33, 0.5, 0.66)
         }
@@ -824,19 +844,22 @@ elicitSurvivalExtrapolation<- function(){
                             upper = input$myvals1[5, ],
                             probs = p)
         return(signif(qlinearpool(myfit1,
-                                  q=c(runif(1, 0.2, 0.3),
-                                      runif(1, 0.4, 0.6),
-                                      runif(1, 0.7, 0.8)),
+                                  q=c(runif(1, 0.1, 0.3),
+                                      runif(1, 0.35, 0.65),
+                                      runif(1, 0.7, 0.9)),
                                   d = "beta"),
                       2))
         
       }else{
         return(c(NA, NA, NA))
       }
+      }
     })
     
     XGp2Defaults <-reactive({
-      if(input$generateX && !is.null(input$myvals1)){
+      if(is.null(input$generateXGp2)){return(c(NA, NA, NA))}else{
+
+      if(input$generateXGp2 && !is.null(input$myvals1)){
         if(input$elicMethod == "quartiles"){p <- c(0.25, 0.5, 0.75)}else{
           p <- c(0.33, 0.5, 0.66)
         }
@@ -845,14 +868,15 @@ elicitSurvivalExtrapolation<- function(){
                           upper = input$myvals2[5, ],
                           probs = p)
         return(signif(qlinearpool(myfit2,
-                                  q=c(runif(1, 0.2, 0.3),
-                                      runif(1, 0.4, 0.6),
-                                      runif(1, 0.7, 0.8)),
+                                  q=c(runif(1, 0.1, 0.3),
+                                      runif(1, 0.35, 0.65),
+                                      runif(1, 0.7, 0.9)),
                                   d = "beta"),
                       2))
         
       }else{
         return(c(NA, NA, NA))
+      }
       }
     })
     
@@ -896,7 +920,7 @@ elicitSurvivalExtrapolation<- function(){
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 2",
         numericInput("RIOX2Gp2", label = h5("Value X2"), 
-                     value = XGp1Defaults()[3])
+                     value = XGp2Defaults()[3])
       )
     })
     output$RIOJudgementP2Gp1 <- renderUI({
@@ -926,7 +950,7 @@ elicitSurvivalExtrapolation<- function(){
       conditionalPanel(
         condition = "output.RIOJudgementtgpNumber == 2",
         numericInput("RIOX3Gp2", label = h5("Value X3"), 
-                     value = XGp1Defaults()[2])
+                     value = XGp2Defaults()[2])
       )
     })
     output$RIOJudgementP3Gp1 <- renderUI({
@@ -984,19 +1008,68 @@ elicitSurvivalExtrapolation<- function(){
       
     })
     
+    observeEvent(input$RIOJudgementTreatmentGroup, {
+      
+      updateCheckboxInput(session, "show_X2", value = TRUE)
+      updateCheckboxInput(session, "show_X3", value = TRUE)
+      
+      if(input$RIOJudgementTreatmentGroup == levels(survivalDF()$treatment)[1]){
+        if(is.null(input$RIOP2Gp1)){
+          updateCheckboxInput(session, "show_X3", value = FALSE)
+        }else{
+          if(is.na(input$RIOP2Gp1)) updateCheckboxInput(session, "show_X3", value = FALSE)
+        }
+        if(is.null(input$RIOP1Gp1)){
+          updateCheckboxInput(session, "show_X2", value = FALSE)
+        }else{
+          if(is.na(input$RIOP1Gp1)) updateCheckboxInput(session, "show_X2", value = FALSE)
+        }
+      }
+      if(length(levels(survivalDF()$treatment))>1){
+      if(input$RIOJudgementTreatmentGroup == levels(survivalDF()$treatment)[2]){
+        if(is.null(input$RIOP2Gp2)){
+          updateCheckboxInput(session, "show_X3", value = FALSE)
+        }else{
+          if(is.na(input$RIOP2Gp2)) updateCheckboxInput(session, "show_X3", value = FALSE)
+        }
+        if(is.null(input$RIOP1Gp2)){
+          updateCheckboxInput(session, "show_X2", value = FALSE)
+        }else{
+          if(is.na(input$RIOP1Gp2)) updateCheckboxInput(session, "show_X2", value = FALSE)
+        }
+      }
+      }
+      
+    })
+    
     observeEvent(input$reset, {
-      updateCheckboxInput(session, "generateX", value = FALSE)
-      updateCheckboxInput(session, "show_X2", value = FALSE)
-      updateCheckboxInput(session, "show_X3", value = FALSE)
-      updateNumericInput(session, "nRIOprobs", value = 20)
-      updateNumericInput(session, "RIOP1Gp1", value = NA)
-      updateNumericInput(session, "RIOP2Gp1", value = NA)
-      updateNumericInput(session, "RIOP2Gp1", value = NA)
-      updateNumericInput(session, "RIOP2Gp2", value = NA)
-      updateNumericInput(session, "RIOP3Gp1", value = NA)
-      updateNumericInput(session, "RIOP3Gp", value = NA)
-      
-      
+
+      if(input$RIOJudgementTreatmentGroup == levels(survivalDF()$treatment)[1]){
+        updateNumericInput(session, "RIOP1Gp1", value = NA)
+        updateNumericInput(session, "RIOP2Gp1", value = NA)
+        updateNumericInput(session, "RIOP3Gp1", value = NA)
+        updateCheckboxInput(session, "generateXGp1", value = FALSE)
+        updateNumericInput(session, "RIOX1Gp1", value = NA)
+        updateNumericInput(session, "RIOX2Gp1", value = NA)
+        updateNumericInput(session, "RIOX3Gp1", value = NA)
+        updateCheckboxInput(session, "show_X2", value = FALSE)
+        updateCheckboxInput(session, "show_X3", value = FALSE)
+      }
+      if(length(levels(survivalDF()$treatment))>1){
+      if(input$RIOJudgementTreatmentGroup == levels(survivalDF()$treatment)[2]){
+        updateNumericInput(session, "RIOP1Gp2", value = NA)
+        updateNumericInput(session, "RIOP2Gp2", value = NA)
+        updateNumericInput(session, "RIOP3Gp2", value = NA)        
+        updateCheckboxInput(session, "generateXGp2", value = FALSE)
+        updateNumericInput(session, "RIOX1Gp2", value = NA)
+        updateNumericInput(session, "RIOX2Gp2", value = NA)
+        updateNumericInput(session, "RIOX3Gp2", value = NA)
+        updateCheckboxInput(session, "show_X2", value = FALSE)
+        updateCheckboxInput(session, "show_X3", value = FALSE)
+      }
+      }
+      # Trigger update of output$generateX
+      updateSelectInput(session, "RIOJudgementTreatmentGroup", input$RIOJudgementTreatmentGroup)
     }) 
     
    # RIO distribution tab ----
@@ -1441,7 +1514,7 @@ elicitSurvivalExtrapolation<- function(){
                         fs = input$fs,
                         xl = xaxis1()[1], xu = xaxis1()[2])
       }
-      
+      if(length(levels(survivalDF()$treatment))>1){
       if(input$compareRIOgroup == levels(survivalDF()$treatment)[2]){
         req(myfit2())
         p1 <- compareGroupRIO(lpfit_survival(), 
@@ -1451,6 +1524,7 @@ elicitSurvivalExtrapolation<- function(){
                         dRIO = input$RIOdist2,
                         fs = input$fs,
                         xl = xaxis2()[1], xu = xaxis2()[2])
+      }
       }
       p1
    
