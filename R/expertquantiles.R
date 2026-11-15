@@ -63,11 +63,8 @@ function(fit, q, d = "best", ex = 1){
 	}
 	
 	if(d == "hist"){
-	  qx <- approx(c(0, fit$probs[ex, ], 1),
-	               c(fit$limits[ex, 1],
-	                 fit$vals[ex, ],
-	                 fit$limits[ex, 2]),
-	               xout = q)$y
+	  qx <- qhist(q, c(fit$limits[ex, 1], fit$vals[ex, ], fit$limits[ex, 2]),
+	              c(0, fit$probs[ex, ], 1))
 	}
 	
 qx	
