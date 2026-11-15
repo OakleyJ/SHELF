@@ -12,9 +12,10 @@
 #'  by default). \eqn{k_1} can be set to \code{-Inf}, or \eqn{k_2} can be set to \code{Inf};
 #'  in either case, the hypothetical median value must be specified. If both \eqn{k_1}
 #'  and \eqn{k_2} are finite, the hypothetical median must be one of the interval endpoints.
-#'  Note that, unlike the \link{fitdist} command, a 'best fitting'
-#'  distribution is not reported, as the distributions are fitted to two elicited
-#'  probabilities only.    
+#'  Only two probabilities are elicited, so the residuals do not provide a basis
+#'  for choosing between two-parameter distribution families. The returned
+#'  \code{best.fitting} field records the family with the smallest sum of squared
+#'  residuals for compatibility with other \code{elicitation} methods.
 #' 
 #' @param interval A vector specifying the endpoints of an interval \eqn{[k_1, k_2]}.  
 #' @param propvals A vector specifying two values \eqn{\theta_1, \theta_2} for the proportion.
@@ -37,6 +38,9 @@
 #' \item{Log.Student.t}{Parameters of the fitted log student t distributions.
 #' Note that (log(X- \code{lower}) - location) / scale has a standard t distribution. The
 #' degrees of freedom is not fitted: it is specified as an input argument.} 
+#' \item{best.fitting}{The distribution name corresponding to the smallest
+#' sum of squared residuals in \code{ssq}. This is not a recommendation of a
+#' distribution family based on two elicited probabilities.}
 #' \item{vals}{The elicited values \eqn{\theta_1, \theta_2}}
 #' \item{probs}{The elicited probabilities \eqn{p_1, p_2}}
 #' \item{limits}{The lower and upper limits specified by each expert (+/- Inf
@@ -76,6 +80,7 @@ fitprecision <- function(interval, propvals,
   # Make copies for use in the density plots
   intervalPlot <- interval
   propvalsPlot <- propvals
+  propprobsPlot <- propprobs
   
   
   # Convert interval and proportions to the case
@@ -83,11 +88,13 @@ fitprecision <- function(interval, propvals,
   if (interval[1] == -Inf){
     interval <- c(interval[2], med)
     propvals <- sort(0.5 - propvals)
+    propprobs <- rev(1 - propprobs)
   }
   
   if (interval[2] == Inf){
     interval <- c(med, interval[1])
     propvals <- sort(0.5 - propvals)
+    propprobs <- rev(1 - propprobs)
   }
   
   if (trans == "identity"){
@@ -113,7 +120,7 @@ fitprecision <- function(interval, propvals,
   }
   
   precisionfit <- fitdist(vals = precisionvalues, probs = propprobs,
-                          lower = 0)
+                          lower = 0, tdf = tdf)
   
   precisionfit$interval <- intervalPlot 
   precisionfit$transform <- trans
@@ -157,11 +164,11 @@ fitprecision <- function(interval, propvals,
       labs(y = "")
     p1 <- pcore + geom_line() + 
       geom_area(data = df, aes(x=xint, y = dint1), fill="red", alpha=0.5) +
-      labs(title = paste("lower (",propprobs[1],
+      labs(title = paste("lower (",propprobsPlot[1],
                          " quantile) proportion = ", propvalsPlot[1], sep=""))
     p2 <- pcore + geom_line(aes(x=x, y=d2)) + 
       geom_area(data = df, aes(x=xint, y = dint2), fill="red", alpha=0.5) +
-      labs(title = paste("upper (",propprobs[2],
+      labs(title = paste("upper (",propprobsPlot[2],
                          " quantile) proportion = ", propvalsPlot[2], sep =""))
     multiplot(p1, p2)
   }
@@ -170,10 +177,8 @@ fitprecision <- function(interval, propvals,
   precisionfit$Normal[1, ] <- precisionfit$Student.t[1, ] <- NA
   precisionfit$ssq[1:2] <- NA
   
-  distnames <- c("Normal", "Student-t", "Gamma", "Log normal", "Log Student-t", "Beta")
-   
   index <- which.min(precisionfit$ssq)
-  precisionfit$best.fitting <- data.frame(best.fit=distnames[index])
+  precisionfit$best.fitting <- data.frame(best.fit=names(precisionfit$ssq)[index])
   
   class(precisionfit) <- "elicitation"
   precisionfit
