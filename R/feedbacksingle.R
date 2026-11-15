@@ -163,8 +163,8 @@ function(fit, quantiles =  NA, values = NA, sf = 3, ex = 1){
 	  Mp[, "mirrorlogt"] <- 1 - pt(valuesMatrix[, "mirrorlogt"],
 	                               fit$mirrorlogt[ex,3])
 	  
-	  # set to 0 for log-T, if x is above upper limit
-	  Mp[values >= fit$limits[ex, 2],  "mirrorlogt"] <- 0 
+	  # A reflected log-t CDF is one at and above its upper support limit.
+	  Mp[values >= fit$limits[ex, 2],  "mirrorlogt"] <- 1
 	}
 	
 	if(fit$limits[ex,1] > - Inf & fit$limits[ex,2] <  Inf){
